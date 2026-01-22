@@ -3,7 +3,7 @@
 
 #include "SubscribeCmd.h"
 
-SubscribeCmd::SubscribeCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
+SubscribeCmd::SubscribeCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
 	: Cmd(ioctx, manager),
 	ackdata({ .type = Cmd::Type::Subscribe })
 {
@@ -41,9 +41,9 @@ void SubscribeCmd::ExecuteCmd()
 void SubscribeCmd::ExecuteAck()
 {
 	ioctx->PostSend(
-		ackbuilder
-		.AppendUInt<Cmd::Type>(ackdata.type)
-		.AppendUInt<Cmd::ReasonCode>(ackdata.reason)
+		ackbuffer
+		.WriteUInt<Cmd::Type>(ackdata.type)
+		.WriteUInt<Cmd::ReasonCode>(ackdata.reason)
 		.Build()
 	);
 }

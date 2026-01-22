@@ -6,13 +6,8 @@
 
 class DisconnectCmd : public Cmd
 {
-	friend class CmdSystem;
-
-private:
-	struct Token {};
-
 public:
-	DisconnectCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
+	DisconnectCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
 	virtual ~DisconnectCmd() = default;
 
 private:

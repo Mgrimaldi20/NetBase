@@ -9,13 +9,8 @@
 
 class ConnectCmd : public Cmd
 {
-	friend class CmdSystem;
-
-private:
-	struct Token {};
-
 public:
-	ConnectCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
+	ConnectCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
 	virtual ~ConnectCmd() = default;
 
 private:

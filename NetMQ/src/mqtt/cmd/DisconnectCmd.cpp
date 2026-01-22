@@ -3,7 +3,7 @@
 
 #include "DisconnectCmd.h"
 
-DisconnectCmd::DisconnectCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
+DisconnectCmd::DisconnectCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
 	: Cmd(ioctx, manager)
 {
 	(void)params;
