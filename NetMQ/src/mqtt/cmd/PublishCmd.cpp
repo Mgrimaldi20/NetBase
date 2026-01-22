@@ -2,7 +2,7 @@
 
 #include "PublishCmd.h"
 
-PublishCmd::PublishCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
+PublishCmd::PublishCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
 	: Cmd(ioctx, manager),
 	ackdata({ .type = Cmd::Type::Publish })
 {
@@ -35,9 +35,9 @@ void PublishCmd::ExecuteCmd()
 void PublishCmd::ExecuteAck()
 {
 	ioctx->PostSend(
-		ackbuilder
-		.AppendUInt<Cmd::Type>(ackdata.type)
-		.AppendUInt<Cmd::ReasonCode>(ackdata.reason)
+		ackbuffer
+		.WriteUInt<Cmd::Type>(ackdata.type)
+		.WriteUInt<Cmd::ReasonCode>(ackdata.reason)
 		.Build()
 	);
 }

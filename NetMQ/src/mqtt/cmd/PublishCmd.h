@@ -6,13 +6,8 @@
 
 class PublishCmd : public Cmd
 {
-	friend class CmdSystem;
-
-private:
-	struct Token {};
-
 public:
-	PublishCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
+	PublishCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
 	virtual ~PublishCmd() = default;
 
 private:

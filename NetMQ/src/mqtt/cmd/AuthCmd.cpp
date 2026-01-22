@@ -1,6 +1,6 @@
 #include "AuthCmd.h"
 
-AuthCmd::AuthCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
+AuthCmd::AuthCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
 	: Cmd(ioctx, manager)
 {
 	(void)params;

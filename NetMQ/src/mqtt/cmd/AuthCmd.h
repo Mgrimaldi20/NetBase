@@ -6,13 +6,8 @@
 
 class AuthCmd : public Cmd
 {
-	friend class CmdSystem;
-
-private:
-	struct Token {};
-
 public:
-	AuthCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
+	AuthCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
 	virtual ~AuthCmd() = default;
 
 private:

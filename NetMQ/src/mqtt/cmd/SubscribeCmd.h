@@ -6,13 +6,8 @@
 
 class SubscribeCmd : public Cmd
 {
-	friend class CmdSystem;
-
-private:
-	struct Token {};
-
 public:
-	SubscribeCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
+	SubscribeCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params);
 	virtual ~SubscribeCmd() = default;
 
 private:

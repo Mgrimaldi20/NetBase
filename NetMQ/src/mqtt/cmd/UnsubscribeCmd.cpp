@@ -3,7 +3,7 @@
 
 #include "UnsubscribeCmd.h"
 
-UnsubscribeCmd::UnsubscribeCmd(Token, std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
+UnsubscribeCmd::UnsubscribeCmd(std::shared_ptr<IOContext> ioctx, SubManager &manager, ByteBuffer &params)
 	: Cmd(ioctx, manager),
 	ackdata({ .type = Cmd::Type::Unsubscribe })
 {
@@ -37,9 +37,9 @@ void UnsubscribeCmd::ExecuteCmd()
 void UnsubscribeCmd::ExecuteAck()
 {
 	ioctx->PostSend(
-		ackbuilder
-		.AppendUInt<Cmd::Type>(ackdata.type)
-		.AppendUInt<Cmd::ReasonCode>(ackdata.reason)
+		ackbuffer
+		.WriteUInt<Cmd::Type>(ackdata.type)
+		.WriteUInt<Cmd::ReasonCode>(ackdata.reason)
 		.Build()
 	);
 }
