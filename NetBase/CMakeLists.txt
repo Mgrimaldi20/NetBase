@@ -1,4 +1,4 @@
-﻿# CMakeList.txt : CMake project for NetMQ, include source and define
+﻿# CMakeList.txt : CMake project for NetBase, include source and define
 # project specific logic here.
 #
 
@@ -65,7 +65,7 @@ endif()
 
 # Set up all the compiler options here
 if(MSVC)
-	target_compile_options(NetBase PRIVATE "/W4" "/WX" "/permissive-" "/analyze" "/fp:fast" "/FAs" "/MP")			# Common options for all build types
+	target_compile_options(NetBase PRIVATE "/W4" "/WX" "/permissive-" "/analyze" "/fp:fast" "/FAs" "/MP")		# Common options for all build types
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																		# Debug build compiler options
 		target_compile_options(NetBase PRIVATE
 			"/Zi"
@@ -74,13 +74,13 @@ if(MSVC)
 			"/MDd"
 			"/JMC"
 		)
-		target_link_options(NetBase PRIVATE "/DEBUG")																# Ensure PDB file is generated
+		target_link_options(NetBase PRIVATE "/DEBUG")															# Ensure PDB file is generated
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")																	# Release build compiler options
 		target_compile_options(NetBase PRIVATE "/O2" "/MD" "/GL" "/Gw")
 	endif()
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")							# CLANG and GCC compiler options
-	target_compile_options(NetBase PRIVATE "-Wall" "-Werror" "-Wpedantic" "-ffast-math" "-fanalyzer")				# Common options for all build types
+	target_compile_options(NetBase PRIVATE "-Wall" "-Werror" "-Wpedantic" "-ffast-math" "-fanalyzer")			# Common options for all build types
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																		# Debug build compiler options
 		target_compile_options(NetBase PRIVATE
 			"-g"
