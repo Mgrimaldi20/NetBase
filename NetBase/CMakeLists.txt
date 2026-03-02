@@ -10,7 +10,6 @@ if(CMAKE_VERSION VERSION_GREATER 3.25)
 endif()
 
 target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
-target_compile_definitions(NetBase PRIVATE MQTT_SPEC_VERSION=5)	# 0x05 for MQTT 5.0
 
 # Check the Operating System and include the appropriate file for execution
 if(WIN32)
@@ -38,6 +37,8 @@ target_sources(NetBase PRIVATE
 	"src/sys/Socket.h"
 	"src/sys/IOContext.h"
 	"src/framework/Bitmask.h"
+	"src/framework/ByteBuffer.h"
+	"src/framework/ByteBuffer.cpp"
 	"src/framework/Log.h"
 	"src/framework/Log.cpp"
 	"src/framework/UUID.h"
@@ -46,12 +47,6 @@ target_sources(NetBase PRIVATE
 	"src/framework/IOContextManager.cpp"
 	"src/framework/CmdSystem.h"
 	"src/framework/CmdSystem.cpp"
-	"src/framework/ByteBuffer.h"
-	"src/framework/ByteBuffer.cpp"
-)
-
-target_sources(NetBase PRIVATE
-	"src/NetMQ/cmd/Cmd.h"
 )
 
 include_directories(src)

@@ -7,21 +7,43 @@ std::byte &ByteBuffer::operator[](size_t index) noexcept
 	return buffer[index];
 }
 
+ByteBuffer::ByteBuffer()
+	: buffer(),
+	readpos(0)
+{
+}
+
+ByteBuffer::ByteBuffer(const ByteBuffer &)
+	: buffer(),
+	readpos(0)
+{
+}
+
+ByteBuffer::ByteBuffer(ByteBuffer &&) noexcept
+	: buffer(),
+	readpos(0)
+{
+}
+
 ByteBuffer::ByteBuffer(std::span<std::byte> buf)
-	: buffer(buf.begin(), buf.end())
+	: buffer(buf.begin(), buf.end()),
+	readpos(0)
 {
 }
 
 ByteBuffer::ByteBuffer(std::vector<std::byte> buf)
-	: buffer(std::move(buf))
+	: buffer(std::move(buf)),
+	readpos(0)
 {
 }
 
-constexpr uintmax_t ByteBuffer::ReadVarUInt()
+uintmax_t ByteBuffer::ReadVarUInt()
 {
 	uintmax_t multiplier = 1;
 	uintmax_t value = 0;
 	std::byte encoded = std::byte(0);
+
+	size_t bytesread = 0;
 
 	do
 	{
@@ -33,34 +55,42 @@ constexpr uintmax_t ByteBuffer::ReadVarUInt()
 			throw std::runtime_error("Malformed Variable Byte Integer");
 
 		multiplier *= 128;
+		bytesread++;
 	} while (std::to_integer<uintmax_t>(encoded) & 128);
+
+	readpos += bytesread;
 
 	return value;
 }
 
-constexpr std::string ByteBuffer::ReadString(size_t length)
+std::string ByteBuffer::ReadString(size_t length)
 {
-	if (buffer.size() < length)
+	if (buffer.size() - readpos < length)
 		return "";
 
 	std::string out;
-	std::transform(buffer.begin(), buffer.end(), std::back_inserter(out), [](std::byte b) { return static_cast<char>(b); });
+	std::transform(
+		buffer.begin() + readpos,
+		buffer.begin() + readpos + length,
+		std::back_inserter(out), [](std::byte b)
+		{
+			return static_cast<char>(b);
+		}
+	);
 
-	auto iter = buffer.begin();
-	std::advance(iter, length);
+	readpos += length;
 
 	return out;
 }
 
-constexpr std::span<const std::byte> ByteBuffer::ReadBytes(size_t length)
+std::span<const std::byte> ByteBuffer::ReadBytes(size_t length)
 {
-	if (buffer.size() < length)
+	if (buffer.size() - readpos < length)
 		return std::span<const std::byte>();
 
-	std::span<const std::byte> out(buffer.data(), length);
+	std::span<const std::byte> out(buffer.data() + readpos, length);
 
-	auto iter = buffer.begin();
-	std::advance(iter, length);
+	readpos += length;
 
 	return out;
 }

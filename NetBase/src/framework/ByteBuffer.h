@@ -52,22 +52,22 @@ class ByteBuffer
 public:
 	std::byte &operator[](size_t index) noexcept;
 
-	ByteBuffer() = default;
-	ByteBuffer(const ByteBuffer &) = default;
-	ByteBuffer(ByteBuffer &&) noexcept = default;
+	ByteBuffer();
+	ByteBuffer(const ByteBuffer &);
+	ByteBuffer(ByteBuffer &&) noexcept;
 	ByteBuffer(std::span<std::byte> buf);
 	ByteBuffer(std::vector<std::byte> buf);
 	~ByteBuffer() = default;
 
 	template<ValidUIntType T>
-	inline constexpr T ReadUInt();
+	inline T ReadUInt();
 
 	template<ValidUIntUnderlyingType T>
-	inline constexpr T ReadUInt();
+	inline T ReadUInt();
 
-	constexpr uintmax_t ReadVarUInt();
-	constexpr std::string ReadString(size_t length);
-	constexpr std::span<const std::byte> ReadBytes(size_t length);
+	uintmax_t ReadVarUInt();
+	std::string ReadString(size_t length);
+	std::span<const std::byte> ReadBytes(size_t length);
 
 	template<ValidUIntType T>
 	inline ByteBuffer &WriteUInt(const T val);
@@ -87,32 +87,31 @@ public:
 
 private:
 	std::vector<std::byte> buffer;
+	size_t readpos;
 };
 
 template<ValidUIntType T>
-inline constexpr T ByteBuffer::ReadUInt()
+inline T ByteBuffer::ReadUInt()
 {
 	constexpr size_t OUT_SIZE = sizeof(T);
 
-	if (buffer.size() < OUT_SIZE)
+	if (buffer.size() - readpos < OUT_SIZE)
 		return 0;
 
 	T out = 0;
-	std::memcpy(&out, buffer.data(), OUT_SIZE);
-
+	std::memcpy(&out, buffer.data() + readpos, OUT_SIZE);
 	if constexpr (std::endian::native == std::endian::little)
 		out = std::byteswap(out);
 
-	auto iter = buffer.begin();
-	std::advance(iter, OUT_SIZE);
+	readpos += OUT_SIZE;
 
 	return out;
 }
 
 template<ValidUIntUnderlyingType T>
-inline constexpr T ByteBuffer::ReadUInt()
+inline T ByteBuffer::ReadUInt()
 {
-	return static_cast<T>(ReadUInt<std::underlying_type_t<T>>(buffer));
+	return static_cast<T>(ReadUInt<std::underlying_type_t<T>>());
 }
 
 template<ValidUIntType T>
