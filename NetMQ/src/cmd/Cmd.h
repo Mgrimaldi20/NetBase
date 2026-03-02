@@ -1,5 +1,5 @@
-#ifndef _NETMQ_CMD_H_
-#define _NETMQ_CMD_H_
+#ifndef _NETMQ_CMD_CMD_H_
+#define _NETMQ_CMD_CMD_H_
 
 #include <cstddef>
 #include <type_traits>
