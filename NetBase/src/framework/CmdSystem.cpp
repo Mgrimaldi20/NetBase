@@ -13,19 +13,24 @@ CmdSystem::~CmdSystem()
 
 void CmdSystem::RegisterHandler(const std::string &cmdname, CmdHandler handler)
 {
-	handlers[cmdname].emplace_back(std::move(handler));
+	bool res = handlers.insert_or_assign(cmdname, handler).second;
+	if (!res)
+		log.Warn("Handler for command '{}' was replaced", cmdname);
+
+	else
+		log.Info("Registered handler for command '{}'", cmdname);
 }
 
-void CmdSystem::ParseCommand(std::shared_ptr<IOContext> ioctx, ByteBuffer &incoming)
+ByteBuffer CmdSystem::ParseCommand(ByteBuffer &incoming)
 {
 	std::string cmdname = incoming.ReadString(4);
+
 	auto it = handlers.find(cmdname);
 	if (it == handlers.end())
 	{
 		log.Warn("Received unknown command: {}", cmdname);
-		return;
+		return ByteBuffer();
 	}
 
-	for (const CmdHandler &handler : it->second)
-		handler(ioctx, incoming);
+	return it->second(incoming);
 }

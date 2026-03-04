@@ -59,8 +59,16 @@ if(WIN32)
 endif()
 
 # Set up all the compiler options here
-if(MSVC)
-	target_compile_options(NetBase PRIVATE "/W4" "/WX" "/permissive-" "/analyze" "/fp:fast" "/FAs" "/MP")		# Common options for all build types
+if(MSVC)																										# MSVC compiler options
+	target_compile_options(NetBase PRIVATE																		# Common options for all build types
+		"/W4"
+		"/WX"
+		"/permissive-"
+		"/analyze"
+		"/fp:fast"
+		"/FAs"
+		"/MP"
+	)
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																		# Debug build compiler options
 		target_compile_options(NetBase PRIVATE
 			"/Zi"
@@ -69,30 +77,45 @@ if(MSVC)
 			"/MDd"
 			"/JMC"
 		)
-		target_link_options(NetBase PRIVATE "/DEBUG")															# Ensure PDB file is generated
+		target_link_options(NetBase PRIVATE "/DEBUG")															# Ensure PDB file is generated (Win32)
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")																	# Release build compiler options
-		target_compile_options(NetBase PRIVATE "/O2" "/MD" "/GL" "/Gw")
+		target_compile_options(NetBase PRIVATE
+			"/O2"
+			"/MD"
+			"/GL"
+			"/Gw"
+		)
 	endif()
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")							# CLANG and GCC compiler options
-	target_compile_options(NetBase PRIVATE "-Wall" "-Werror" "-Wpedantic" "-ffast-math" "-fanalyzer")			# Common options for all build types
+	target_compile_options(NetBase PRIVATE																		# Common options for all build types
+		"-Wall"
+		"-Werror"
+		"-Wpedantic"
+		"-ffast-math"
+		"-fanalyzer"
+		"-fvisibility=hidden"
+	)
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																		# Debug build compiler options
 		target_compile_options(NetBase PRIVATE
 			"-g"
+			#"-fsanitize=address"
 			#"-fsanitize=leak"
 			#"-fsanitize=undefined"
-			#"-fsanitize=address"
 			#"-fsanitize=thread"
 			"-O0"
 		)
 		target_link_libraries(NetBase PRIVATE
+			#"-fsanitize=address"
 			#"-fsanitize=leak"
 			#"-fsanitize=undefined"
-			#"-fsanitize=address"
 			#"-fsanitize=thread"
 		)
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")																	# Release build compiler options
-		target_compile_options(NetBase PRIVATE "-O3" "-flto")
+		target_compile_options(NetBase PRIVATE
+			"-O3"
+			"-flto"
+		)
 	endif()
 endif()
 
