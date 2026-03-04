@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <vector>
 #include <unordered_map>
 #include <functional>
 
@@ -24,16 +23,16 @@
 class CmdSystem
 {
 public:
-	using CmdHandler = std::function<void(std::shared_ptr<IOContext>, ByteBuffer &)>;
+	using CmdHandler = std::function<ByteBuffer(ByteBuffer &)>;
 
 	CmdSystem(Log &log);
 	~CmdSystem();
 
 	void RegisterHandler(const std::string &cmdname, CmdHandler handler);
-	void ParseCommand(std::shared_ptr<IOContext> ioctx, ByteBuffer &incoming);
+	ByteBuffer ParseCommand(ByteBuffer &incoming);
 
 private:
-	std::unordered_map<std::string, std::vector<CmdHandler>> handlers;
+	std::unordered_map<std::string, CmdHandler> handlers;
 
 	Log &log;
 };

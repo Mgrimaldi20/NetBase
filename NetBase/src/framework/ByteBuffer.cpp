@@ -13,15 +13,15 @@ ByteBuffer::ByteBuffer()
 {
 }
 
-ByteBuffer::ByteBuffer(const ByteBuffer &)
-	: buffer(),
-	readpos(0)
+ByteBuffer::ByteBuffer(const ByteBuffer &other)
+	: buffer(other.buffer),
+	readpos(other.readpos)
 {
 }
 
-ByteBuffer::ByteBuffer(ByteBuffer &&) noexcept
-	: buffer(),
-	readpos(0)
+ByteBuffer::ByteBuffer(ByteBuffer &&other) noexcept
+	: buffer(std::move(other.buffer)),
+	readpos(other.readpos)
 {
 }
 

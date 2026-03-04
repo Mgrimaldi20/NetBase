@@ -182,10 +182,10 @@ bool ValidateOptions(int argc, char **argv)
 			{
 				authenabled = true;
 
-				std::string envtkn = std::getenv("NETMQ_AUTH_TOKEN");
+				std::string envtkn = std::getenv("NETBASE_AUTH_TOKEN");
 				if (envtkn.empty())
 				{
-					std::cerr << "Error: -a flag requires NETMQ_AUTH_TOKEN environment variable to be set" << std::endl;
+					std::cerr << "Error: -a flag requires NETBASE_AUTH_TOKEN environment variable to be set\n";
 					return false;
 				}
 
@@ -198,7 +198,7 @@ bool ValidateOptions(int argc, char **argv)
 
 			case '?':
 				std::cout << std::endl << "Usage:" << std::endl
-					<< "NetMQ [-p:<port>] [-a] [-?]" << std::endl
+					<< "NetBase [-p:<port>] [-a] [-?]" << std::endl
 					<< "--------------------------------------------------" << std::endl
 					<< "-p:<port>    Specify the port number of the server" << std::endl
 					<< "-a           Enable auth mode, a token is required" << std::endl
@@ -303,7 +303,7 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 				break;
 			}
 
-			case OverlappedIO::Operation::Read:		// a read operation is complete, so post a write to get more data from the client
+			case OverlappedIO::Operation::Read:		// a read operation is complete, post a write to send data to clients
 			{
 				ioctx->SetRecving(false);
 
@@ -313,18 +313,24 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 					continue;
 				}
 
-				ByteBuffer ioctxbuffer(ioctx->GetIncomingBuffer());
-				cmd.ParseCommand(ioctx, ioctxbuffer);
 
-				// post another read after sending
-				ioctx->PostRecv();
+				ByteBuffer ioctxbuffer(ioctx->GetIncomingBuffer());
+				ByteBuffer response = cmd.ParseCommand(ioctxbuffer);
+				if (!response.Empty())
+					ioctx->PostSend(response.Build());
 
 				break;
 			}
 
-			case OverlappedIO::Operation::Write:	// a write operation is complete, so post a read back to the client now
+			case OverlappedIO::Operation::Write:	// a write operation is complete, post another read to get more data from the client
+			{
+				// post another read after sending
+				ioctx->PostRecv();
+
 				ioctx->SetSending(false);
+
 				break;
+			}
 		}
 	}
 }
