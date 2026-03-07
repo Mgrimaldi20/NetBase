@@ -38,6 +38,7 @@ public:
 
 	Socket &GetAcceptSocket() noexcept;
 
+	std::string_view GetClientID() const noexcept;
 	void SetClientID(std::string_view id) noexcept;
 
 	OverlappedIO &GetAcceptOverlapped() noexcept;

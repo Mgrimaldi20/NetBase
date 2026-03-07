@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
+#include <utility>
+#include <vector>
 
 #include "Log.h"
 #include "ByteBuffer.h"
@@ -23,16 +25,20 @@
 class CmdSystem
 {
 public:
-	using CmdHandler = std::function<ByteBuffer(ByteBuffer &)>;
+	// the first ByteBuffer is the response to send back to the sender
+	// the second ByteBuffer is the message to broadcast to other clients
+	// the vector is the list of client ids to broadcast to
+	using CmdResult = std::pair<ByteBuffer, std::pair<ByteBuffer, std::vector<std::string>>>;
+	using CmdHandler = std::function<CmdResult(ByteBuffer &)>;
 
 	CmdSystem(Log &log);
 	~CmdSystem();
 
-	void RegisterHandler(const std::string &cmdname, CmdHandler handler);
-	ByteBuffer ParseCommand(ByteBuffer &incoming);
+	void RegisterHandler(const std::string &cmdname, CmdSystem::CmdHandler handler);
+	CmdSystem::CmdResult ParseCommand(ByteBuffer &incoming);
 
 private:
-	std::unordered_map<std::string, CmdHandler> handlers;
+	std::unordered_map<std::string, CmdSystem::CmdHandler> handlers;
 
 	Log &log;
 };
