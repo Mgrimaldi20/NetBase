@@ -130,6 +130,11 @@ Socket &IOContext::GetAcceptSocket() noexcept
 	return acceptsocket;
 }
 
+std::string_view IOContext::GetClientID() const noexcept
+{
+	return clientid;
+}
+
 void IOContext::SetClientID(std::string_view id) noexcept
 {
 	clientid = id;

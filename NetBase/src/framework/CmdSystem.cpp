@@ -11,7 +11,7 @@ CmdSystem::~CmdSystem()
 	log.Info("Shutting down the Command System");
 }
 
-void CmdSystem::RegisterHandler(const std::string &cmdname, CmdHandler handler)
+void CmdSystem::RegisterHandler(const std::string &cmdname, CmdSystem::CmdHandler handler)
 {
 	bool res = handlers.insert_or_assign(cmdname, handler).second;
 	if (!res)
@@ -21,7 +21,7 @@ void CmdSystem::RegisterHandler(const std::string &cmdname, CmdHandler handler)
 		log.Info("Registered handler for command '{}'", cmdname);
 }
 
-ByteBuffer CmdSystem::ParseCommand(ByteBuffer &incoming)
+CmdSystem::CmdResult CmdSystem::ParseCommand(ByteBuffer &incoming)
 {
 	std::string cmdname = incoming.ReadString(4);
 
@@ -29,7 +29,7 @@ ByteBuffer CmdSystem::ParseCommand(ByteBuffer &incoming)
 	if (it == handlers.end())
 	{
 		log.Warn("Received unknown command: {}", cmdname);
-		return ByteBuffer();
+		return CmdResult();
 	}
 
 	return it->second(incoming);

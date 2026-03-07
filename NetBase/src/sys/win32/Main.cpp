@@ -313,11 +313,36 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 					continue;
 				}
 
-
 				ByteBuffer ioctxbuffer(ioctx->GetIncomingBuffer());
-				ByteBuffer response = cmd.ParseCommand(ioctxbuffer);
-				if (!response.Empty())
-					ioctx->PostSend(response.Build());
+				CmdSystem::CmdResult response = cmd.ParseCommand(ioctxbuffer);
+
+				// broadcast messages to other clients, maybe get a list of ioctxs to broadcast to from the completion key
+				// instead of iterating through the whole list of contexts and checking client ids for each message
+				// this would require some way to track which actual ctxs would need to send from each id, maybe a map of client ids to ioctxs
+				// but for now just iterate through the whole list and check client ids for each message with a double for loop (crap)
+				for (const std::string &clientid : response.second.second)
+				{
+					std::shared_ptr<IOContext> targetioctx;
+
+					{
+						std::scoped_lock lock(ioctxlistmtx);
+
+						for (const std::shared_ptr<IOContext> &ctx : ioctxlist)
+						{
+							if (ctx->GetClientID() == clientid)
+							{
+								targetioctx = ctx;
+								break;
+							}
+						}
+					}
+
+					if (targetioctx)
+						targetioctx->PostSend(response.second.first.Build());
+				}
+
+				if (!response.first.Empty())
+					ioctx->PostSend(response.first.Build());
 
 				break;
 			}
