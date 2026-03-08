@@ -8,10 +8,12 @@
 #include "net/WinSockAPI.h"
 
 #include <iostream>
+#include <unordered_set>
 
 #include "framework/Log.h"
 #include "framework/CmdSystem.h"
 #include "framework/IOContextManager.h"
+#include "framework/UUID.h"
 
 #include "net/Socket.h"
 #include "io/IOContext.h"
@@ -32,8 +34,9 @@ static LPFN_ACCEPTEX AcceptExFn;
 
 static std::list<std::shared_ptr<IOContext>> ioctxlist;
 static std::mutex ioctxlistmtx;
-static std::unordered_map<std::string, std::weak_ptr<IOContext>> clientidmap;	// only used to track ioctxs to their client ids for fast lookup
-static std::mutex clientidmapmtx;
+
+static std::unordered_set<std::string> uuids;
+static std::mutex uuidmtx;
 
 static std::atomic<bool> endserver;
 static std::atomic<bool> restartserver;
@@ -293,22 +296,15 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 				}
 
 				ByteBuffer ioctxbuffer(ioctx->GetIncomingBuffer());
-				CmdSystem::CmdResult response = cmd.ParseCommand(ioctxbuffer);
+				CmdSystem::CmdResult response = cmd.ParseCommand(ioctxbuffer, ioctx);
 
-				for (const std::string &clientid : response.second.second)
+				for (const std::weak_ptr<IOContext> &weakioctx : response.second.second)
 				{
-					std::shared_ptr<IOContext> targetioctx;
-					{
-						std::scoped_lock lock(clientidmapmtx);
-
-						auto it = clientidmap.find(clientid);
-						if (it != clientidmap.end())
-							targetioctx = it->second.lock();
-					}
+					std::shared_ptr<IOContext> targetioctx = weakioctx.lock();
 
 					if (!targetioctx)
 					{
-						log.Warn("Failed to find client id '{}' in client map for broadcasting", clientid);
+						log.Warn("Unknown IO Context in broadcast list, it may have already been closed...");
 						continue;
 					}
 
@@ -369,6 +365,22 @@ bool PostAccept(Socket &listensocket, Log &log)
 	std::shared_ptr<IOContext> &ioctx = *iter;
 	ioctx->Initialize();
 	ioctx->SetListIter(iter);
+
+	std::string uuid = NetBase::UUID::GenerateV4();
+
+	for (int i=0; i<3; i++)
+	{
+		std::scoped_lock uuidlock(uuidmtx);
+
+		if (uuids.find(uuid) == uuids.end())
+		{
+			uuids.insert(uuid);
+			ioctx->SetClientID(uuid);
+			break;
+		}
+
+		uuid = NetBase::UUID::GenerateV4();
+	}
 
 	DWORD recvbytes = 0;
 	int ret = AcceptExFn(
