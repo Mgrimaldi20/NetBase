@@ -39,9 +39,6 @@ static std::condition_variable cleanupcv;
 
 static std::string_view serverport = Socket::NET_DEFAULT_PORT;
 
-static bool authenabled;
-static std::vector<std::byte> authtkn;
-
 int main(int argc, char **argv)
 {
 	if (!ValidateOptions(argc, argv))
@@ -178,30 +175,11 @@ bool ValidateOptions(int argc, char **argv)
 				break;
 			}
 
-			case 'a':
-			{
-				authenabled = true;
-
-				std::string envtkn = std::getenv("NETBASE_AUTH_TOKEN");
-				if (envtkn.empty())
-				{
-					std::cerr << "Error: -a flag requires NETBASE_AUTH_TOKEN environment variable to be set\n";
-					return false;
-				}
-
-				for (char c : envtkn)
-					authtkn.push_back(static_cast<std::byte>(c));
-
-				std::cout << "Authentication enabled with token from environment" << std::endl;
-				break;
-			}
-
 			case '?':
 				std::cout << std::endl << "Usage:" << std::endl
-					<< "NetBase [-p:<port>] [-a] [-?]" << std::endl
+					<< "NetBase [-p:<port>] [-?]" << std::endl
 					<< "--------------------------------------------------" << std::endl
 					<< "-p:<port>    Specify the port number of the server" << std::endl
-					<< "-a           Enable auth mode, a token is required" << std::endl
 					<< "-?           Prints out this help message and exit" << std::endl;
 
 				return false;
