@@ -16,6 +16,8 @@ public:
 	void Bind(std::string_view port) const;
 	void Listen() const;
 
+	bool SetSocketOption(const char *optval, int optlen, int level = SOL_SOCKET, int optname = SO_UPDATE_ACCEPT_CONTEXT) const;
+
 	int Send(WSABUF &wsabuf, OverlappedIO &overlapped);
 	int Recv(WSABUF &wsabuf, OverlappedIO &overlapped);
 

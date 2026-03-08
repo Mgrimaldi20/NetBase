@@ -30,7 +30,7 @@ bool IOCompletionPort::UpdateIOCompletionPort(Socket &socket, ULONG_PTR completi
 	return true;
 }
 
-bool IOCompletionPort::GetQueuedCompletionStatus(unsigned long *iosize, unsigned long long *completionkey, WSAOVERLAPPED **wsaoverlapped) const
+bool IOCompletionPort::GetQueuedCompletionStatus(unsigned long *iosize, ULONG_PTR *completionkey, WSAOVERLAPPED **wsaoverlapped) const
 {
 	return ::GetQueuedCompletionStatus(iocp, iosize, completionkey, wsaoverlapped, INFINITE);
 }

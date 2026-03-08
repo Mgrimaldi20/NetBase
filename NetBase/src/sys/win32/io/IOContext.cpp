@@ -2,7 +2,13 @@
 
 const std::string GetErrorMessage(const int errcode);
 
-IOContext::IOContext(Log &log, std::list<std::shared_ptr<IOContext>> &ioctxlist, std::mutex &ioctxlistmtx)
+IOContext::IOContext(
+	Log &log,
+	std::list<std::shared_ptr<IOContext>> &ioctxlist,
+	std::mutex &ioctxlistmtx,
+	std::unordered_map<std::string, std::weak_ptr<IOContext>> &clientidmap,
+	std::mutex &clientidmapmtx
+)
 	: acceptsocket(),
 	clientid(),
 	acceptov(OverlappedIO::Operation::Accept, {}),
@@ -23,7 +29,9 @@ IOContext::IOContext(Log &log, std::list<std::shared_ptr<IOContext>> &ioctxlist,
 	closing(false),
 	log(log),
 	ioctxlist(ioctxlist),
-	ioctxlistmtx(ioctxlistmtx)
+	ioctxlistmtx(ioctxlistmtx),
+	clientidmap(clientidmap),
+	clientidmapmtx(clientidmapmtx)
 {
 	outgoing.reserve(100);	// this should be configurable based on the workload
 }
@@ -101,10 +109,7 @@ void IOContext::CloseClient()
 	{
 		std::unique_lock<std::mutex> lock(iomtx);
 
-		auto pred = [this]() noexcept
-		{
-			return !recving.load(std::memory_order_acquire) && !sending.load(std::memory_order_acquire);
-		};
+		auto pred = [this]() noexcept { return !recving.load(std::memory_order_acquire) && !sending.load(std::memory_order_acquire); };
 
 		if (!iocv.wait_for(lock, timeout, pred))
 			log.Warn("CloseClient() timeout waiting for IO operations to complete for client: {}", clientid);
@@ -115,6 +120,11 @@ void IOContext::CloseClient()
 	{
 		std::scoped_lock lock(ioctxlistmtx);
 		ioctxlist.erase(iter);
+	}
+
+	{
+		std::scoped_lock lock(clientidmapmtx);
+		clientidmap.erase(clientid);
 	}
 }
 

@@ -78,6 +78,12 @@ void Socket::Listen() const
 		throw std::runtime_error(std::format("listen() failed with error: {}", GetErrorMessage(WSAGetLastError())));
 }
 
+bool Socket::SetSocketOption(const char *optval, int optlen, int level, int optname) const
+{
+	int ret = setsockopt(socket, level, optname, optval, optlen);
+	return (ret != SOCKET_ERROR);
+}
+
 int Socket::Send(WSABUF &wsabuf, OverlappedIO &overlapped)
 {
 	return WSASend(socket, &wsabuf, 1, nullptr, 0, &overlapped.GetOverlapped(), nullptr);
