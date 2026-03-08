@@ -27,15 +27,15 @@ class CmdSystem
 public:
 	// the first ByteBuffer is the response to send back to the sender
 	// the second ByteBuffer is the message to broadcast to other clients
-	// the vector is the list of client ids to broadcast to
-	using CmdResult = std::pair<ByteBuffer, std::pair<ByteBuffer, std::vector<std::string>>>;
-	using CmdHandler = std::function<CmdResult(ByteBuffer &)>;
+	// the vector is the list of client contexts to broadcast to
+	using CmdResult = std::pair<ByteBuffer, std::pair<ByteBuffer, std::vector<std::weak_ptr<IOContext>>>>;
+	using CmdHandler = std::function<CmdResult(ByteBuffer &, std::weak_ptr<IOContext>)>;
 
 	CmdSystem(Log &log);
 	~CmdSystem();
 
 	void RegisterHandler(const std::string &cmdname, CmdSystem::CmdHandler handler);
-	CmdSystem::CmdResult ParseCommand(ByteBuffer &incoming);
+	CmdSystem::CmdResult ParseCommand(ByteBuffer &incoming, std::weak_ptr<IOContext> sender);
 
 private:
 	std::unordered_map<std::string, CmdSystem::CmdHandler> handlers;

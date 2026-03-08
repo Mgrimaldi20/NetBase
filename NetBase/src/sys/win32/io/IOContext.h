@@ -12,7 +12,6 @@
 #include <span>
 #include <vector>
 #include <list>
-#include <unordered_map>
 
 #include "framework/Log.h"
 
@@ -24,14 +23,7 @@
 class IOContext : public std::enable_shared_from_this<IOContext>
 {
 public:
-	IOContext(
-		Log &log,
-		std::list<std::shared_ptr<IOContext>> &ioctxlist,
-		std::mutex &ioctxlistmtx,
-		std::unordered_map<std::string, std::weak_ptr<IOContext>> &clientidmap,
-		std::mutex &clientidmapmtx
-	);
-
+	IOContext(Log &log, std::list<std::shared_ptr<IOContext>> &ioctxlist, std::mutex &ioctxlistmtx);
 	~IOContext();
 
 	void Initialize();	// create a wrapper for this class that calls this in the constructor and then use that wrapper in the server code instead of this class directly
@@ -97,8 +89,6 @@ private:
 
 	std::list<std::shared_ptr<IOContext>> &ioctxlist;
 	std::mutex &ioctxlistmtx;
-	std::unordered_map<std::string, std::weak_ptr<IOContext>> &clientidmap;
-	std::mutex &clientidmapmtx;
 };
 
 #endif

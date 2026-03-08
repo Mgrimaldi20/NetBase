@@ -21,7 +21,7 @@ void CmdSystem::RegisterHandler(const std::string &cmdname, CmdSystem::CmdHandle
 		log.Info("Registered handler for command '{}'", cmdname);
 }
 
-CmdSystem::CmdResult CmdSystem::ParseCommand(ByteBuffer &incoming)
+CmdSystem::CmdResult CmdSystem::ParseCommand(ByteBuffer &incoming, std::weak_ptr<IOContext> sender)
 {
 	std::string cmdname = incoming.ReadString(4);
 
@@ -32,5 +32,5 @@ CmdSystem::CmdResult CmdSystem::ParseCommand(ByteBuffer &incoming)
 		return CmdResult();
 	}
 
-	return it->second(incoming);
+	return it->second(incoming, sender);
 }

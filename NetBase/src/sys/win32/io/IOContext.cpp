@@ -2,13 +2,7 @@
 
 const std::string GetErrorMessage(const int errcode);
 
-IOContext::IOContext(
-	Log &log,
-	std::list<std::shared_ptr<IOContext>> &ioctxlist,
-	std::mutex &ioctxlistmtx,
-	std::unordered_map<std::string, std::weak_ptr<IOContext>> &clientidmap,
-	std::mutex &clientidmapmtx
-)
+IOContext::IOContext(Log &log, std::list<std::shared_ptr<IOContext>> &ioctxlist, std::mutex &ioctxlistmtx)
 	: acceptsocket(),
 	clientid(),
 	acceptov(OverlappedIO::Operation::Accept, {}),
@@ -29,9 +23,7 @@ IOContext::IOContext(
 	closing(false),
 	log(log),
 	ioctxlist(ioctxlist),
-	ioctxlistmtx(ioctxlistmtx),
-	clientidmap(clientidmap),
-	clientidmapmtx(clientidmapmtx)
+	ioctxlistmtx(ioctxlistmtx)
 {
 	outgoing.reserve(100);	// this should be configurable based on the workload
 }
@@ -120,11 +112,6 @@ void IOContext::CloseClient()
 	{
 		std::scoped_lock lock(ioctxlistmtx);
 		ioctxlist.erase(iter);
-	}
-
-	{
-		std::scoped_lock lock(clientidmapmtx);
-		clientidmap.erase(clientid);
 	}
 }
 
