@@ -32,6 +32,8 @@ static LPFN_ACCEPTEX AcceptExFn;
 
 static std::list<std::shared_ptr<IOContext>> ioctxlist;
 static std::mutex ioctxlistmtx;
+static std::unordered_map<std::string, std::weak_ptr<IOContext>> clientidmap;	// only used to track ioctxs to their client ids for fast lookup
+static std::mutex clientidmapmtx;
 
 static std::atomic<bool> endserver;
 static std::atomic<bool> restartserver;
@@ -219,12 +221,12 @@ BOOL WINAPI CtrlHandler(DWORD event)
 void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem &cmd, Log &log)
 {
 	DWORD iosize = 0;
-	ULONG_PTR completionkey = 0;
+	ULONG_PTR *completionkey = nullptr;			// unused
 	WSAOVERLAPPED *wsaoverlapped = nullptr;
 
 	while (true)
 	{
-		bool status = iocp.GetQueuedCompletionStatus(&iosize, &completionkey, &wsaoverlapped);
+		bool status = iocp.GetQueuedCompletionStatus(&iosize, completionkey, &wsaoverlapped);
 		if (!status)
 			log.Error("IOCompletionPort::GetQueuedCompletionStatus() failed with error: {}", GetErrorMessage(GetLastError()));
 
@@ -249,15 +251,14 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 			{
 				// after AcceptEx completed
 				SOCKET ls = listensocket.GetSocket();
-				int ret = setsockopt(ioctx->GetAcceptSocket().GetSocket(), SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, reinterpret_cast<char *>(&ls), sizeof(ls));
-				if (ret == SOCKET_ERROR)
+				if (!ioctx->GetAcceptSocket().SetSocketOption(reinterpret_cast<char *>(&ls), sizeof(ls)))
 				{
 					log.Error("setsockopt(SO_UPDATE_ACCEPT_CONTEXT) failed to update accept socket: {}", GetErrorMessage(WSAGetLastError()));
 					ioctx->CloseClient();
 					return;
 				}
 
-				if (!iocp.UpdateIOCompletionPort(ioctx->GetAcceptSocket(), static_cast<ULONG_PTR>(ioctx->GetAcceptSocket().GetSocket())))
+				if (!iocp.UpdateIOCompletionPort(ioctx->GetAcceptSocket(), reinterpret_cast<ULONG_PTR>(nullptr)))
 				{
 					log.Error("UpdateIOCompletionPort() failed to associate iocp handle to accept socket: {}", GetErrorMessage(GetLastError()));
 					ioctx->CloseClient();
@@ -294,29 +295,24 @@ void WorkerThread(const IOCompletionPort &iocp, Socket &listensocket, CmdSystem 
 				ByteBuffer ioctxbuffer(ioctx->GetIncomingBuffer());
 				CmdSystem::CmdResult response = cmd.ParseCommand(ioctxbuffer);
 
-				// broadcast messages to other clients, maybe get a list of ioctxs to broadcast to from the completion key
-				// instead of iterating through the whole list of contexts and checking client ids for each message
-				// this would require some way to track which actual ctxs would need to send from each id, maybe a map of client ids to ioctxs
-				// but for now just iterate through the whole list and check client ids for each message with a double for loop (crap)
 				for (const std::string &clientid : response.second.second)
 				{
 					std::shared_ptr<IOContext> targetioctx;
-
 					{
-						std::scoped_lock lock(ioctxlistmtx);
+						std::scoped_lock lock(clientidmapmtx);
 
-						for (const std::shared_ptr<IOContext> &ctx : ioctxlist)
-						{
-							if (ctx->GetClientID() == clientid)
-							{
-								targetioctx = ctx;
-								break;
-							}
-						}
+						auto it = clientidmap.find(clientid);
+						if (it != clientidmap.end())
+							targetioctx = it->second.lock();
 					}
 
-					if (targetioctx)
-						targetioctx->PostSend(response.second.first.Build());
+					if (!targetioctx)
+					{
+						log.Warn("Failed to find client id '{}' in client map for broadcasting", clientid);
+						continue;
+					}
+
+					targetioctx->PostSend(response.second.first.Build());
 				}
 
 				if (!response.first.Empty())

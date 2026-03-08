@@ -36,7 +36,6 @@ endif()
 target_sources(NetBase PRIVATE
 	"src/sys/Socket.h"
 	"src/sys/IOContext.h"
-	"src/framework/Bitmask.h"
 	"src/framework/ByteBuffer.h"
 	"src/framework/ByteBuffer.cpp"
 	"src/framework/Log.h"

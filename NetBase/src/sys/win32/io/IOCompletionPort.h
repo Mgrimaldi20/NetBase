@@ -11,7 +11,7 @@ public:
 	~IOCompletionPort();
 
 	bool UpdateIOCompletionPort(Socket &socket, ULONG_PTR completionkey) const;
-	bool GetQueuedCompletionStatus(unsigned long *iosize, unsigned long long *completionkey, WSAOVERLAPPED **wsaoverlapped) const;
+	bool GetQueuedCompletionStatus(unsigned long *iosize, ULONG_PTR *completionkey, WSAOVERLAPPED **wsaoverlapped) const;
 	bool PostQueuedQuitStatus();
 
 private:
