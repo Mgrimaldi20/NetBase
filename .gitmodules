@@ -1,0 +1,3 @@
+[submodule "NetBase/src/asio"]
+	path = NetBase/src/asio
+	url = https://github.com/Mgrimaldi20/asio.git
