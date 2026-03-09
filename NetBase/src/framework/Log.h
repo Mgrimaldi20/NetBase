@@ -7,6 +7,7 @@
 #include <string>
 #include <format>
 #include <mutex>
+#include <chrono>
 
 /*
 * Class: Log
@@ -78,7 +79,6 @@ inline void Log::Write(std::string_view msg)
 		if constexpr (T == Log::Type::Info) return "INFO";
 		else if constexpr (T == Log::Type::Warn) return "WARN";
 		else if constexpr (T == Log::Type::Error) return "ERROR";
-		else return "UNKNOWN";
 	};
 
 	std::scoped_lock lock(logmtx);
