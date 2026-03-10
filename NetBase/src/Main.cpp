@@ -34,14 +34,10 @@ int main(int argc, char **argv)
 
 	Log log;
 
-	// TODO: start the server and listen for incoming connections
-	// The server should be implemented in a separate class, and the main function should only be responsible for parsing options and starting the server.
+	// TODO: The server should be implemented in a separate class, and the main function should only be responsible for parsing options and starting the server.
 	// The server should also handle graceful shutdown and cleanup of resources when the program is terminated.
 	// The server should also handle multiple clients concurrently, and should be able to broadcast messages to all relevant clients when a command is executed.
 	// The server should also handle errors and exceptions gracefully, and should log any relevant information to the log file or console.
-	// The server should also ideally use multiple threads AND coroutines to effectively make use of IOCP on Windows and io_uring on Linux, to handle multiple clients concurrently.
-	// The server should also ideally use a thread pool to manage worker threads for handling client connections and commands, to avoid the overhead of creating and destroying threads for each client connection.
-	// New threads should not be created during regular handling, all threads should be created at server startup and should be reused for handling client connections, thread count should be 2 * CPU cores.
 
 	unsigned int numthreads = std::thread::hardware_concurrency() * 2;
 	numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;
