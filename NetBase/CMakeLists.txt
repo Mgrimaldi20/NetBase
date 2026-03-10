@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.25)
 project(NetBase LANGUAGES CXX)
 
-# Add source to this project's executable.
+# Add source to this project's executable
 add_executable(NetBase)
 
 set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
@@ -13,7 +13,7 @@ set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
 # Set the NetBase version
 target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
 
-# Specify the common OS independent source files for the NetBase project.
+# Specify the common OS independent source files for the NetBase project
 target_sources(NetBase PRIVATE
 	"src/Main.cpp"
 	"src/framework/ByteBuffer.cpp"
@@ -30,7 +30,7 @@ endif()
 
 add_library(asio INTERFACE)
 
-target_include_directories(asio SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/asio/include")
+target_include_directories(asio SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/asio/include")
 
 target_compile_definitions(asio INTERFACE ASIO_STANDALONE)
 
@@ -46,9 +46,9 @@ target_link_libraries(NetBase PRIVATE asio)
 # MSVC compiler options
 if(MSVC)
 	target_compile_options(NetBase PRIVATE
-		/external:W0
-		/external:anglebrackets
-		/analyze:external-
+		"/external:W0"
+		"/external:anglebrackets"
+		"/analyze:external-"
 	)
 
 	# Common options for all build types
