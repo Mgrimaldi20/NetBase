@@ -2,39 +2,57 @@
 # project specific logic here.
 #
 
+cmake_minimum_required(VERSION 3.25)
+project(NetBase LANGUAGES CXX)
+
 # Add source to this project's executable.
 add_executable(NetBase)
 
-if(CMAKE_VERSION VERSION_GREATER 3.25)
-	set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
-endif()
+set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
 
+# Set the NetBase version
 target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
 
 # Specify the common OS independent source files for the NetBase project.
 target_sources(NetBase PRIVATE
 	"src/Main.cpp"
-	"src/framework/ByteBuffer.h"
 	"src/framework/ByteBuffer.cpp"
-	"src/framework/Log.h"
+	"src/framework/ByteBuffer.h"
 	"src/framework/Log.cpp"
-	"src/framework/CmdSystem.h"
+	"src/framework/Log.h"
 	"src/framework/CmdSystem.cpp"
+	"src/framework/CmdSystem.h"
 )
 
-include_directories("src")
-include_directories("src/asio/include")
-
-# Set up linker options
 if(WIN32)
 	target_compile_definitions(NetBase PRIVATE UNICODE _UNICODE)
-	target_link_libraries(NetBase PUBLIC ws2_32)
-	target_link_libraries(NetBase PUBLIC mswsock)
 endif()
 
+add_library(asio INTERFACE)
+
+target_include_directories(asio SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/asio/include")
+
+target_compile_definitions(asio INTERFACE ASIO_STANDALONE)
+
+if(WIN32)
+	target_compile_definitions(asio INTERFACE ASIO_HAS_IOCP)
+elseif(UNIX)
+	target_compile_definitions(asio INTERFACE ASIO_HAS_IO_URING)
+endif()
+
+target_link_libraries(NetBase PRIVATE asio)
+
 # Set up all the compiler options here
-if(MSVC)																									# MSVC compiler options
-	target_compile_options(NetBase PRIVATE																	# Common options for all build types
+# MSVC compiler options
+if(MSVC)
+	target_compile_options(NetBase PRIVATE
+		/external:W0
+		/external:anglebrackets
+		/analyze:external-
+	)
+
+	# Common options for all build types
+	target_compile_options(NetBase PRIVATE
 		"/W4"
 		"/WX"
 		"/permissive-"
@@ -43,7 +61,9 @@ if(MSVC)																									# MSVC compiler options
 		"/FAs"
 		"/MP"
 	)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																	# Debug build compiler options
+
+	# Debug build compiler options
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_options(NetBase PRIVATE
 			"/Zi"
 			"/fsanitize=address"
@@ -51,8 +71,12 @@ if(MSVC)																									# MSVC compiler options
 			"/MDd"
 			"/JMC"
 		)
-		target_link_options(NetBase PRIVATE "/DEBUG")														# Ensure PDB file is generated (Win32)
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")																# Release build compiler options
+
+		# Ensure PDB file is generated (Win32)
+		target_link_options(NetBase PRIVATE "/DEBUG")
+
+	# Release build compiler options
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		target_compile_options(NetBase PRIVATE
 			"/O2"
 			"/MD"
@@ -61,8 +85,10 @@ if(MSVC)																									# MSVC compiler options
 		)
 	endif()
 
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")						# CLANG and GCC compiler options
-	target_compile_options(NetBase PRIVATE																	# Common options for all build types
+# CLANG and GCC compiler options
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	# Common options for all build types
+	target_compile_options(NetBase PRIVATE
 		"-Wall"
 		"-Werror"
 		"-Wpedantic"
@@ -70,22 +96,27 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 		"-fanalyzer"
 		"-fvisibility=hidden"
 	)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")																	# Debug build compiler options
+
+	# Debug build compiler options
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_options(NetBase PRIVATE
 			"-g"
-			#"-fsanitize=address"
-			#"-fsanitize=leak"
-			#"-fsanitize=undefined"
-			#"-fsanitize=thread"
+			"-fsanitize=address"
+			"-fsanitize=leak"
+			"-fsanitize=undefined"
+			"--fsanitize=thread"
 			"-O0"
 		)
-		target_link_libraries(NetBase PRIVATE
-			#"-fsanitize=address"
-			#"-fsanitize=leak"
-			#"-fsanitize=undefined"
-			#"-fsanitize=thread"
+
+		target_link_options(NetBase PRIVATE
+			"-fsanitize=address"
+			"-fsanitize=leak"
+			"-fsanitize=undefined"
+			"--fsanitize=thread"
 		)
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")																# Release build compiler options
+
+	# Release build compiler options
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 		target_compile_options(NetBase PRIVATE
 			"-O3"
 			"-flto"
