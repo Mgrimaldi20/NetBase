@@ -13,9 +13,15 @@ set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
 # Set the NetBase version
 target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	target_compile_definitions(NetBase PRIVATE NETBASE_DEBUG)
+endif()
+
 # Specify the common OS independent source files for the NetBase project
 target_sources(NetBase PRIVATE
 	"src/Main.cpp"
+	"src/framework/Server.h"
+	"src/framework/Server.cpp"
 	"src/framework/ByteBuffer.cpp"
 	"src/framework/ByteBuffer.h"
 	"src/framework/Log.cpp"
