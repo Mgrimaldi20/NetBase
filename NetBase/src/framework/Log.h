@@ -27,6 +27,9 @@ public:
 	~Log();
 
 	template<typename ...Args>
+	inline void Debug(std::format_string<Args...> fmt, Args &&...args);
+
+	template<typename ...Args>
 	inline void Info(std::format_string<Args...> fmt, Args &&...args);
 
 	template<typename ...Args>
@@ -38,6 +41,7 @@ public:
 private:
 	enum class Type
 	{
+		Debug,
 		Info,
 		Warn,
 		Error
@@ -52,6 +56,14 @@ private:
 
 	std::mutex logmtx;
 };
+
+template<typename ...Args>
+inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
+{
+#if defined(NETBASE_DEBUG)
+	Write<Log::Type::Debug>(std::format(fmt, std::forward<Args>(args)...));
+#endif
+}
 
 template<typename ...Args>
 inline void Log::Info(std::format_string<Args...> fmt, Args && ...args)
