@@ -15,6 +15,7 @@
 * Different logging levels are provided to represent the class of information to log.
 * The logger will print the current time, level, and message.
 * 
+*	Debug: log a formatted debug message, designed for debugging purposes and development, not in in release builds
 *	Info: log a formatted information message, designed for general program information and state
 *	Warn: log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: log a formatted error message, designed for unrecoverable code errors, program should quit
@@ -88,9 +89,11 @@ inline void Log::Write(std::string_view msg)
 {
 	constexpr auto GetTypeStr = []() consteval
 	{
-		if constexpr (T == Log::Type::Info) return "INFO";
+		if constexpr (T == Log::Type::Debug) return "DEBUG";
+		else if constexpr (T == Log::Type::Info) return "INFO";
 		else if constexpr (T == Log::Type::Warn) return "WARN";
 		else if constexpr (T == Log::Type::Error) return "ERROR";
+		else return "UNKNOWN";
 	};
 
 	std::scoped_lock lock(logmtx);
