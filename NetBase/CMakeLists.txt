@@ -22,6 +22,8 @@ target_sources(NetBase PRIVATE
 	"src/Main.cpp"
 	"src/framework/Server.h"
 	"src/framework/Server.cpp"
+	"src/framework/Session.h"
+	"src/framework/Session.cpp"
 	"src/framework/ByteBuffer.cpp"
 	"src/framework/ByteBuffer.h"
 	"src/framework/Log.cpp"
