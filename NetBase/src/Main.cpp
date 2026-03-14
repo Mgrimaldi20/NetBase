@@ -3,8 +3,6 @@
 #include <string_view>
 #include <system_error>
 #include <thread>
-#include <atomic>
-#include <vector>
 #include <memory>
 
 #include "framework/Log.h"
@@ -42,10 +40,6 @@ int main(int argc, char **argv)
 			NET_DEFAULT_THREADS
 		);
 	}
-
-	log->Info("Number of worker threads available: {}", numthreads);
-	log->Info("NetBase server running on port: {}", serverport);
-	log->Info("Press Ctrl-C to exit, or Ctrl-Break/Ctrl-Z to restart...");
 
 	Server server(serverport, numthreads, log);
 	server.Run();

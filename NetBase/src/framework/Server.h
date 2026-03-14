@@ -2,10 +2,10 @@
 #define _NETBASE_FRAMEWORK_SERVER_H_
 
 #include <memory>
-#include <atomic>
 
 #include "asio/io_context.hpp"
 #include "asio/awaitable.hpp"
+#include "asio/signal_set.hpp"
 
 #include "asio/ip/tcp.hpp"
 #include "asio/ip/udp.hpp"
@@ -30,10 +30,11 @@ public:
 private:
 	asio::awaitable<void> Listener();
 
+	void RegisterSignals();
+
 	// create the iocp/io_uring context for the server
 	asio::io_context ioctx;
-
-	std::atomic<bool> restartserver;
+	asio::signal_set signals;
 
 	asio::ip::port_type port;
 	unsigned int numthreads;
