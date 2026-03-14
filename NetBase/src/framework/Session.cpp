@@ -1,3 +1,5 @@
+#include "asio/co_spawn.hpp"
+#include "asio/detached.hpp"
 #include "asio/write.hpp"
 #include "asio/use_awaitable.hpp"
 
@@ -7,6 +9,7 @@ Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 	: socket(std::move(socket)),
 	log(log)
 {
+	asio::co_spawn(socket.get_executor(), [self = shared_from_this()] { return self->Start(); }, asio::detached);
 }
 
 Session::~Session()

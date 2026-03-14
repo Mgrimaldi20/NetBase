@@ -3,7 +3,6 @@
 
 #include "asio/co_spawn.hpp"
 #include "asio/detached.hpp"
-#include "asio/signal_set.hpp"
 #include "asio/use_awaitable.hpp"
 
 #include "Session.h"
@@ -13,65 +12,39 @@
 constexpr int NET_SIGINT = SIGINT;
 constexpr int NET_SIGTERM = SIGTERM;
 
-#if defined(SIGBREAK)
-constexpr int NET_RESTART_SIG = SIGBREAK;
-#elif defined(SIGTSTP)
-constexpr int NET_RESTART_SIG = SIGTSTP;
-#endif
-
 Server::Server(asio::ip::port_type port, unsigned int numthreads, std::shared_ptr<Log> log)
 	: ioctx(),
-	restartserver(false),
+	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	port(port),
 	numthreads(numthreads),
 	log(log)
 {
+	RegisterSignals();
+
 	// start the server and listen for incoming connections on the specified port number
 	asio::co_spawn(ioctx, Listener(), asio::detached);
 
-	// register signal handler for graceful shutdown or restart
-	asio::signal_set signals(ioctx, NET_SIGINT, NET_SIGTERM, NET_RESTART_SIG);
-	signals.async_wait([&](const std::error_code &ec, int signal)
-	{
-		if (!ec)
-		{
-			log->Info("Signal received: {}", signal);
-
-			if (signal == NET_RESTART_SIG)
-			{
-				log->Info("NetBase server is restarting...\n");
-				restartserver = true;
-			}
-
-			ioctx.stop();
-		}
-
-		else
-			log->Error("Signal handler error: {}", ec.message());
-	});
+	log->Info("Number of worker threads available: {}", numthreads);
+	log->Info("NetBase server running on port: {}", port);
+	log->Info("Press Ctrl-C to exit...");
 }
 
 Server::~Server()
 {
-	log->Info("Shutting down the server");
+	log->Info("Shutting down the Server");
 }
 
 void Server::Run()
 {
-	do
+	// run the server with a thread pool and handle requests until stopped
+	std::vector<std::jthread> threads;
+	for (unsigned int i=0; i<numthreads; i++)
 	{
-		restartserver = false;
-
-		// run the server with a thread pool and handle requests until stopped
-		std::vector<std::jthread> threads;
-		for (unsigned int i=0; i<numthreads; i++)
+		threads.emplace_back([this]()
 		{
-			threads.emplace_back([this]()
-			{
-				ioctx.run();
-			});
-		}
-	} while (restartserver);
+			ioctx.run();
+		});
+	}
 }
 
 asio::awaitable<void> Server::Listener()
@@ -80,8 +53,26 @@ asio::awaitable<void> Server::Listener()
 
 	while (true)
 	{
-		asio::ip::tcp::socket socket = co_await acceptor.async_accept(asio::use_awaitable);
-		std::make_shared<Session>(socket, log);
-		//asio::co_spawn(ioctx, /*Session awaitable*/, log), asio::detached);
+		std::shared_ptr<Session> session = std::make_shared<Session>(
+			co_await acceptor.async_accept(asio::use_awaitable),
+			log
+		);
 	}
+}
+
+void Server::RegisterSignals()
+{
+	// register signal handler for graceful shutdown or restart
+	signals.async_wait([this](const std::error_code &ec, int signal)
+	{
+		if (!ec)
+		{
+			log->Info("Signal received: {}", signal);
+
+			ioctx.stop();
+		}
+
+		else
+			log->Error("Signal handler error: {}", ec.message());
+	});
 }
