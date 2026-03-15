@@ -2,6 +2,8 @@
 #define _NETBASE_FRAMEWORK_SESSION_H_
 
 #include <memory>
+#include <string>
+#include <deque>
 
 #include "asio/awaitable.hpp"
 
@@ -16,8 +18,13 @@ public:
 	Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
 	~Session();
 
+	void Start();
+
 private:
-	asio::awaitable<void> Start();
+	asio::awaitable<void> Reader();
+	asio::awaitable<void> Writer();
+
+	std::deque<std::string> writequeue;
 
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<Log> log;
