@@ -1,3 +1,4 @@
+#include <system_error>
 #include <thread>
 #include <vector>
 
@@ -53,10 +54,10 @@ asio::awaitable<void> Server::Listener()
 
 	while (true)
 	{
-		std::shared_ptr<Session> session = std::make_shared<Session>(
+		std::make_shared<Session>(
 			co_await acceptor.async_accept(asio::use_awaitable),
 			log
-		);
+		)->Start();
 	}
 }
 
@@ -68,7 +69,6 @@ void Server::RegisterSignals()
 		if (!ec)
 		{
 			log->Info("Signal received: {}", signal);
-
 			ioctx.stop();
 		}
 

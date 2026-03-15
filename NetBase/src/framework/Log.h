@@ -28,7 +28,7 @@ public:
 	~Log();
 
 	template<typename ...Args>
-	inline void Debug(std::format_string<Args...> fmt, Args &&...args);
+	inline void Debug([[maybe_unused]] std::format_string<Args...> fmt, [[maybe_unused]] Args &&...args);
 
 	template<typename ...Args>
 	inline void Info(std::format_string<Args...> fmt, Args &&...args);
@@ -64,6 +64,9 @@ inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
 #if defined(NETBASE_DEBUG)
 	Write<Log::Type::Debug>(std::format(fmt, std::forward<Args>(args)...));
 #endif
+
+	(void)fmt;
+	(void)std::initializer_list<int>{((void)args, 0)...};
 }
 
 template<typename ...Args>

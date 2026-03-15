@@ -34,7 +34,8 @@ int main(int argc, char **argv)
 
 	if (numthreads == NET_DEFAULT_THREADS)
 	{
-		log->Warn("The number of threads avaliable is equal to the default number [{}]\n"
+		log->Warn(
+			"The number of threads avaliable is equal to the default number [{}]\n"
 			"If this is not correct, you may wish to restart NetBase as the"
 			"correct number of system threads have not been detected",
 			NET_DEFAULT_THREADS

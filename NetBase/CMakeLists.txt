@@ -8,6 +8,7 @@ project(NetBase LANGUAGES CXX)
 # Add source to this project's executable
 add_executable(NetBase)
 
+set(CMAKE_CXX_STANDARD 23)
 set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
 
 # Set the NetBase version

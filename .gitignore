@@ -20,6 +20,8 @@ mono_crash.*
 *.ps1
 *.sh
 *.bin
+*.swp
+*.bat
 
 # Test dirs
 [Tt]est/
