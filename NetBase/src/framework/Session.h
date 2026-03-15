@@ -6,6 +6,7 @@
 #include <deque>
 
 #include "asio/awaitable.hpp"
+#include <asio/steady_timer.hpp>
 
 #include "asio/ip/tcp.hpp"
 #include "asio/ip/udp.hpp"
@@ -24,8 +25,11 @@ private:
 	asio::awaitable<void> Reader();
 	asio::awaitable<void> Writer();
 
-	std::deque<std::string> writequeue;
+	void Close();
 
+	std::deque<std::string> writequeue;
+	std::string clientaddr;
+	asio::steady_timer timer;
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<Log> log;
 };
