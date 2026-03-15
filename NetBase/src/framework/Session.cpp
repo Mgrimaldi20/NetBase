@@ -1,21 +1,28 @@
+#include <chrono>
+
 #include "asio/co_spawn.hpp"
 #include "asio/detached.hpp"
 #include "asio/write.hpp"
 #include "asio/use_awaitable.hpp"
+#include "asio/redirect_error.hpp"
+#include "asio/error_code.hpp"
 
 #include "Session.h"
 
 Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 	: writequeue(),
+	clientaddr(socket.remote_endpoint().address().to_string()),
+	timer(socket.get_executor()),
 	socket(std::move(socket)),
 	log(log)
 {
-	log->Info("New session started with client: {}", this->socket.remote_endpoint().address().to_string());
+	log->Info("New session started with client: {}", clientaddr);
+	timer.expires_at(std::chrono::steady_clock::time_point::max());
 }
 
 Session::~Session()
 {
-	log->Info("Session ended with client: {}", socket.remote_endpoint().address().to_string());
+	log->Info("Session ended with client: {}", clientaddr);
 }
 
 void Session::Start()
@@ -43,15 +50,17 @@ asio::awaitable<void> Session::Reader()
 			message.resize(1024);
 
 			std::size_t n = co_await socket.async_read_some(asio::buffer(message, message.size()), asio::use_awaitable);
-			log->Debug("Received message from client {}: [{} bytes]: {}", socket.remote_endpoint().address().to_string(), n, message);
+			log->Debug("Received message from client {}: [{} bytes]: {}", clientaddr, n, message);
 
 			writequeue.push_back(message);
+			timer.cancel_one();
 		}
 	}
 
 	catch (const std::exception &e)
 	{
 		log->Error("Session error: {}", e.what());
+		Close();
 	}
 }
 
@@ -62,15 +71,28 @@ asio::awaitable<void> Session::Writer()
 		while (socket.is_open())
 		{
 			if (writequeue.empty())
-				continue;
+			{
+				asio::error_code ec;
+				co_await timer.async_wait(asio::redirect_error(asio::use_awaitable, ec));
+			}
 
-			co_await asio::async_write(socket, asio::buffer(writequeue.front()), asio::use_awaitable);
-			writequeue.pop_front();
+			else
+			{
+				co_await asio::async_write(socket, asio::buffer(writequeue.front()), asio::use_awaitable);
+				writequeue.pop_front();
+			}
 		}
 	}
 
 	catch (const std::exception &e)
 	{
 		log->Error("Session error: {}", e.what());
+		Close();
 	}
+}
+
+void Session::Close()
+{
+	socket.close();
+	timer.cancel();
 }
