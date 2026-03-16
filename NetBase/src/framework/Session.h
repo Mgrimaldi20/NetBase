@@ -5,11 +5,7 @@
 #include <string>
 #include <deque>
 
-#include "asio/awaitable.hpp"
-#include <asio/steady_timer.hpp>
-
-#include "asio/ip/tcp.hpp"
-#include "asio/ip/udp.hpp"
+#include "../Asio.h"
 
 #include "Log.h"
 

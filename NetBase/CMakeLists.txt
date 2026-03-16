@@ -18,9 +18,23 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_compile_definitions(NetBase PRIVATE NETBASE_DEBUG)
 endif()
 
+if(WIN32)
+	target_compile_definitions(NetBase PRIVATE UNICODE _UNICODE)
+endif()
+
+if(MSVC)
+	target_compile_definitions(NetBase PRIVATE NETBASE_MSVC)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	target_compile_definitions(NetBase PRIVATE NETBASE_CLANG)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	target_compile_definitions(NetBase PRIVATE NETBASE_GCC)
+endif()
+
 # Specify the common OS independent source files for the NetBase project
 target_sources(NetBase PRIVATE
 	"src/Main.cpp"
+	"src/Asio.h"
+	"src/Asio.cpp"
 	"src/framework/Server.h"
 	"src/framework/Server.cpp"
 	"src/framework/Session.h"
@@ -33,10 +47,9 @@ target_sources(NetBase PRIVATE
 	"src/framework/CmdSystem.h"
 )
 
-if(WIN32)
-	target_compile_definitions(NetBase PRIVATE UNICODE _UNICODE)
-endif()
+include_directories("/src/framework")
 
+# Add the ASIO library as an interface target
 add_library(asio INTERFACE)
 
 target_include_directories(asio SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/libs/asio/include")
@@ -90,6 +103,7 @@ if(MSVC)
 			"/O2"
 			"/MD"
 			"/GL"
+			"/LTCG"
 			"/Gw"
 		)
 	endif()
