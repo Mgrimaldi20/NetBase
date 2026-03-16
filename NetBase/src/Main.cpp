@@ -17,9 +17,7 @@ static bool ValidateOptions(int argc, char **argv);
 
 /* 
 * TODO:
-* The server should also handle graceful shutdown and cleanup of resources when the program is terminated.
 * The server should also handle multiple clients concurrently, and should be able to broadcast messages to all relevant clients when a command is executed.
-* The server should also handle errors and exceptions gracefully, and should log any relevant information to the log file or console.
 * Logs should perhaps be a thread local resource, so a logger is spawned for each thread and can write to their own files without issue.
 */
 int main(int argc, char **argv)

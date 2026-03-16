@@ -3,12 +3,7 @@
 
 #include <memory>
 
-#include "asio/io_context.hpp"
-#include "asio/awaitable.hpp"
-#include "asio/signal_set.hpp"
-
-#include "asio/ip/tcp.hpp"
-#include "asio/ip/udp.hpp"
+#include "../Asio.h"
 
 #include "Log.h"
 
