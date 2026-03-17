@@ -1,6 +1,6 @@
 #include <chrono>
-
-#include "../Asio.h"
+#include <exception>
+#include <system_error>
 
 #include "Session.h"
 
@@ -11,8 +11,9 @@ Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 	socket(std::move(socket)),
 	log(log)
 {
-	log->Info("New session started with client: {}", clientaddr);
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
+
+	log->Info("New session started with client: {}", clientaddr);
 }
 
 Session::~Session()
@@ -44,19 +45,37 @@ asio::awaitable<void> Session::Reader()
 			std::string message;
 			message.resize(1024);
 
-			std::size_t n = co_await socket.async_read_some(asio::buffer(message, message.size()), asio::use_awaitable);
+			asio::error_code ec;
+
+			std::size_t n = co_await socket.async_read_some(
+				asio::buffer(message, message.size()),
+				asio::redirect_error(asio::use_awaitable, ec)
+			);
+
+			if (ec == asio::error::eof)
+				break;
+
+			if (ec)
+				throw std::system_error(ec);
+
 			log->Debug("Received message from client {}: [{} bytes]: {}", clientaddr, n, message);
 
+			message.resize(n);
+
+			bool empty = writequeue.empty();
 			writequeue.push_back(message);
-			timer.cancel_one();
+
+			if (empty)
+				timer.cancel_one();
 		}
 	}
 
 	catch (const std::exception &e)
 	{
-		log->Error("Session error: {}", e.what());
-		Close();
+		log->Error("Session Reader error: {}", e.what());
 	}
+
+	Close();
 }
 
 asio::awaitable<void> Session::Writer()
@@ -73,15 +92,19 @@ asio::awaitable<void> Session::Writer()
 
 			else
 			{
-				co_await asio::async_write(socket, asio::buffer(writequeue.front()), asio::use_awaitable);
+				std::string message = writequeue.front();
+
+				co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
 				writequeue.pop_front();
+
+				log->Debug("Wrote message to client {}: [{} bytes]: {}", clientaddr, message.size(), message);
 			}
 		}
 	}
 
 	catch (const std::exception &e)
 	{
-		log->Error("Session error: {}", e.what());
+		log->Error("Session Writer error: {}", e.what());
 		Close();
 	}
 }

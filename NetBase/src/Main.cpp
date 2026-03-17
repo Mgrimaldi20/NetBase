@@ -4,6 +4,7 @@
 #include <system_error>
 #include <thread>
 #include <memory>
+#include <exception>
 
 #include "framework/Log.h"
 #include "framework/Server.h"
@@ -22,28 +23,37 @@ static bool ValidateOptions(int argc, char **argv);
 */
 int main(int argc, char **argv)
 {
-	if (!ValidateOptions(argc, argv))
-		return 1;
-
-	std::shared_ptr<Log> log = std::make_shared<Log>();
-
-	unsigned int numthreads = std::thread::hardware_concurrency() * 2;
-	numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;
-
-	if (numthreads == NET_DEFAULT_THREADS)
+	try
 	{
-		log->Warn(
-			"The number of threads avaliable is equal to the default number [{}]\n"
-			"If this is not correct, you may wish to restart NetBase as the"
-			"correct number of system threads have not been detected",
-			NET_DEFAULT_THREADS
-		);
+		if (!ValidateOptions(argc, argv))
+			return 1;
+
+		std::shared_ptr<Log> log = std::make_shared<Log>();
+
+		unsigned int numthreads = std::thread::hardware_concurrency() * 2;
+		numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;
+
+		if (numthreads == NET_DEFAULT_THREADS)
+		{
+			log->Warn(
+				"The number of threads avaliable is equal to the default number [{}]\n"
+				"If this is not correct, you may wish to restart NetBase as the"
+				"correct number of system threads have not been detected",
+				NET_DEFAULT_THREADS
+			);
+		}
+
+		Server server(serverport, numthreads, log);
+		server.Run();
+
+		log->Info("NetBase server is exiting...");
 	}
 
-	Server server(serverport, numthreads, log);
-	server.Run();
-
-	log->Info("NetBase server is exiting...");
+	catch (const std::exception &e)
+	{
+		std::cerr << typeid(e).name() << ": Exception: " << e.what() << std::endl;
+		return 1;
+	}
 
 	return 0;
 }
