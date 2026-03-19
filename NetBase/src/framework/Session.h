@@ -25,7 +25,10 @@ private:
 
 	std::deque<std::string> writequeue;
 	std::string clientaddr;
+
+	asio::strand<asio::any_io_executor> strand;
 	asio::steady_timer timer;
+
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<Log> log;
 };

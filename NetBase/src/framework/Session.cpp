@@ -7,7 +7,8 @@
 Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 	: writequeue(),
 	clientaddr(socket.remote_endpoint().address().to_string()),
-	timer(socket.get_executor()),
+	strand(socket.get_executor()),
+	timer(strand),
 	socket(std::move(socket)),
 	log(log)
 {
@@ -24,13 +25,13 @@ Session::~Session()
 void Session::Start()
 {
 	asio::co_spawn(
-		socket.get_executor(),
+		strand,
 		[self = shared_from_this()] { return self->Reader(); },
 		asio::detached
 	);
 
 	asio::co_spawn(
-		socket.get_executor(),
+		strand,
 		[self = shared_from_this()] { return self->Writer(); },
 		asio::detached
 	);
@@ -88,17 +89,16 @@ asio::awaitable<void> Session::Writer()
 			{
 				asio::error_code ec;
 				co_await timer.async_wait(asio::redirect_error(asio::use_awaitable, ec));
+
+				continue;
 			}
 
-			else
-			{
-				std::string message = writequeue.front();
+			std::string message = writequeue.front();
 
-				co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
-				writequeue.pop_front();
+			co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
+			writequeue.pop_front();
 
-				log->Debug("Wrote message to client {}: [{} bytes]: {}", clientaddr, message.size(), message);
-			}
+			log->Debug("Wrote message to client {}: [{} bytes]: {}", clientaddr, message.size(), message);
 		}
 	}
 
