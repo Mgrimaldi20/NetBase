@@ -40,13 +40,11 @@ target_sources(NetBase PRIVATE
 	"src/framework/Server.cpp"
 	"src/framework/Session.h"
 	"src/framework/Session.cpp"
-	"src/framework/ByteBuffer.cpp"
-	"src/framework/ByteBuffer.h"
 	"src/framework/Log.cpp"
 	"src/framework/Log.h"
 	"src/framework/CmdSystem.cpp"
 	"src/framework/CmdSystem.h"
-)
+ "src/framework/Channel.h" "src/framework/Channel.cpp" "src/framework/Client.h"  "src/framework/ChannelManager.cpp")
 
 include_directories("/src/framework")
 

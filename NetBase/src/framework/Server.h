@@ -10,7 +10,7 @@
 /*
 * Class: Server
 * The main server class, responsible for accepting incoming connections and spawning sessions.
-* The server will run on multiple threads, and coroutines will be used to handle async operations.
+* The server will run on multiple threads, and coroutines will be used to handle async accepts.
 * 
 *	Run: Runs the server, kicks off the threads, and blocks until the server is stopped
 */

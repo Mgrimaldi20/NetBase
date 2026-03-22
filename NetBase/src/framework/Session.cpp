@@ -9,6 +9,7 @@ Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 	clientaddr(socket.remote_endpoint().address().to_string()),
 	strand(socket.get_executor()),
 	timer(strand),
+	joinedchannels(),
 	socket(std::move(socket)),
 	log(log)
 {
@@ -37,6 +38,20 @@ void Session::Start()
 	);
 }
 
+std::string Session::GetAddr()
+{
+	return clientaddr;
+}
+
+void Session::Send(std::string message)
+{
+	bool empty = writequeue.empty();
+	writequeue.push_back(message);
+
+	if (empty)
+		timer.cancel_one();
+}
+
 asio::awaitable<void> Session::Reader()
 {
 	try
@@ -63,11 +78,8 @@ asio::awaitable<void> Session::Reader()
 
 			message.resize(n);
 
-			bool empty = writequeue.empty();
-			writequeue.push_back(message);
-
-			if (empty)
-				timer.cancel_one();
+			for (std::shared_ptr<Channel> &channel : joinedchannels)
+				channel->Broadcast(message);
 		}
 	}
 
@@ -113,4 +125,7 @@ void Session::Close()
 {
 	socket.close();
 	timer.cancel();
+
+	for (std::shared_ptr<Channel> &channel : joinedchannels)
+		channel->Leave(shared_from_this());
 }
