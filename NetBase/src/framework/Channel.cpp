@@ -27,7 +27,7 @@ void Channel::Leave(std::shared_ptr<Client> client)
 	log->Debug("Client: {} has left channel: {}", client->GetAddr(), channelname);
 }
 
-void Channel::Broadcast(std::string message)
+void Channel::Broadcast(const std::string &message)
 {
 	for (const std::shared_ptr<Client> &client : clients)
 		client->Send(message);

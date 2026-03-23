@@ -16,8 +16,8 @@ public:
 	Client() = default;
 	virtual ~Client() = default;
 
-	virtual std::string GetAddr() = 0;
-	virtual void Send(std::string message) = 0;
+	virtual const std::string &GetAddr() = 0;
+	virtual void Send(const std::string &message) = 0;
 };
 
 #endif

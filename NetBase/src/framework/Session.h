@@ -17,9 +17,10 @@
 * Class: Session
 * A session that represents a clients connection and all active session information.
 * Handles reading from and writing to channels that the client is connected to.
-* Implements the Send() interface from the client to broadcast data.
+* Implements the client interface, the Session is a Client.
 * 
 *	Start: Creates the Reader and Writer coroutines used when a client connects
+*	GetAddr: Implementation of the Client interface to return the clients address
 *	Send: Implementation of the Client interface function to broadcast on a channel
 */
 class Session : public Client, public std::enable_shared_from_this<Session>
@@ -30,8 +31,8 @@ public:
 
 	void Start();
 
-	std::string GetAddr() override final;
-	void Send(std::string message) override final;
+	const std::string &GetAddr() override final;
+	void Send(const std::string &message) override final;
 
 private:
 	asio::awaitable<void> Reader();
