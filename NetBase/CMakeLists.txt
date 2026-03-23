@@ -36,15 +36,18 @@ target_sources(NetBase PRIVATE
 	"src/Main.cpp"
 	"src/Asio.h"
 	"src/Asio.cpp"
-	"src/framework/Server.h"
-	"src/framework/Server.cpp"
+	"src/framework/Log.h"
+	"src/framework/Log.cpp"
+	"src/framework/Client.h"
 	"src/framework/Session.h"
 	"src/framework/Session.cpp"
-	"src/framework/Log.cpp"
-	"src/framework/Log.h"
-	"src/framework/CmdSystem.cpp"
-	"src/framework/CmdSystem.h"
- "src/framework/Channel.h" "src/framework/Channel.cpp" "src/framework/Client.h"  "src/framework/ChannelManager.cpp")
+	"src/framework/Server.h"
+	"src/framework/Server.cpp"
+	"src/framework/Channel.h"
+	"src/framework/Channel.cpp"
+	"src/framework/ChannelManager.h"
+	"src/framework/ChannelManager.cpp"
+)
 
 include_directories("/src/framework")
 

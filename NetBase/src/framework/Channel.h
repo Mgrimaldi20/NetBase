@@ -28,7 +28,7 @@ public:
 	void Join(std::shared_ptr<Client> client);
 	void Leave(std::shared_ptr<Client> client);
 
-	void Broadcast(std::string message);
+	void Broadcast(const std::string &message);
 
 private:
 	std::string channelname;

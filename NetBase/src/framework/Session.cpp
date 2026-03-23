@@ -38,12 +38,12 @@ void Session::Start()
 	);
 }
 
-std::string Session::GetAddr()
+const std::string &Session::GetAddr()
 {
 	return clientaddr;
 }
 
-void Session::Send(std::string message)
+void Session::Send(const std::string &message)
 {
 	bool empty = writequeue.empty();
 	writequeue.push_back(message);

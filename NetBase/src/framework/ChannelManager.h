@@ -16,6 +16,7 @@
 *
 *	Fetch: Gets a channel if it already exists
 *	Create: Creates a new channel if it doesnt exist and returns it
+*	Exists: Check if a channel with the specified name exists
 *	FetchAll: Fetches a list of every channel managed by the system
 */
 class ChannelManager
