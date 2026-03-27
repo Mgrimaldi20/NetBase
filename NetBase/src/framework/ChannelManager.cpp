@@ -5,8 +5,9 @@
 
 #include "ChannelManager.h"
 
-ChannelManager::ChannelManager(std::shared_ptr<Log> log)
+ChannelManager::ChannelManager(std::shared_ptr<Log> log, asio::any_io_executor exec)
 	: channels(),
+	strand(exec),
 	log(log)
 {
 	log->Info("Channel Manager started");
@@ -17,37 +18,50 @@ ChannelManager::~ChannelManager()
 	log->Info("Shutting down the Channel Manager");
 }
 
-std::shared_ptr<Channel> ChannelManager::Create(const std::string &channelname)
+asio::awaitable<std::shared_ptr<Channel>> ChannelManager::Create(std::string channelname)
 {
-	return channels.emplace(
+	co_await asio::dispatch(strand, asio::use_awaitable);
+
+	asio::any_io_executor exec = strand.get_inner_executor();
+
+	auto [it, inserted] = channels.emplace(
 		channelname,
-		std::make_shared<Channel>(channelname, log)
-	).first->second;
+		std::make_shared<Channel>(
+			channelname,
+			log,
+			asio::make_strand(exec)
+		)
+	);
+
+	if (!inserted)
+		log->Warn("Failed to create Channel, already exists, fetching existing Channel: {}", channelname);
+
+	co_return it->second;
 }
 
-std::shared_ptr<Channel> ChannelManager::Fetch(const std::string &channelname)
+asio::awaitable<std::shared_ptr<Channel>> ChannelManager::Fetch(std::string channelname)
 {
-	try
-	{
-		std::shared_ptr<Channel> channel = channels.at(channelname);
-		return channel;
-	}
+	co_await asio::dispatch(strand, asio::use_awaitable);
 
-	catch (const std::exception &e)
-	{
-		log->Warn("Channel Manager error: {}", e.what());
-		return nullptr;
-	}
+	auto it = channels.find(channelname);
+	if (it != channels.end())
+		co_return it->second;
+
+	co_return nullptr;
 }
 
-bool ChannelManager::Exists(const std::string &channelname)
+asio::awaitable<bool> ChannelManager::Exists(std::string channelname)
 {
-	return channels.contains(channelname);
+	co_await asio::dispatch(strand, asio::use_awaitable);
+	co_return channels.contains(channelname);
 }
 
-std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
+asio::awaitable<std::vector<std::shared_ptr<Channel>>> ChannelManager::FetchAll()
 {
+	co_await asio::dispatch(strand, asio::use_awaitable);
+
 	std::vector<std::shared_ptr<Channel>> elements;
+	elements.reserve(channels.size());
 
 	auto Transformer = [](const std::pair<const std::string, std::shared_ptr<Channel>> &pair)
 	{
@@ -61,5 +75,5 @@ std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 		Transformer
 	);
 
-	return elements;
+	co_return elements;
 }

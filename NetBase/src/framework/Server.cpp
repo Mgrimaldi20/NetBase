@@ -21,9 +21,13 @@ Server::Server(asio::ip::port_type port, unsigned int numthreads, std::shared_pt
 	// start the server and listen for incoming connections on the specified port number
 	asio::co_spawn(ioctx, Listener(), asio::detached);
 
-	log->Info("Number of worker threads available: {}", numthreads);
-	log->Info("NetBase server running on port: {}", port);
-	log->Info("Press Ctrl-C to exit...");
+	log->Info(
+		"Number of worker threads available: {}\n"
+		"NetBase server running on port: {}\n"
+		"Press Ctrl-C to exit...",
+		numthreads,
+		port
+	);
 }
 
 Server::~Server()
