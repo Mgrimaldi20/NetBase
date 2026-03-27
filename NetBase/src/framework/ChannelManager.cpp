@@ -36,9 +36,8 @@ std::shared_ptr<Channel> ChannelManager::Fetch(const std::string &channelname)
 	catch (const std::exception &e)
 	{
 		log->Warn("Channel Manager error: {}", e.what());
+		return nullptr;
 	}
-
-	return nullptr;
 }
 
 bool ChannelManager::Exists(const std::string &channelname)

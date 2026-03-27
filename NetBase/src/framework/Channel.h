@@ -2,7 +2,7 @@
 #define _NETBASE_FRAMEWORK_CHANNEL_H_
 
 #include <unordered_set>
-#include <string>
+#include <string_view>
 #include <memory>
 
 #include "Client.h"
@@ -22,13 +22,13 @@
 class Channel
 {
 public:
-	Channel(std::string channelname, std::shared_ptr<Log> log);
+	Channel(std::string_view channelname, std::shared_ptr<Log> log);
 	~Channel();
 
 	void Join(std::shared_ptr<Client> client);
 	void Leave(std::shared_ptr<Client> client);
 
-	void Broadcast(const std::string &message);
+	void Broadcast(std::string_view message);
 
 private:
 	std::string channelname;
