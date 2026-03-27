@@ -1,7 +1,7 @@
 #ifndef _NETBASE_FRAMEWORK_CLIENT_H_
 #define _NETBASE_FRAMEWORK_CLIENT_H_
 
-#include <string>
+#include <string_view>
 
 /*
 * Class: Client
@@ -16,8 +16,8 @@ public:
 	Client() = default;
 	virtual ~Client() = default;
 
-	virtual const std::string &GetAddr() = 0;
-	virtual void Send(const std::string &message) = 0;
+	virtual std::string_view GetAddr() = 0;
+	virtual void Send(std::string_view message) = 0;
 };
 
 #endif

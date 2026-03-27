@@ -5,6 +5,7 @@
 #include <string>
 #include <deque>
 #include <vector>
+#include <string_view>
 
 #include "../Asio.h"
 
@@ -26,13 +27,16 @@
 class Session : public Client, public std::enable_shared_from_this<Session>
 {
 public:
-	Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
-	~Session();
+	static std::shared_ptr<Session> Create(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
 
 	void Start();
 
-	const std::string &GetAddr() override final;
-	void Send(const std::string &message) override final;
+	std::string_view GetAddr() override final;
+	void Send(std::string_view message) override final;
+
+protected:
+	Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
+	~Session();
 
 private:
 	asio::awaitable<void> Reader();

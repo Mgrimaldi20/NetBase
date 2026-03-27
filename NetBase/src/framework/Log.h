@@ -8,6 +8,7 @@
 #include <format>
 #include <mutex>
 #include <chrono>
+#include <string_view>
 
 /*
 * Class: Log

@@ -46,11 +46,12 @@ void Server::Run()
 
 asio::awaitable<void> Server::Listener()
 {
-	asio::ip::tcp::acceptor acceptor(ioctx, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port));
+	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
+	asio::ip::tcp::acceptor acceptor(ioctx, endpoint);
 
 	while (true)
 	{
-		std::make_shared<Session>(
+		Session::Create(
 			co_await acceptor.async_accept(asio::use_awaitable),
 			log
 		)->Start();
@@ -62,9 +63,19 @@ void Server::RegisterSignals()
 	// register signal handler for graceful shutdown or restart
 	signals.async_wait([this](const std::error_code &ec, int signal)
 	{
+		constexpr auto GetSignalStr = [](int signal)
+		{
+			switch (signal)
+			{
+				case NET_SIGINT: return "NET_SIGINT";
+				case NET_SIGTERM: return "NET_SIGTERM";
+				default: return "UNKNOWN";
+			}
+		};
+
 		if (!ec)
 		{
-			log->Info("Signal received: {}", signal);
+			log->Info("Signal received: {} : {}", signal, GetSignalStr(signal));
 			ioctx.stop();
 		}
 
