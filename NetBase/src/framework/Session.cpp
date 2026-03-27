@@ -15,12 +15,12 @@ Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
 
-	log->Info("New session started with client: {}", clientaddr);
+	log->Info("New session started with Client: {}", clientaddr);
 }
 
 Session::~Session()
 {
-	log->Info("Session ended with client: {}", clientaddr);
+	log->Info("Session ended with Client: {}", clientaddr);
 }
 
 std::shared_ptr<Session> Session::Create(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
@@ -48,10 +48,10 @@ std::string_view Session::GetAddr()
 	return clientaddr;
 }
 
-void Session::Send(std::string_view message)
+void Session::Send(std::shared_ptr<std::string> message)
 {
 	bool empty = writequeue.empty();
-	writequeue.emplace_back(message);
+	writequeue.emplace_back(std::move(message));
 
 	if (empty)
 		timer.cancel_one();
@@ -79,12 +79,14 @@ asio::awaitable<void> Session::Reader()
 			if (ec)
 				throw std::system_error(ec);
 
-			log->Debug("Received message from client {}: [{} bytes]: {}", clientaddr, n, message);
+			log->Debug("Received message from Client {}: [{} bytes] :: {}", clientaddr, n, message);
 
 			message.resize(n);
 
+			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
+
 			for (std::shared_ptr<Channel> &channel : joinedchannels)
-				channel->Broadcast(message);
+				channel->Broadcast(msg);
 		}
 	}
 
@@ -110,12 +112,12 @@ asio::awaitable<void> Session::Writer()
 				continue;
 			}
 
-			std::string message = std::move(writequeue.front());
+			std::shared_ptr<std::string> message = std::move(writequeue.front());
 			writequeue.pop_front();
 
-			co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
+			co_await asio::async_write(socket, asio::buffer(*message), asio::use_awaitable);
 
-			log->Debug("Wrote message to client {}: [{} bytes]: {}", clientaddr, message.size(), message);
+			log->Debug("Wrote message to Client {}: [{} bytes] :: {}", clientaddr, message->size(), *message);
 		}
 	}
 

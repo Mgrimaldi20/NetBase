@@ -6,6 +6,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../Asio.h"
+
 #include "Channel.h"
 
 #include "Log.h"
@@ -22,17 +24,19 @@
 class ChannelManager
 {
 public:
-	ChannelManager(std::shared_ptr<Log> log);
+	ChannelManager(std::shared_ptr<Log> log, asio::any_io_executor exec);
 	~ChannelManager();
 
-	std::shared_ptr<Channel> Create(const std::string &channelname);
-	std::shared_ptr<Channel> Fetch(const std::string &channelname);
-	bool Exists(const std::string &channelname);
+	asio::awaitable<std::shared_ptr<Channel>> Create(std::string channelname);
+	asio::awaitable<std::shared_ptr<Channel>> Fetch(std::string channelname);
+	asio::awaitable<bool> Exists(std::string channelname);
 
-	std::vector<std::shared_ptr<Channel>> FetchAll();
+	asio::awaitable<std::vector<std::shared_ptr<Channel>>> FetchAll();
 
 private:
 	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
+
+	asio::strand<asio::any_io_executor> strand;
 
 	std::shared_ptr<Log> log;
 };

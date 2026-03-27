@@ -32,7 +32,7 @@ public:
 	void Start();
 
 	std::string_view GetAddr() override final;
-	void Send(std::string_view message) override final;
+	void Send(std::shared_ptr<std::string> message) override final;
 
 protected:
 	Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
@@ -44,7 +44,7 @@ private:
 
 	void Close();
 
-	std::deque<std::string> writequeue;
+	std::deque<std::shared_ptr<std::string>> writequeue;
 	std::string clientaddr;
 
 	asio::strand<asio::any_io_executor> strand;

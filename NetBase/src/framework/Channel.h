@@ -3,7 +3,10 @@
 
 #include <unordered_set>
 #include <string_view>
+#include <string>
 #include <memory>
+
+#include "../Asio.h"
 
 #include "Client.h"
 
@@ -22,18 +25,20 @@
 class Channel
 {
 public:
-	Channel(std::string_view channelname, std::shared_ptr<Log> log);
+	Channel(std::string_view channelname, std::shared_ptr<Log> log, asio::any_io_executor exec);
 	~Channel();
 
 	void Join(std::shared_ptr<Client> client);
 	void Leave(std::shared_ptr<Client> client);
 
-	void Broadcast(std::string_view message);
+	void Broadcast(std::shared_ptr<std::string> message);
 
 private:
-	std::string channelname;
 	std::unordered_set<std::shared_ptr<Client>> clients;
 
+	asio::strand<asio::any_io_executor> strand;
+
+	std::string channelname;
 	std::shared_ptr<Log> log;
 };
 
