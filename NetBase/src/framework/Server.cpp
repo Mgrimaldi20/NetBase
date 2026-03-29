@@ -55,7 +55,7 @@ asio::awaitable<void> Server::Listener()
 
 	while (true)
 	{
-		Session::Create(
+		std::make_shared<Session>(
 			co_await acceptor.async_accept(asio::use_awaitable),
 			log
 		)->Start();

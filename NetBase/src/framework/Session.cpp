@@ -23,11 +23,6 @@ Session::~Session()
 	log->Info("Session ended with Client: {}", clientaddr);
 }
 
-std::shared_ptr<Session> Session::Create(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
-{
-	return std::make_shared<Session>(socket, log);
-}
-
 void Session::Start()
 {
 	asio::co_spawn(
@@ -51,7 +46,7 @@ std::string_view Session::GetAddr()
 void Session::Send(std::shared_ptr<std::string> message)
 {
 	bool empty = writequeue.empty();
-	writequeue.emplace_back(std::move(message));
+	writequeue.emplace(std::move(message));
 
 	if (empty)
 		timer.cancel_one();
@@ -113,7 +108,7 @@ asio::awaitable<void> Session::Writer()
 			}
 
 			std::shared_ptr<std::string> message = std::move(writequeue.front());
-			writequeue.pop_front();
+			writequeue.pop();
 
 			co_await asio::async_write(socket, asio::buffer(*message), asio::use_awaitable);
 
