@@ -10,6 +10,7 @@
 * An interface representing a client object in the system, and its properties.
 * Derived classes should implement the Send() function for inter-client communication.
 * 
+*	GetAddr: Pure virtual function, designed to get the IP of the client
 *	Send: Pure virtual function, designed for sending data
 */
 class Client

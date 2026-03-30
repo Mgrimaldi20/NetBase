@@ -6,18 +6,16 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../Asio.h"
-
+#include "Asio.h"
 #include "Channel.h"
-
 #include "Log.h"
 
 /*
 * Class: ChannelManager
 * A manager for all of the channels, allows for fetching and creation of channel objects.
 *
-*	Fetch: Gets a channel if it already exists
 *	Create: Creates a new channel if it doesnt exist and returns it
+*	Fetch: Gets a channel if it already exists
 *	Exists: Check if a channel with the specified name exists
 *	FetchAll: Fetches a list of every channel managed by the system
 */
