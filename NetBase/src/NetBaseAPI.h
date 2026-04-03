@@ -8,4 +8,11 @@ public:
 	virtual ~NetBaseAPI() = default;
 };
 
+class ProtocolAPI
+{
+public:
+	ProtocolAPI() = default;
+	virtual ~ProtocolAPI() = default;
+};
+
 #endif
