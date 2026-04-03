@@ -4,9 +4,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <filesystem>
-
-#include "DynamicLibrary.h"
+#include "sys/DynamicLibrary.h"
 
 class WinDynamicLibrary : public DynamicLibrary
 {
@@ -18,8 +16,6 @@ public:
 
 private:
 	HMODULE dllhandle;
-
-	std::filesystem::path fullpath;
 };
 
 #endif

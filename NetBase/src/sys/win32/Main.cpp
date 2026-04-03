@@ -6,6 +6,9 @@
 #include <memory>
 #include <exception>
 
+#include "WinPluginManager.h"
+
+#include "framework/Asio.h"
 #include "framework/Log.h"
 #include "framework/Server.h"
 
@@ -16,10 +19,6 @@ static asio::ip::port_type serverport = NET_DEFAULT_PORT;
 
 static bool ValidateOptions(int argc, char **argv);
 
-/* 
-* TODO:
-* Logs should perhaps be a thread local resource, so a logger is spawned for each thread and can write to their own files without issue.
-*/
 int main(int argc, char **argv)
 {
 	try
@@ -28,6 +27,7 @@ int main(int argc, char **argv)
 			return 1;
 
 		std::shared_ptr<Log> log = std::make_shared<Log>();
+		std::shared_ptr<PluginManager> pluginmanager = std::make_shared<WinPluginManager>("Plugin.dll");
 
 		unsigned int numthreads = std::thread::hardware_concurrency() * 2;
 		numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;

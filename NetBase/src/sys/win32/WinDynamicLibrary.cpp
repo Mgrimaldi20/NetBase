@@ -4,15 +4,15 @@
 #include "WinDynamicLibrary.h"
 
 WinDynamicLibrary::WinDynamicLibrary(std::filesystem::path fullpath)
-	: dllhandle(),
-	fullpath(fullpath)
+	: DynamicLibrary(fullpath),
+	dllhandle()
 {
-	dllhandle = LoadLibrary(fullpath.c_str());
+	dllhandle = LoadLibrary(fullpath.c_str());	// returns a wchar_t on win32
 	if (!dllhandle || dllhandle == INVALID_HANDLE_VALUE)
 	{
 		throw std::system_error(
 			std::error_code(GetLastError(), std::system_category()),
-			std::format("An error has occured while trying to load DLL file: {}", fullpath)
+			std::format("An error has occured while trying to load DLL file: {}", fullpath.string())
 		);
 	}
 }
@@ -29,7 +29,7 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 	{
 		throw std::system_error(
 			std::error_code(GetLastError(), std::system_category()),
-			std::format("An error has occured while trying to grab the function: {} from DLL file: {}", funcname, fullpath)
+			std::format("An error has occured while trying to grab the function: {} from DLL file: {}", funcname, fullpath.string())
 		);
 	}
 
