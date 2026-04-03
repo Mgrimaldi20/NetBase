@@ -6,6 +6,12 @@
 
 #include "sys/DynamicLibrary.h"
 
+/*
+* Class: WinDynamicLibrary
+* Windows based implementation of the DynamicLibrary interface to represent a DLL.
+* 
+*	GetSymbol: Implementation of the DynamicLibrary interface to get the function from the lib
+*/
 class WinDynamicLibrary : public DynamicLibrary
 {
 public:

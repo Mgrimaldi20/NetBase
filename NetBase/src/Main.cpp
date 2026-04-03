@@ -5,8 +5,7 @@
 #include <thread>
 #include <memory>
 #include <exception>
-
-#include "WinPluginManager.h"
+#include <filesystem>
 
 #include "framework/Asio.h"
 #include "framework/Log.h"
@@ -16,6 +15,7 @@ constexpr unsigned int NET_DEFAULT_THREADS = 2;
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
+static std::filesystem::path dylibpath;
 
 static bool ValidateOptions(int argc, char **argv);
 
@@ -27,7 +27,6 @@ int main(int argc, char **argv)
 			return 1;
 
 		std::shared_ptr<Log> log = std::make_shared<Log>();
-		std::shared_ptr<PluginManager> pluginmanager = std::make_shared<WinPluginManager>("Plugin.dll");
 
 		unsigned int numthreads = std::thread::hardware_concurrency() * 2;
 		numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;
@@ -93,12 +92,30 @@ bool ValidateOptions(int argc, char **argv)
 				break;
 			}
 
+			case 'd':
+			{
+				std::string_view fullpath(argv[i] + 2);
+
+				if (fullpath.empty() || fullpath[0] != ':')
+				{
+					std::cout << "Invalid dynamic library path format: " << argv[i] << std::endl;
+					return false;
+				}
+
+				std::cout << "Plugin to load: " << fullpath << std::endl;
+
+				dylibpath = fullpath;
+
+				break;
+			}
+
 			case '?':
 				std::cout << std::endl << "Usage:" << std::endl
-					<< "NetBase [-p:<port>] [-?]" << std::endl
-					<< "--------------------------------------------------" << std::endl
-					<< "-p:<port>    Specify the port number of the server" << std::endl
-					<< "-?           Prints out this help message and exit" << std::endl;
+					<< "NetBase [-p:<port>] [-d:<dylib fullpath>] [-?]" << std::endl
+					<< "------------------------------------------------------------" << std::endl
+					<< "-p:<port>              Specify the port number of the server" << std::endl
+					<< "-d:<dylib fullpath>    Specify the full path of the protocol" << std::endl
+					<< "-?                     Prints out this help message and exit" << std::endl;
 
 				return false;
 
