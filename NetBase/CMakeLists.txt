@@ -33,7 +33,9 @@ endif()
 
 # Specify the common OS independent source files for the NetBase project
 target_sources(NetBase PRIVATE
+	"src/NetBaseAPI.h"
 	"src/sys/DynamicLibrary.h"
+	"src/sys/PluginManager.h"
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
 	"src/framework/Log.h"
@@ -55,15 +57,17 @@ if(WIN32)
 		"src/sys/win32/Main.cpp"
 		"src/sys/win32/WinDynamicLibrary.h"
 		"src/sys/win32/WinDynamicLibrary.cpp"
+		"src/sys/win32/WinPluginManager.h"
+		"src/sys/win32/WinPluginManager.cpp"
 	)
 elseif(LINUX OR APPLE)
 	target_sources(NetBase PRIVATE
 		"src/sys/posix/Main.cpp"
 		"src/sys/posix/PosixDynamicLibrary.h"
 		"src/sys/posix/PosixDynamicLibrary.cpp"
+		"src/sys/posix/PosixPluginManager.h"
+		"src/sys/posix/PosixPluginManager.cpp"
 	)
-
-	target_include_directories(NetBase PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/sys/posix")
 endif()
 
 #if(LINUX)
@@ -75,7 +79,6 @@ endif()
 #endif()
 
 target_include_directories(NetBase PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
-target_include_directories(NetBase PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/sys")
 
 # Add the ASIO library as an interface target
 add_library(asio INTERFACE)
