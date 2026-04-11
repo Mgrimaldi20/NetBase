@@ -9,6 +9,12 @@ PosixDynamicLibrary::PosixDynamicLibrary(std::filesystem::path fullpath)
 	: DynamicLibrary(fullpath),
 	handle()
 {
+	if (!std::filesystem::exists(fullpath))
+		throw std::runtime_error(std::format("File: {} does not exist", fullpath.string()));
+
+	if (!std::filesystem::is_regular_file(fullpath))
+		throw std::runtime_error(std::format("Library path: {} is not a file", fullpath.string()));
+
 	handle = dlopen(fullpath.c_str(), RTLD_LAZY);
 	if (!handle.has_value())
 	{
@@ -51,5 +57,5 @@ std::any PosixDynamicLibrary::GetSymbol(const std::string &funcname)
 
 std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(std::filesystem::path fullpath)
 {
-	return std::make_unique<PosixDynamicLibrary>(fullpath);
+	return std::unique_ptr<PosixDynamicLibrary>(new PosixDynamicLibrary(fullpath));
 }

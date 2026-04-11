@@ -50,7 +50,7 @@ private:
 	};
 
 	template<Log::Type T>
-	void Write(std::string_view msg);
+	inline void Write(std::string_view msg);
 
 	std::ofstream logfile;
 	std::ostream &outstream;

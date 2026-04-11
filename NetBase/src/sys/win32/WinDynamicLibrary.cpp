@@ -7,7 +7,13 @@ WinDynamicLibrary::WinDynamicLibrary(std::filesystem::path fullpath)
 	: DynamicLibrary(fullpath),
 	dllhandle()
 {
-	dllhandle = LoadLibrary(fullpath.c_str());	// returns a wchar_t on win32
+	if (!std::filesystem::exists(fullpath))
+		throw std::runtime_error(std::format("File: {} does not exist", fullpath.string()));
+
+	if (!std::filesystem::is_regular_file(fullpath))
+		throw std::runtime_error(std::format("Library path: {} is not a file", fullpath.string()));
+
+	dllhandle = LoadLibrary(fullpath.c_str());
 	if (!dllhandle || dllhandle == INVALID_HANDLE_VALUE)
 	{
 		std::string errormsg = std::format(
@@ -49,5 +55,5 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 
 std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(std::filesystem::path fullpath)
 {
-	return std::make_unique<WinDynamicLibrary>(fullpath);
+	return std::unique_ptr<WinDynamicLibrary>(new WinDynamicLibrary(fullpath));
 }

@@ -17,6 +17,8 @@
 class DynamicLibrary
 {
 public:
+	virtual ~DynamicLibrary() = default;
+
 	virtual std::any GetSymbol(const std::string &funcname) = 0;
 
 	static std::unique_ptr<DynamicLibrary> CreateDynamicLibrary(std::filesystem::path fullpath);
@@ -24,8 +26,6 @@ public:
 protected:
 	DynamicLibrary(std::filesystem::path fullpath)
 		: fullpath(fullpath) {}
-
-	virtual ~DynamicLibrary() = default;
 
 	std::filesystem::path fullpath;
 };
