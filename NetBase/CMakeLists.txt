@@ -56,8 +56,6 @@ if(WIN32)
 	target_sources(NetBase PRIVATE
 		"src/sys/win32/WinDynamicLibrary.h"
 		"src/sys/win32/WinDynamicLibrary.cpp"
-		
-		
 	)
 elseif(LINUX OR APPLE)
 	target_sources(NetBase PRIVATE

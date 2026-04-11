@@ -8,8 +8,8 @@
 #include <filesystem>
 
 #include "framework/Asio.h"
-#include "framework/Log.h"
 #include "framework/Server.h"
+#include "framework/Log.h"
 
 constexpr unsigned int NET_DEFAULT_THREADS = 2;
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
@@ -33,12 +33,9 @@ int main(int argc, char **argv)
 
 		if (numthreads == NET_DEFAULT_THREADS)
 		{
-			log->Warn(
-				"The number of threads avaliable is equal to the default number [{}]\n"
-				"If this is not correct, you may wish to restart NetBase as the"
-				"correct number of system threads have not been detected",
-				NET_DEFAULT_THREADS
-			);
+			log->Warn("The number of threads avaliable is equal to the default number [{}]", NET_DEFAULT_THREADS);
+			log->Warn("If this is not correct, you may wish to restart NetBase as the");
+			log->Warn("correct number of system threads have not been detected");
 		}
 
 		Server server(serverport, numthreads, log);
@@ -71,7 +68,7 @@ bool ValidateOptions(int argc, char **argv)
 
 				if (portstr.empty() || portstr[0] != ':')
 				{
-					std::cout << "Invalid port number format: " << argv[i] << std::endl;
+					std::cout << "Invalid port number command line format: " << argv[i] << std::endl;
 					return false;
 				}
 
@@ -98,13 +95,20 @@ bool ValidateOptions(int argc, char **argv)
 
 				if (fullpath.empty() || fullpath[0] != ':')
 				{
-					std::cout << "Invalid dynamic library path format: " << argv[i] << std::endl;
+					std::cout << "Invalid dynamic library path command line format: " << argv[i] << std::endl;
 					return false;
 				}
 
-				std::cout << "Plugin to load: " << fullpath << std::endl;
+				std::filesystem::path path(fullpath);
+				if (!path.has_filename() || !path.has_extension())
+				{
+					std::cout << "Invalid dynamic library file path: " << path << std::endl;
+					return false;
+				}
 
-				dylibpath = fullpath;
+				std::cout << "Plugin to load: " << path << std::endl;
+
+				dylibpath = std::filesystem::canonical(path);
 
 				break;
 			}
