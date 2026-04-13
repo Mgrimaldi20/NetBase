@@ -4,13 +4,18 @@
 
 #include "Session.h"
 
-Session::Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log)
+Session::Session(
+	asio::ip::tcp::socket socket,
+	std::shared_ptr<CmdDispatcher> dispatcher,
+	std::shared_ptr<Log> log
+)
 	: writequeue(),
 	clientaddr(socket.remote_endpoint().address().to_string()),
 	strand(socket.get_executor()),
 	timer(strand),
 	joinedchannels(),
 	socket(std::move(socket)),
+	dispatcher(dispatcher),
 	log(log)
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
@@ -79,6 +84,9 @@ asio::awaitable<void> Session::Reader()
 			message.resize(n);
 
 			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
+
+			ParsedCmd parsedcmd;
+			dispatcher->Dispatch(shared_from_this(), parsedcmd);
 
 			for (std::shared_ptr<Channel> &channel : joinedchannels)
 				channel->Broadcast(msg);

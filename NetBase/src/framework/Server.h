@@ -5,6 +5,7 @@
 
 #include "Asio.h"
 #include "Log.h"
+#include "CmdDispatcher.h"
 
 /*
 * Class: Server
@@ -40,6 +41,9 @@ private:
 	asio::ip::port_type port;
 	unsigned int numthreads;
 	std::shared_ptr<Log> log;
+
+	// create the dispatcher in the server
+	std::shared_ptr<CmdDispatcher> dispatcher;
 };
 
 #endif

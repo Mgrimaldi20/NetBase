@@ -14,7 +14,8 @@ Server::Server(asio::ip::port_type port, unsigned int numthreads, std::shared_pt
 	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	port(port),
 	numthreads(numthreads),
-	log(log)
+	log(log),
+	dispatcher([log]() { return std::make_shared<CmdDispatcher>(log); }())
 {
 	RegisterSignals();
 
@@ -53,6 +54,7 @@ asio::awaitable<void> Server::Listener()
 	{
 		std::make_shared<Session>(
 			co_await acceptor.async_accept(asio::use_awaitable),
+			dispatcher,
 			log
 		)->Start();
 	}

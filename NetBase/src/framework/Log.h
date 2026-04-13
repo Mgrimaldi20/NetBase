@@ -100,12 +100,14 @@ inline void Log::Write(std::string_view msg)
 		else return "UNKNOWN";
 	};
 
+	auto timepoint = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
+
 	std::scoped_lock lock(logmtx);
 
 	std::format_to(
 		std::ostream_iterator<char>(outstream),
 		"{} [{}] {}\n",
-		std::chrono::floor<std::chrono::seconds>(std::chrono::current_zone()->to_local(std::chrono::system_clock::now())),
+		std::chrono::floor<std::chrono::seconds>(timepoint),
 		GetTypeStr(),
 		msg
 	);

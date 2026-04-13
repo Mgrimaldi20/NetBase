@@ -10,6 +10,7 @@
 #include "Asio.h"
 #include "Channel.h"
 #include "Log.h"
+#include "CmdDispatcher.h"
 
 #include "Client.h"
 
@@ -26,7 +27,12 @@
 class Session : public Client, public std::enable_shared_from_this<Session>
 {
 public:
-	Session(asio::ip::tcp::socket socket, std::shared_ptr<Log> log);
+	Session(
+		asio::ip::tcp::socket socket,
+		std::shared_ptr<CmdDispatcher> dispatcher,
+		std::shared_ptr<Log> log
+	);
+
 	~Session();
 
 	void Start();
@@ -49,6 +55,7 @@ private:
 	std::vector<std::shared_ptr<Channel>> joinedchannels;
 
 	asio::ip::tcp::socket socket;
+	std::shared_ptr<CmdDispatcher> dispatcher;
 	std::shared_ptr<Log> log;
 };
 
