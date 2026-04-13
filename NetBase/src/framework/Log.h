@@ -7,6 +7,8 @@
 #include <string>
 #include <format>
 #include <mutex>
+#include <chrono>
+#include <string_view>
 
 /*
 * Class: Log
@@ -14,6 +16,7 @@
 * Different logging levels are provided to represent the class of information to log.
 * The logger will print the current time, level, and message.
 * 
+*	Debug: log a formatted debug message, designed for debugging purposes and development, not in in release builds
 *	Info: log a formatted information message, designed for general program information and state
 *	Warn: log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: log a formatted error message, designed for unrecoverable code errors, program should quit
@@ -24,6 +27,9 @@ public:
 	Log();
 	Log(const std::filesystem::path &fullpath);
 	~Log();
+
+	template<typename ...Args>
+	inline void Debug([[maybe_unused]] std::format_string<Args...> fmt, [[maybe_unused]] Args &&...args);
 
 	template<typename ...Args>
 	inline void Info(std::format_string<Args...> fmt, Args &&...args);
@@ -37,13 +43,14 @@ public:
 private:
 	enum class Type
 	{
+		Debug,
 		Info,
 		Warn,
 		Error
 	};
 
 	template<Log::Type T>
-	void Write(std::string_view msg);
+	inline void Write(std::string_view msg);
 
 	std::ofstream logfile;
 	std::ostream &outstream;
@@ -51,6 +58,17 @@ private:
 
 	std::mutex logmtx;
 };
+
+template<typename ...Args>
+inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
+{
+#if defined(NETBASE_DEBUG)
+	Write<Log::Type::Debug>(std::format(fmt, std::forward<Args>(args)...));
+#else
+	(void)fmt;
+	(void)std::initializer_list<int>{((void)args, 0)...};
+#endif
+}
 
 template<typename ...Args>
 inline void Log::Info(std::format_string<Args...> fmt, Args && ...args)
@@ -75,18 +93,21 @@ inline void Log::Write(std::string_view msg)
 {
 	constexpr auto GetTypeStr = []() consteval
 	{
-		if constexpr (T == Log::Type::Info) return "INFO";
+		if constexpr (T == Log::Type::Debug) return "DEBUG";
+		else if constexpr (T == Log::Type::Info) return "INFO";
 		else if constexpr (T == Log::Type::Warn) return "WARN";
 		else if constexpr (T == Log::Type::Error) return "ERROR";
 		else return "UNKNOWN";
 	};
+
+	auto timepoint = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
 
 	std::scoped_lock lock(logmtx);
 
 	std::format_to(
 		std::ostream_iterator<char>(outstream),
 		"{} [{}] {}\n",
-		std::chrono::floor<std::chrono::seconds>(std::chrono::current_zone()->to_local(std::chrono::system_clock::now())),
+		std::chrono::floor<std::chrono::seconds>(timepoint),
 		GetTypeStr(),
 		msg
 	);
