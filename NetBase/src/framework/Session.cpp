@@ -86,10 +86,10 @@ asio::awaitable<void> Session::Reader()
 			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
 
 			ParsedCmd parsedcmd;
-			dispatcher->Dispatch(shared_from_this(), parsedcmd);
+			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 
-			for (std::shared_ptr<Channel> &channel : joinedchannels)
-				channel->Broadcast(msg);
+			for (const auto &channel : joinedchannels)
+				channel.lock()->Broadcast(msg);
 		}
 	}
 
@@ -136,6 +136,6 @@ void Session::Close()
 	socket.close();
 	timer.cancel();
 
-	for (std::shared_ptr<Channel> &channel : joinedchannels)
-		channel->Leave(shared_from_this());
+	for (const auto &channel : joinedchannels)
+		channel.lock()->Leave(shared_from_this());
 }

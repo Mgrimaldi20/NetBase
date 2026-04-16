@@ -38,7 +38,7 @@ void Channel::Broadcast(std::shared_ptr<std::string> message)
 	{
 		log->Debug("Broadcasting on Channel: {} :: {}", channelname, *message);
 
-		for (const std::shared_ptr<Client> &client : clients)
+		for (const auto &client : clients)
 			client->Send(message);
 
 		log->Debug("Broadcast on Channel: {} :: Complete", channelname);
