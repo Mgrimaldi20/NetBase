@@ -52,7 +52,7 @@ private:
 	asio::strand<asio::any_io_executor> strand;
 	asio::steady_timer timer;
 
-	std::vector<std::shared_ptr<Channel>> joinedchannels;
+	std::vector<std::weak_ptr<Channel>> joinedchannels;
 
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<CmdDispatcher> dispatcher;

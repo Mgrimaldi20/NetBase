@@ -49,8 +49,6 @@ target_sources(NetBase PRIVATE
 	"src/framework/Channel.cpp"
 	"src/framework/ChannelManager.h"
 	"src/framework/ChannelManager.cpp"
-	
-	
 	"src/framework/CmdDispatcher.h"
 	"src/framework/CmdDispatcher.cpp"
 )

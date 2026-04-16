@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 	catch (const std::exception &e)
 	{
-		std::cerr << typeid(e).name() << ": Exception: " << e.what() << std::endl;
+		std::cerr << typeid(e).name() << " :: Exception :: " << e.what() << std::endl;
 		return 1;
 	}
 
@@ -106,9 +106,9 @@ bool ValidateOptions(int argc, char **argv)
 					return false;
 				}
 
-				std::cout << "Plugin to load: " << path << std::endl;
-
 				dylibpath = std::filesystem::canonical(path);
+
+				std::cout << "Plugin to load (canonical path): " << dylibpath << std::endl;
 
 				break;
 			}
