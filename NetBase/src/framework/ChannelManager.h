@@ -8,7 +8,8 @@
 
 #include "Asio.h"
 #include "Channel.h"
-#include "Log.h"
+
+#include "log/Log.h"
 
 /*
 * Class: ChannelManager

@@ -15,7 +15,7 @@
 class WinDynamicLibrary : public DynamicLibrary
 {
 public:
-	WinDynamicLibrary(std::filesystem::path fullpath);
+	WinDynamicLibrary(const std::filesystem::path &fullpath);
 	virtual ~WinDynamicLibrary();
 
 	std::any GetSymbol(const std::string &funcname) override final;
