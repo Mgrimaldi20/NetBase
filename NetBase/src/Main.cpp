@@ -9,7 +9,9 @@
 
 #include "framework/Asio.h"
 #include "framework/Server.h"
-#include "framework/Log.h"
+
+#include "framework/log/Log.h"
+#include "framework/log/sink/console/ConsoleSink.h"
 
 constexpr unsigned int NET_DEFAULT_THREADS = 2;
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
@@ -26,7 +28,7 @@ int main(int argc, char **argv)
 		if (!ValidateOptions(argc, argv))
 			return 1;
 
-		std::shared_ptr<Log> log = std::make_shared<Log>();
+		std::shared_ptr<Log> log = std::make_shared<Log>("NetBase", std::make_unique<ConsoleSink>());
 
 		unsigned int numthreads = std::thread::hardware_concurrency() * 2;
 		numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;

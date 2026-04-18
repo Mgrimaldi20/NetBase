@@ -38,8 +38,6 @@ target_sources(NetBase PRIVATE
 	"src/sys/DynamicLibrary.h"
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
-	"src/framework/Log.h"
-	"src/framework/Log.cpp"
 	"src/framework/Server.h"
 	"src/framework/Server.cpp"
 	"src/framework/Client.h"
@@ -51,6 +49,13 @@ target_sources(NetBase PRIVATE
 	"src/framework/ChannelManager.cpp"
 	"src/framework/CmdDispatcher.h"
 	"src/framework/CmdDispatcher.cpp"
+	"src/framework/log/Log.h"
+	"src/framework/log/Log.cpp"
+	"src/framework/log/sink/Sink.h"
+	"src/framework/log/sink/file/FileSink.h"
+	"src/framework/log/sink/file/FileSink.cpp"
+	"src/framework/log/sink/console/ConsoleSink.h"
+	"src/framework/log/sink/console/ConsoleSink.cpp"
 )
 
 # Include different source code depending on OS

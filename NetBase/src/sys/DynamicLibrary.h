@@ -21,13 +21,10 @@ public:
 
 	virtual std::any GetSymbol(const std::string &funcname) = 0;
 
-	static std::unique_ptr<DynamicLibrary> CreateDynamicLibrary(std::filesystem::path fullpath);
+	static std::unique_ptr<DynamicLibrary> CreateDynamicLibrary(const std::filesystem::path &fullpath);
 
 protected:
-	DynamicLibrary(std::filesystem::path fullpath)
-		: fullpath(fullpath) {}
-
-	std::filesystem::path fullpath;
+	DynamicLibrary() = default;
 };
 
 #endif

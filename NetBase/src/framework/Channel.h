@@ -8,7 +8,8 @@
 
 #include "Asio.h"
 #include "Client.h"
-#include "Log.h"
+
+#include "log/Log.h"
 
 /*
 * Class: Channel

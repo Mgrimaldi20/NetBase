@@ -6,8 +6,7 @@
 #include "PosixDynamicLibrary.h"
 
 PosixDynamicLibrary::PosixDynamicLibrary(std::filesystem::path fullpath)
-	: DynamicLibrary(fullpath),
-	handle()
+	: handle()
 {
 	if (!std::filesystem::exists(fullpath))
 		throw std::runtime_error(std::format("File: {} does not exist", fullpath.string()));
@@ -41,9 +40,8 @@ std::any PosixDynamicLibrary::GetSymbol(const std::string &funcname)
 	if (!func)
 	{
 		std::string errormsg = std::format(
-			"An error has occured while trying to grab the function: {} from Dynamic Library file: {} :: {}",
+			"An error has occured while trying to grab the function: {} :: {}",
 			funcname,
-			fullpath.string(),
 			dlerror()
 		);
 

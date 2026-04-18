@@ -3,9 +3,8 @@
 
 #include "WinDynamicLibrary.h"
 
-WinDynamicLibrary::WinDynamicLibrary(std::filesystem::path fullpath)
-	: DynamicLibrary(fullpath),
-	dllhandle()
+WinDynamicLibrary::WinDynamicLibrary(const std::filesystem::path &fullpath)
+	: dllhandle()
 {
 	if (!std::filesystem::exists(fullpath))
 		throw std::runtime_error(std::format("File: {} does not exist", fullpath.string()));
@@ -39,9 +38,8 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 	if (!func)
 	{
 		std::string errormsg = std::format(
-			"An error has occured while trying to grab the function: {} from DLL file: {}",
-			funcname,
-			fullpath.string()
+			"An error has occured while trying to grab the function: {}",
+			funcname
 		);
 
 		throw std::system_error(
@@ -53,7 +51,7 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 	return func;
 }
 
-std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(std::filesystem::path fullpath)
+std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(const std::filesystem::path &fullpath)
 {
 	return std::unique_ptr<WinDynamicLibrary>(new WinDynamicLibrary(fullpath));
 }

@@ -9,8 +9,9 @@
 
 #include "Asio.h"
 #include "Channel.h"
-#include "Log.h"
 #include "CmdDispatcher.h"
+
+#include "log/Log.h"
 
 #include "Client.h"
 
