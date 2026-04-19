@@ -1,10 +1,16 @@
 #include <iostream>
+#include <format>
 
 #include "ConsoleSink.h"
 
-void ConsoleSink::Write(std::string_view msg)
+ConsoleSink::ConsoleSink(std::unique_ptr<Formatter> formatter)
+	: formatter(std::move(formatter))
 {
-	std::cout << msg;
+}
+
+void ConsoleSink::Write(const Entry &entry)
+{
+	std::cout << formatter->Format(entry);
 }
 
 std::string_view ConsoleSink::GetName()

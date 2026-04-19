@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "Entry.h"
+
 #include "sink/Sink.h"
 
 /*
@@ -25,7 +27,7 @@
 class Log
 {
 public:
-	Log(std::string logname, std::unique_ptr<Sink> sink);
+	Log(std::string_view logname, std::unique_ptr<Sink> sink);
 	~Log();
 
 	template<typename ...Args>
@@ -43,16 +45,7 @@ public:
 	void AddSink(std::unique_ptr<Sink> sink);
 
 private:
-	enum class Type
-	{
-		Debug,
-		Info,
-		Warn,
-		Error
-	};
-
-	std::string_view GetTypeStr(Log::Type type);
-	void Write(Log::Type type, std::string_view msg);
+	void Write(Entry::Level level, std::string_view msg);
 
 	std::vector<std::unique_ptr<Sink>> sinks;
 	std::string logname;
@@ -63,7 +56,7 @@ template<typename ...Args>
 inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
 {
 #if defined(NETBASE_DEBUG)
-	Write(Log::Type::Debug, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Debug, std::format(fmt, std::forward<Args>(args)...));
 #else
 	(void)fmt;
 	(void)std::initializer_list<int>{((void)args, 0)...};
@@ -73,19 +66,19 @@ inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
 template<typename ...Args>
 inline void Log::Info(std::format_string<Args...> fmt, Args && ...args)
 {
-	Write(Log::Type::Info, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Info, std::format(fmt, std::forward<Args>(args)...));
 }
 
 template<typename ...Args>
 inline void Log::Warn(std::format_string<Args...> fmt, Args && ...args)
 {
-	Write(Log::Type::Warn, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Warn, std::format(fmt, std::forward<Args>(args)...));
 }
 
 template<typename ...Args>
 inline void Log::Error(std::format_string<Args...> fmt, Args && ...args)
 {
-	Write(Log::Type::Error, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Error, std::format(fmt, std::forward<Args>(args)...));
 }
 
 #endif
