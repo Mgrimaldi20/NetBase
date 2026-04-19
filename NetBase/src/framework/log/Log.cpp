@@ -1,21 +1,23 @@
 #include <chrono>
-#include <string>
 #include <iterator>
 
 #include "Log.h"
 
-Log::Log(std::string logname, std::unique_ptr<Sink> sink)
+Log::Log(std::string_view logname, std::unique_ptr<Sink> sink)
 	: sinks(),
-	logname(std::move(logname)),
+	logname(logname),
 	logmtx()
 {
 	AddSink(std::move(sink));
-	Info("Logger opened: {}", this->logname);
+	Info("Logger started: {}", this->logname);
 }
 
 Log::~Log()
 {
-	Info("Closing Logger: {}", logname);
+	Info("Shutting down the Logger: {}", logname);
+
+	for (auto &sink : sinks)
+		Debug("\t- Attached sink: {}", sink->GetName());
 }
 
 void Log::AddSink(std::unique_ptr<Sink> sink)
@@ -25,31 +27,17 @@ void Log::AddSink(std::unique_ptr<Sink> sink)
 	Info("Attached logger sink: {}", it->get()->GetName());
 }
 
-std::string_view Log::GetTypeStr(Log::Type type)
+void Log::Write(Entry::Level level, std::string_view msg)
 {
-	switch (type)
+	Entry entry =
 	{
-		case Log::Type::Debug: return "DEBUG";
-		case Log::Type::Info: return "INFO";
-		case Log::Type::Warn: return "WARN";
-		case Log::Type::Error: return "ERROR";
-		default: return "UNKNOWN";
-	}
-}
-
-void Log::Write(Log::Type type, std::string_view msg)
-{
-	auto timepoint = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
-
-	std::string formatted = std::format(
-		"{} [{}] {}\n",
-		std::chrono::floor<std::chrono::seconds>(timepoint),
-		GetTypeStr(type),
-		msg
-	);
+		.time = std::chrono::system_clock::now(),
+		.level = level,
+		.msg = std::string(msg)
+	};
 
 	std::scoped_lock lock(logmtx);
 
 	for (auto &sink : sinks)
-		sink->Write(formatted);
+		sink->Write(entry);
 }

@@ -3,13 +3,15 @@
 
 #include <string_view>
 
+#include "../Entry.h"
+
 class Sink
 {
 public:
 	Sink() = default;
 	virtual ~Sink() = default;
 
-	virtual void Write(std::string_view msg) = 0;
+	virtual void Write(const Entry &entry) = 0;
 	virtual std::string_view GetName() = 0;
 };
 
