@@ -1,4 +1,5 @@
-#include <format>
+#include <ostream>
+#include <print>
 
 #include "FileSink.h"
 
@@ -20,10 +21,10 @@ FileSink::FileSink(const std::filesystem::path &fullpath, std::unique_ptr<Format
 
 void FileSink::Write(const Entry &entry)
 {
-	logfile << formatter->Format(entry);
+	std::print(logfile, "{}", formatter->Format(entry));
 }
 
-std::string_view FileSink::GetName()
+std::string &FileSink::GetName()
 {
 	return sinkname;
 }

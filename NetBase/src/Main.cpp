@@ -1,4 +1,5 @@
 #include <iostream>
+#include <print>
 #include <charconv>
 #include <string_view>
 #include <system_error>
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
 
 	catch (const std::exception &e)
 	{
-		std::cerr << typeid(e).name() << " :: Exception :: " << e.what() << std::endl;
+		std::println(std::cerr, "{} :: Exception :: {}", typeid(e).name(), e.what());
 		return 1;
 	}
 
@@ -76,7 +77,7 @@ bool ValidateOptions(int argc, char **argv)
 
 				if (portstr.empty() || portstr[0] != ':')
 				{
-					std::cout << "Invalid port number command line format: " << argv[i] << std::endl;
+					std::println("Invalid port number command line format: {}", argv[i]);
 					return false;
 				}
 
@@ -88,11 +89,11 @@ bool ValidateOptions(int argc, char **argv)
 
 				if (result.ec != std::errc())
 				{
-					std::cout << "Invalid port number: " << portstr.substr(1) << std::endl;
+					std::println("Invalid port number: {}", portstr.substr(1));
 					return false;
 				}
 
-				std::cout << "Server port set to: " << serverport << std::endl;
+				std::println("Server port set to: {}", serverport);
 
 				break;
 			}
@@ -103,36 +104,36 @@ bool ValidateOptions(int argc, char **argv)
 
 				if (fullpath.empty() || fullpath[0] != ':')
 				{
-					std::cout << "Invalid dynamic library path command line format: " << argv[i] << std::endl;
+					std::println("Invalid dynamic library path command line format: {}", argv[i]);
 					return false;
 				}
 
 				std::filesystem::path path(fullpath);
 				if (!path.has_filename() || !path.has_extension())
 				{
-					std::cout << "Invalid dynamic library file path: " << path << std::endl;
+					std::println("Invalid dynamic library file path: {}", path.string());
 					return false;
 				}
 
 				dylibpath = std::filesystem::canonical(path);
 
-				std::cout << "Plugin to load (canonical path): " << dylibpath << std::endl;
+				std::println("Plugin to load (canonical path): {}", dylibpath.string());
 
 				break;
 			}
 
 			case '?':
-				std::cout << std::endl << "Usage:" << std::endl
-					<< "NetBase [-p:<port>] [-d:<dylib fullpath>] [-?]" << std::endl
-					<< "------------------------------------------------------------" << std::endl
-					<< "-p:<port>              Specify the port number of the server" << std::endl
-					<< "-d:<dylib fullpath>    Specify the full path of the protocol" << std::endl
-					<< "-?                     Prints out this help message and exit" << std::endl;
+				std::println("\nUsage:\n");
+				std::println("NetBase [-p:<port>] [-d:<dylib fullpath>] [-?]");
+				std::println("------------------------------------------------------------");
+				std::println("-p:<port>              Specify the port number of the server");
+				std::println("-d:<dylib fullpath>    Specify the full path of the protocol");
+				std::println("-?                     Prints out this help message and exit");
 
 				return false;
 
 			default:
-				std::cout << "Unknown command line options flag: " << argv[i] << std::endl;
+				std::println("Unknown command line options flag: {}", argv[i]);
 				return false;
 		}
 	}

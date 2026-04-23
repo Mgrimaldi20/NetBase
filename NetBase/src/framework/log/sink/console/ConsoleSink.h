@@ -7,6 +7,13 @@
 
 #include "../Sink.h"
 
+/*
+* Class: ConsoleSink
+* An implementation of the Sink interface to write a log entry to stdout.
+* 
+*	Write: Writes a formatted log entry to the console
+*	GetName: Gets the name of the stdout Sink
+*/
 class ConsoleSink : public Sink
 {
 public:
@@ -14,9 +21,10 @@ public:
 	virtual ~ConsoleSink() = default;
 
 	void Write(const Entry &entry) override final;
-	std::string_view GetName() override final;
+	std::string &GetName() override final;
 
 private:
+	std::string sinkname;
 	std::unique_ptr<Formatter> formatter;
 };
 

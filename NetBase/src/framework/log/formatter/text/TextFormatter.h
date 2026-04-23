@@ -3,6 +3,12 @@
 
 #include "../Formatter.h"
 
+/*
+* Class: TextFormatter
+* An implementation of the Formatter interface to format a log entry as a simple text string.
+* 
+*	Format: Will turn the entry into a basic general purpose text format
+*/
 class TextFormatter : public Formatter
 {
 public:
