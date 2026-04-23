@@ -1,18 +1,20 @@
-#include <format>
 #include <chrono>
+#include <format>
 
 #include "TextFormatter.h"
 
 std::string TextFormatter::Format(const Entry &entry) const
 {
-	auto timepoint = std::chrono::floor<std::chrono::seconds>(
-		std::chrono::current_zone()->to_local(entry.time)
+	std::chrono::zoned_time localtime(
+		std::chrono::current_zone(),
+		std::chrono::floor<std::chrono::seconds>(entry.time)
 	);
 
 	return std::format(
-		"{} [{}] {}\n",
-		timepoint,
+		"{:%F %H:%M:%S %Z} [{}] [{}] {}\n",
+		localtime,
+		entry.logname,
 		entry.GetLevelStr(entry.level),
-		entry.msg
+		entry.message
 	);
 }

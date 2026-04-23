@@ -1,19 +1,19 @@
-#include <iostream>
-#include <format>
+#include <print>
 
 #include "ConsoleSink.h"
 
 ConsoleSink::ConsoleSink(std::unique_ptr<Formatter> formatter)
-	: formatter(std::move(formatter))
+	: sinkname("STDOUT"),
+	formatter(std::move(formatter))
 {
 }
 
 void ConsoleSink::Write(const Entry &entry)
 {
-	std::cout << formatter->Format(entry);
+	std::print("{}", formatter->Format(entry));
 }
 
-std::string_view ConsoleSink::GetName()
+std::string &ConsoleSink::GetName()
 {
-	return "STDOUT";
+	return sinkname;
 }

@@ -32,8 +32,9 @@ void Log::Write(Entry::Level level, std::string_view msg)
 	Entry entry =
 	{
 		.time = std::chrono::system_clock::now(),
+		.logname = logname,
 		.level = level,
-		.msg = std::string(msg)
+		.message = std::string(msg)
 	};
 
 	std::scoped_lock lock(logmtx);

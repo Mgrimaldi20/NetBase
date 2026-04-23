@@ -61,7 +61,7 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/formatter/Formatter.h"
 	"src/framework/log/formatter/text/TextFormatter.h"
 	"src/framework/log/formatter/text/TextFormatter.cpp"
-)
+  )
 
 # Include different source code depending on OS
 if(WIN32)

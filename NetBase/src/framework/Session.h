@@ -21,9 +21,9 @@
 * Handles reading from and writing to channels that the client is connected to.
 * Implements the client interface, the Session is a Client.
 * 
-*	Start: Creates the Reader and Writer coroutines used when a client connects
-*	GetAddr: Implementation of the Client interface to return the clients address
-*	Send: Implementation of the Client interface function to broadcast on a channel
+*	Start: Creates the Reader and Writer coroutines when a client connects
+*	GetAddr: Returns the clients IP address
+*	Send: Broadcasts a message on a channel
 */
 class Session : public Client, public std::enable_shared_from_this<Session>
 {

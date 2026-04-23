@@ -85,7 +85,7 @@ asio::awaitable<void> Session::Reader()
 
 			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
 
-			ParsedCmd parsedcmd;
+			CmdDispatcher::ParsedCmd parsedcmd;
 			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 
 			for (const auto &channel : joinedchannels)
