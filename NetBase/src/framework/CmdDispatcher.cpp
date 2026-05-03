@@ -21,14 +21,12 @@ void CmdDispatcher::Register(std::uint_least16_t cmdid, CmdHandlerFn fn)
 	log->Info("Registered command with ID: {}", cmdid);
 }
 
-asio::awaitable<void> CmdDispatcher::Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd)
+void CmdDispatcher::Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd)
 {
 	CmdHandlerFn handler = handlers.at(parsedcmd.cmdid);
 
 	if (!handler)
-		co_return;
+		return;
 
-	co_await handler(client, parsedcmd);
-
-	co_return;
+	handler(client, parsedcmd);
 }

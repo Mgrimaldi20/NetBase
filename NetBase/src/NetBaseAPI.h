@@ -2,28 +2,40 @@
 #define _NETBASE_NETBASEAPI_H_
 
 #include <cstdint>
+#include <memory>
+#include <string_view>
+
+#include "framework/CmdDispatcher.h"
+#include "framework/ChannelManager.h"
 
 class NetBaseAPI
 {
 public:
 	NetBaseAPI() = default;
 	virtual ~NetBaseAPI() = default;
+
+	std::shared_ptr<CmdDispatcher> dispatcher;
+	std::shared_ptr<ChannelManager> channelmanager;
 };
 
-class Parser
+class ClientAPI
 {
 public:
-	struct ParsedCmd
+	class Parser
 	{
-		std::uint_least16_t cmdid;
-		std::uint_least64_t length;
-		char *data;
+	public:
+		virtual CmdDispatcher::ParsedCmd operator()(
+			std::string_view data,
+			std::uint_least64_t length
+		) = 0;
+
+		Parser() = default;
+		virtual ~Parser() = default;
 	};
 
-	virtual Parser::ParsedCmd operator()() = 0;
-
-	Parser() = default;
-	virtual ~Parser() = default;
+	std::shared_ptr<ClientAPI::Parser> parser;
 };
+
+using GetClientAPI = std::shared_ptr<ClientAPI> (*)(std::shared_ptr<NetBaseAPI>);
 
 #endif

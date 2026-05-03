@@ -11,14 +11,18 @@
 /*
 * Class: Server
 * The main server class, responsible for accepting incoming connections and spawning sessions.
-* The server will run on multiple threads, and coroutines will be used to handle async accepts.
+* The server will run on a single thread, and coroutines will be used to handle async accepts.
 * 
-*	Run: Runs the server, kicks off the threads, and blocks until the server is stopped
+*	Run: Runs the server, and blocks until the server is stopped
 */
 class Server
 {
 public:
-	Server(asio::ip::port_type port, unsigned int numthreads, std::shared_ptr<Log> log);
+	Server(
+		asio::ip::port_type port,
+		std::shared_ptr<Log> log,
+		std::shared_ptr<CmdDispatcher> dispatcher
+	);
 
 	Server(const Server &) = delete;
 	Server &operator=(const Server &) = delete;
@@ -37,13 +41,11 @@ private:
 
 	// create the iocp/io_uring context for the server
 	asio::io_context ioctx;
+
 	asio::signal_set signals;
 
 	asio::ip::port_type port;
-	unsigned int numthreads;
 	std::shared_ptr<Log> log;
-
-	// create the dispatcher in the server
 	std::shared_ptr<CmdDispatcher> dispatcher;
 };
 

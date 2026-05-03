@@ -3,19 +3,20 @@
 #include <charconv>
 #include <string_view>
 #include <system_error>
-#include <thread>
 #include <memory>
 #include <exception>
 #include <filesystem>
+#include <vector>
 
 #include "framework/Asio.h"
 #include "framework/Server.h"
+#include "framework/CmdDispatcher.h"
+#include "framework/ChannelManager.h"
 
 #include "framework/log/Log.h"
 #include "framework/log/sink/console/ConsoleSink.h"
 #include "framework/log/formatter/text/TextFormatter.h"
 
-constexpr unsigned int NET_DEFAULT_THREADS = 2;
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
@@ -32,22 +33,16 @@ int main(int argc, char **argv)
 
 		std::shared_ptr<Log> log = std::make_shared<Log>(
 			"NetBase",
-			std::make_unique<ConsoleSink>(
-				std::make_unique<TextFormatter>()
-			)
+			std::vector<std::shared_ptr<Sink>>
+			{
+				std::make_shared<ConsoleSink>(std::make_shared<TextFormatter>())
+			}
 		);
 
-		unsigned int numthreads = std::thread::hardware_concurrency() * 2;
-		numthreads = (numthreads == 0) ? NET_DEFAULT_THREADS : numthreads;
+		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
+		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		if (numthreads == NET_DEFAULT_THREADS)
-		{
-			log->Warn("The number of threads avaliable is equal to the default number [{}]", NET_DEFAULT_THREADS);
-			log->Warn("If this is not correct, you may wish to restart NetBase as the");
-			log->Warn("correct number of system threads have not been detected");
-		}
-
-		Server server(serverport, numthreads, log);
+		Server server(serverport, log, dispatcher);
 		server.Run();
 
 		log->Info("NetBase server is exiting...");

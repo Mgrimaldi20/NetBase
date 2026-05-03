@@ -6,7 +6,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include "Asio.h"
 #include "Channel.h"
 
 #include "log/Log.h"
@@ -17,25 +16,27 @@
 *
 *	Create: Creates a new channel if it doesnt exist and returns it
 *	Fetch: Gets a channel if it already exists
-*	Exists: Check if a channel with the specified name exists
 *	FetchAll: Fetches a list of every channel managed by the system
+*	Exists: Check if a channel with the specified name exists
+*	Destroy: Deletes a channel if it exists and kicks out all connected clients
 */
 class ChannelManager
 {
 public:
-	ChannelManager(std::shared_ptr<Log> log, asio::any_io_executor exec);
+	ChannelManager(std::shared_ptr<Log> log);
 	~ChannelManager();
 
-	asio::awaitable<std::shared_ptr<Channel>> Create(std::string channelname);
-	asio::awaitable<std::shared_ptr<Channel>> Fetch(std::string channelname);
-	asio::awaitable<bool> Exists(std::string channelname);
+	std::shared_ptr<Channel> Create(std::string channelname);
 
-	asio::awaitable<std::vector<std::shared_ptr<Channel>>> FetchAll();
+	std::shared_ptr<Channel> Fetch(std::string channelname);
+	std::vector<std::shared_ptr<Channel>> FetchAll();
+
+	bool Exists(std::string channelname);
+
+	void Destroy(std::string channelname);
 
 private:
 	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
-
-	asio::strand<asio::any_io_executor> strand;
 
 	std::shared_ptr<Log> log;
 };

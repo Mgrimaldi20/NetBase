@@ -34,7 +34,7 @@ public:
 		std::shared_ptr<Log> log
 	);
 
-	~Session();
+	virtual ~Session();
 
 	void Start();
 
@@ -50,7 +50,6 @@ private:
 	std::queue<std::shared_ptr<std::string>> writequeue;
 	std::string clientaddr;
 
-	asio::strand<asio::any_io_executor> strand;
 	asio::steady_timer timer;
 
 	std::vector<std::weak_ptr<Channel>> joinedchannels;

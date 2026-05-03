@@ -2,7 +2,6 @@
 #define _NETBASE_FRAMEWORK_LOG_H_
 
 #include <format>
-#include <mutex>
 #include <string_view>
 #include <vector>
 #include <memory>
@@ -27,7 +26,7 @@
 class Log
 {
 public:
-	Log(std::string_view logname, std::unique_ptr<Sink> sink);
+	Log(std::string_view logname, std::vector<std::shared_ptr<Sink>> sinks = {});
 	~Log();
 
 	template<typename ...Args>
@@ -42,14 +41,13 @@ public:
 	template<typename ...Args>
 	inline void Error(std::format_string<Args...> fmt, Args &&...args);
 
-	void AddSink(std::unique_ptr<Sink> sink);
+	void AddSink(std::shared_ptr<Sink> sink);
 
 private:
 	void Write(Entry::Level level, std::string_view msg);
 
-	std::vector<std::unique_ptr<Sink>> sinks;
+	std::vector<std::shared_ptr<Sink>> sinks;
 	std::string logname;
-	std::mutex logmtx;
 };
 
 template<typename ...Args>

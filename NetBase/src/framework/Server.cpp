@@ -1,6 +1,4 @@
 #include <system_error>
-#include <thread>
-#include <vector>
 
 #include "Session.h"
 
@@ -9,13 +7,16 @@
 constexpr int NET_SIGINT = SIGINT;
 constexpr int NET_SIGTERM = SIGTERM;
 
-Server::Server(asio::ip::port_type port, unsigned int numthreads, std::shared_ptr<Log> log)
-	: ioctx(),
+Server::Server(
+	asio::ip::port_type port,
+	std::shared_ptr<Log> log,
+	std::shared_ptr<CmdDispatcher> dispatcher
+)
+	: ioctx(1),
 	signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	port(port),
-	numthreads(numthreads),
 	log(log),
-	dispatcher([log]() { return std::make_shared<CmdDispatcher>(log); }())
+	dispatcher(dispatcher)
 {
 	RegisterSignals();
 
@@ -23,7 +24,6 @@ Server::Server(asio::ip::port_type port, unsigned int numthreads, std::shared_pt
 	asio::co_spawn(ioctx, Listener(), asio::detached);
 
 	log->Info("Server started");
-	log->Info("Number of worker threads available: {}", numthreads);
 	log->Info("NetBase server running on port: {}", port);
 	log->Info("Press Ctrl-C to exit...");
 }
@@ -35,15 +35,7 @@ Server::~Server()
 
 void Server::Run()
 {
-	// run the server with a thread pool and handle requests until stopped
-	std::vector<std::jthread> threads;
-	for (unsigned int i=0; i<numthreads; i++)
-	{
-		threads.emplace_back([this]()
-		{
-			ioctx.run();
-		});
-	}
+	ioctx.run();
 }
 
 asio::awaitable<void> Server::Listener()
@@ -54,7 +46,7 @@ asio::awaitable<void> Server::Listener()
 	while (true)
 	{
 		std::make_shared<Session>(
-			co_await acceptor.async_accept(asio::use_awaitable),
+			co_await std::move(acceptor.async_accept(asio::use_awaitable)),
 			dispatcher,
 			log
 		)->Start();
@@ -75,14 +67,14 @@ void Server::RegisterSignals()
 				default: return "UNKNOWN";
 			}
 		};
-
-		if (!ec)
+			
+		if (ec)
 		{
-			log->Info("Signal received: {} : {}", signal, GetSignalStr(signal));
-			ioctx.stop();
+			log->Error("Signal handler error: {}", ec.message());
+			return;
 		}
 
-		else
-			log->Error("Signal handler error: {}", ec.message());
+		log->Info("Signal received: {} : {}", signal, GetSignalStr(signal));
+		ioctx.stop();
 	});
 }

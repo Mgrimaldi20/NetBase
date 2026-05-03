@@ -7,7 +7,6 @@
 #include <functional>
 #include <string_view>
 
-#include "Asio.h"
 #include "Client.h"
 
 #include "log/Log.h"
@@ -30,14 +29,13 @@ public:
 		std::string_view data;
 	};
 
-	using CmdHandlerFn = std::function<asio::awaitable<void>(std::shared_ptr<Client>, const ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const ParsedCmd &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
 	void Register(std::uint_least16_t cmdid, CmdHandlerFn fn);
-
-	asio::awaitable<void> Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd);
+	void Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd);
 
 private:
 	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;

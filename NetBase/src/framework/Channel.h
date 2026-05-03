@@ -6,7 +6,6 @@
 #include <string>
 #include <memory>
 
-#include "Asio.h"
 #include "Client.h"
 
 #include "log/Log.h"
@@ -24,7 +23,7 @@
 class Channel
 {
 public:
-	Channel(std::string_view channelname, std::shared_ptr<Log> log, asio::any_io_executor exec);
+	Channel(std::string_view channelname, std::shared_ptr<Log> log);
 	~Channel();
 
 	void Join(std::shared_ptr<Client> client);
@@ -34,8 +33,6 @@ public:
 
 private:
 	std::unordered_set<std::shared_ptr<Client>> clients;
-
-	asio::strand<asio::any_io_executor> strand;
 
 	std::string channelname;
 	std::shared_ptr<Log> log;

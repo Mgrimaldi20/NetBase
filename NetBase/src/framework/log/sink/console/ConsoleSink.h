@@ -17,7 +17,7 @@
 class ConsoleSink : public Sink
 {
 public:
-	ConsoleSink(std::unique_ptr<Formatter> formatter);
+	ConsoleSink(std::shared_ptr<Formatter> formatter);
 	virtual ~ConsoleSink() = default;
 
 	void Write(const Entry &entry) override final;
@@ -25,7 +25,7 @@ public:
 
 private:
 	std::string sinkname;
-	std::unique_ptr<Formatter> formatter;
+	std::shared_ptr<Formatter> formatter;
 };
 
 #endif

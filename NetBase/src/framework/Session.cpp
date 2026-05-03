@@ -11,8 +11,7 @@ Session::Session(
 )
 	: writequeue(),
 	clientaddr(socket.remote_endpoint().address().to_string()),
-	strand(socket.get_executor()),
-	timer(strand),
+	timer(socket.get_executor()),
 	joinedchannels(),
 	socket(std::move(socket)),
 	dispatcher(dispatcher),
@@ -31,13 +30,13 @@ Session::~Session()
 void Session::Start()
 {
 	asio::co_spawn(
-		strand,
+		socket.get_executor(),
 		[self = shared_from_this()] { return self->Reader(); },
 		asio::detached
 	);
 
 	asio::co_spawn(
-		strand,
+		socket.get_executor(),
 		[self = shared_from_this()] { return self->Writer(); },
 		asio::detached
 	);

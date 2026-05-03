@@ -21,7 +21,7 @@
 class FileSink : public Sink
 {
 public:
-	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<Formatter> formatter);
+	FileSink(const std::filesystem::path &fullpath, std::shared_ptr<Formatter> formatter);
 	virtual ~FileSink() = default;
 
 	void Write(const Entry &entry) override final;
@@ -30,7 +30,7 @@ public:
 private:
 	std::ofstream logfile;
 	std::string sinkname;
-	std::unique_ptr<Formatter> formatter;
+	std::shared_ptr<Formatter> formatter;
 };
 
 #endif
