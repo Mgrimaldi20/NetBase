@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_SERVER_H_
-#define _NETBASE_FRAMEWORK_SERVER_H_
+#ifndef __NETBASE_FRAMEWORK_SERVER_H__
+#define __NETBASE_FRAMEWORK_SERVER_H__
 
 #include <memory>
 

@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_LOG_ENTRY_H_
-#define _NETBASE_FRAMEWORK_LOG_ENTRY_H_
+#ifndef __NETBASE_FRAMEWORK_LOG_ENTRY_H__
+#define __NETBASE_FRAMEWORK_LOG_ENTRY_H__
 
 #include <chrono>
 #include <string>

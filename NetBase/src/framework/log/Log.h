@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_LOG_H_
-#define _NETBASE_FRAMEWORK_LOG_H_
+#ifndef __NETBASE_FRAMEWORK_LOG_H__
+#define __NETBASE_FRAMEWORK_LOG_H__
 
 #include <format>
 #include <string_view>

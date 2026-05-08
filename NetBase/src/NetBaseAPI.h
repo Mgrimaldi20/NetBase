@@ -1,5 +1,5 @@
-#ifndef _NETBASE_NETBASEAPI_H_
-#define _NETBASE_NETBASEAPI_H_
+#ifndef __NETBASE_NETBASEAPI_H__
+#define __NETBASE_NETBASEAPI_H__
 
 #include <cstdint>
 #include <memory>

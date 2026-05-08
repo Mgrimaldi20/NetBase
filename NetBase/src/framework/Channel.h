@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_CHANNEL_H_
-#define _NETBASE_FRAMEWORK_CHANNEL_H_
+#ifndef __NETBASE_FRAMEWORK_CHANNEL_H__
+#define __NETBASE_FRAMEWORK_CHANNEL_H__
 
 #include <unordered_set>
 #include <string_view>

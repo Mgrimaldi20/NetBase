@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_CLIENT_H_
-#define _NETBASE_FRAMEWORK_CLIENT_H_
+#ifndef __NETBASE_FRAMEWORK_CLIENT_H__
+#define __NETBASE_FRAMEWORK_CLIENT_H__
 
 #include <string_view>
 #include <string>

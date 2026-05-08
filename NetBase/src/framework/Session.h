@@ -1,5 +1,5 @@
-#ifndef _NETBASE_FRAMEWORK_SESSION_H_
-#define _NETBASE_FRAMEWORK_SESSION_H_
+#ifndef __NETBASE_FRAMEWORK_SESSION_H__
+#define __NETBASE_FRAMEWORK_SESSION_H__
 
 #include <memory>
 #include <string>
