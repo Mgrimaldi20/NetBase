@@ -21,7 +21,13 @@ FileSink::FileSink(const std::filesystem::path &fullpath, std::shared_ptr<Format
 
 void FileSink::Write(const Entry &entry)
 {
-	std::print(logfile, "{}", formatter->Format(entry));
+	if (formatter)
+		std::print(logfile, "{}", formatter->Format(entry));
+}
+
+void FileSink::SetFormatter(std::shared_ptr<Formatter> fmtter)
+{
+	formatter = fmtter;
 }
 
 std::string &FileSink::GetName()

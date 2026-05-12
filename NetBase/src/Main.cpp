@@ -31,8 +31,11 @@ int main(int argc, char **argv)
 		if (!ValidateOptions(argc, argv))
 			return 1;
 
+		// single thread hint
+		asio::io_context ioctx(1);
+
 		std::shared_ptr<Log> log = std::make_shared<Log>(
-			"NetBase",
+			std::move("NetBase"),
 			std::vector<std::shared_ptr<Sink>>
 			{
 				std::make_shared<ConsoleSink>(std::make_shared<TextFormatter>())
@@ -42,15 +45,16 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		Server server(serverport, log, dispatcher);
-		server.Run();
+		Server server(serverport, ioctx, log, dispatcher);
+
+		ioctx.run();
 
 		log->Info("NetBase server is exiting...");
 	}
 
 	catch (const std::exception &e)
 	{
-		std::println(std::cerr, "{} :: Exception :: {}", typeid(e).name(), e.what());
+		std::println(std::cerr, "{} :: Fatal Exception :: {}", typeid(e).name(), e.what());
 		return 1;
 	}
 

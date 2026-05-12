@@ -126,8 +126,9 @@ asio::awaitable<void> Session::Writer()
 	catch (const std::exception &e)
 	{
 		log->Error("Session Writer error: {}", e.what());
-		Close();
 	}
+
+	Close();
 }
 
 void Session::Close()

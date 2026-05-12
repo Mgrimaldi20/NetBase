@@ -3,12 +3,12 @@
 
 #include "Log.h"
 
-Log::Log(std::string_view logname, std::vector<std::shared_ptr<Sink>> sinks)
-	: sinks(std::move(sinks)),
-	logname(logname)
+Log::Log(std::string logname, std::vector<std::shared_ptr<Sink>> sinks)
+	: sinks(),
+	logname(std::move(logname))
 {
-	for (const auto &sink : this->sinks)
-		Info("Attached sink: {} to Logger: {}", sink->GetName(), logname);
+	for (const auto &sink : sinks)
+		AttachSink(sink);
 
 	Info("Logger started: {}", this->logname);
 }
@@ -18,22 +18,20 @@ Log::~Log()
 	Info("Shutting down the Logger: {}", logname);
 }
 
-void Log::AddSink(std::shared_ptr<Sink> sink)
+void Log::AttachSink(std::shared_ptr<Sink> sink)
 {
-	sinks.push_back(std::move(sink));
-	auto it = std::prev(sinks.end());
-
-	Info("Attached logger sink: {}", it->get()->GetName());
+	sinks.push_back(sink);
+	Info("Attached sink: {}", sink->GetName());
 }
 
-void Log::Write(Entry::Level level, std::string_view msg)
+void Log::Write(Entry::Level level, std::string msg)
 {
 	Entry entry =
 	{
 		.time = std::chrono::system_clock::now(),
 		.logname = logname,
 		.level = level,
-		.message = std::string(msg)
+		.message = std::move(msg)
 	};
 
 	for (auto &sink : sinks)

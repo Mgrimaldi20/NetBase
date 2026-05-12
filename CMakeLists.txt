@@ -15,5 +15,4 @@ project("NetBase")
 # Include sub-projects.
 add_subdirectory("NetBase")
 
-add_subdirectory("NetEvent")
-add_subdirectory("NetMQ")
+add_subdirectory("SandboxProtocol")

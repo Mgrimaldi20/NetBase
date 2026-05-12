@@ -21,7 +21,13 @@ void CmdDispatcher::Register(std::uint_least16_t cmdid, CmdHandlerFn fn)
 	log->Info("Registered command with ID: {}", cmdid);
 }
 
-void CmdDispatcher::Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd)
+void CmdDispatcher::Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems)
+{
+	for (auto &[key, val] : elems)
+		Register(key, val);
+}
+
+void CmdDispatcher::Dispatch(std::weak_ptr<Client> client, ParsedCmd parsedcmd)
 {
 	CmdHandlerFn handler = handlers.at(parsedcmd.cmdid);
 

@@ -16,20 +16,23 @@
 * The Sink will create the file and directory/s if they do not exist.
 * 
 *	Write: Writes a formatted log entry to the file opened
+*	SetFormatter: Sets the internal formatter to a newly defined one
 *	GetName: Gets the name of the file Sink, will be the name of the file
 */
 class FileSink : public Sink
 {
 public:
-	FileSink(const std::filesystem::path &fullpath, std::shared_ptr<Formatter> formatter);
+	FileSink(const std::filesystem::path &fullpath, std::shared_ptr<Formatter> formatter = {});
 	virtual ~FileSink() = default;
 
 	void Write(const Entry &entry) override final;
+	void SetFormatter(std::shared_ptr<Formatter> fmtter) override final;
 	std::string &GetName() override final;
 
 private:
 	std::ofstream logfile;
 	std::string sinkname;
+
 	std::shared_ptr<Formatter> formatter;
 };
 

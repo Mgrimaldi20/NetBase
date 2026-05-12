@@ -1,9 +1,9 @@
-#ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_H__
-#define __NETBASE_FRAMEWORK_LOG_FORMATTER_H__
+#ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_FORMATTER_H__
+#define __NETBASE_FRAMEWORK_LOG_FORMATTER_FORMATTER_H__
 
 #include <string>
 
-#include "../Entry.h"
+#include "../entry/Entry.h"
 
 /*
 * Class: Formatter

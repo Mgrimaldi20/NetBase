@@ -51,8 +51,8 @@ target_sources(NetBase PRIVATE
 	"src/framework/CmdDispatcher.cpp"
 	"src/framework/log/Log.h"
 	"src/framework/log/Log.cpp"
-	"src/framework/log/Entry.h"
-	"src/framework/log/Entry.cpp"
+	"src/framework/log/entry/Entry.h"
+	"src/framework/log/entry/Entry.cpp"
 	"src/framework/log/sink/Sink.h"
 	"src/framework/log/sink/file/FileSink.h"
 	"src/framework/log/sink/file/FileSink.cpp"
@@ -61,7 +61,7 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/formatter/Formatter.h"
 	"src/framework/log/formatter/text/TextFormatter.h"
 	"src/framework/log/formatter/text/TextFormatter.cpp"
-  )
+)
 
 # Include different source code depending on OS
 if(WIN32)

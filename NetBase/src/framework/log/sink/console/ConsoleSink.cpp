@@ -10,7 +10,13 @@ ConsoleSink::ConsoleSink(std::shared_ptr<Formatter> formatter)
 
 void ConsoleSink::Write(const Entry &entry)
 {
-	std::print("{}", formatter->Format(entry));
+	if (formatter)
+		std::print("{}", formatter->Format(entry));
+}
+
+void ConsoleSink::SetFormatter(std::shared_ptr<Formatter> fmtter)
+{
+	formatter = fmtter;
 }
 
 std::string &ConsoleSink::GetName()

@@ -2,10 +2,12 @@
 #define __NETBASE_FRAMEWORK_CMDDISPATCHER_H__
 
 #include <cstdint>
-#include <memory.h>
+#include <memory>
 #include <unordered_map>
 #include <functional>
 #include <string_view>
+#include <initializer_list>
+#include <utility>
 
 #include "Client.h"
 
@@ -29,13 +31,15 @@ public:
 		std::string_view data;
 	};
 
-	using CmdHandlerFn = std::function<void(std::shared_ptr<Client>, const ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const ParsedCmd &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
 
 	void Register(std::uint_least16_t cmdid, CmdHandlerFn fn);
-	void Dispatch(std::shared_ptr<Client> client, ParsedCmd parsedcmd);
+	void Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems);
+
+	void Dispatch(std::weak_ptr<Client> client, ParsedCmd parsedcmd);
 
 private:
 	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;

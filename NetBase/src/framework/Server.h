@@ -20,6 +20,7 @@ class Server
 public:
 	Server(
 		asio::ip::port_type port,
+		asio::io_context &ioctx,
 		std::shared_ptr<Log> log,
 		std::shared_ptr<CmdDispatcher> dispatcher
 	);
@@ -32,19 +33,17 @@ public:
 
 	~Server();
 
-	void Run();
-
 private:
 	asio::awaitable<void> Listener();
 
 	void RegisterSignals();
 
-	// create the iocp/io_uring context for the server
-	asio::io_context ioctx;
-
 	asio::signal_set signals;
 
 	asio::ip::port_type port;
+
+	asio::io_context &ioctx;
+
 	std::shared_ptr<Log> log;
 	std::shared_ptr<CmdDispatcher> dispatcher;
 };

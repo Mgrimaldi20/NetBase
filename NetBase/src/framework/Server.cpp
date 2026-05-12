@@ -9,11 +9,12 @@ constexpr int NET_SIGTERM = SIGTERM;
 
 Server::Server(
 	asio::ip::port_type port,
+	asio::io_context &ioctx,
 	std::shared_ptr<Log> log,
 	std::shared_ptr<CmdDispatcher> dispatcher
 )
-	: ioctx(1),
-	signals(ioctx, NET_SIGINT, NET_SIGTERM),
+	: signals(ioctx, NET_SIGINT, NET_SIGTERM),
+	ioctx(ioctx),
 	port(port),
 	log(log),
 	dispatcher(dispatcher)
@@ -31,11 +32,6 @@ Server::Server(
 Server::~Server()
 {
 	log->Info("Shutting down the Server");
-}
-
-void Server::Run()
-{
-	ioctx.run();
 }
 
 asio::awaitable<void> Server::Listener()

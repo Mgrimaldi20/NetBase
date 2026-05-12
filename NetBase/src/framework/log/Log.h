@@ -1,14 +1,12 @@
-#ifndef __NETBASE_FRAMEWORK_LOG_H__
-#define __NETBASE_FRAMEWORK_LOG_H__
+#ifndef __NETBASE_FRAMEWORK_LOG_LOG_H__
+#define __NETBASE_FRAMEWORK_LOG_LOG_H__
 
 #include <format>
-#include <string_view>
 #include <vector>
 #include <memory>
 #include <string>
 
-#include "Entry.h"
-
+#include "entry/Entry.h"
 #include "sink/Sink.h"
 
 /*
@@ -26,7 +24,7 @@
 class Log
 {
 public:
-	Log(std::string_view logname, std::vector<std::shared_ptr<Sink>> sinks = {});
+	Log(std::string logname, std::vector<std::shared_ptr<Sink>> sinks = {});
 	~Log();
 
 	template<typename ...Args>
@@ -41,10 +39,10 @@ public:
 	template<typename ...Args>
 	inline void Error(std::format_string<Args...> fmt, Args &&...args);
 
-	void AddSink(std::shared_ptr<Sink> sink);
+	void AttachSink(std::shared_ptr<Sink> sink);
 
 private:
-	void Write(Entry::Level level, std::string_view msg);
+	void Write(Entry::Level level, std::string msg);
 
 	std::vector<std::shared_ptr<Sink>> sinks;
 	std::string logname;
