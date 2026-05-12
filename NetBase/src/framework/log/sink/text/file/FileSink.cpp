@@ -3,7 +3,7 @@
 
 #include "FileSink.h"
 
-FileSink::FileSink(const std::filesystem::path &fullpath, std::shared_ptr<Formatter> formatter)
+FileSink::FileSink(const std::filesystem::path &fullpath, std::shared_ptr<TextFormatter> formatter)
 	: sinkname(fullpath.filename().string()),
 	formatter(formatter)
 {
@@ -25,12 +25,12 @@ void FileSink::Write(const Entry &entry)
 		std::print(logfile, "{}", formatter->Format(entry));
 }
 
-void FileSink::SetFormatter(std::shared_ptr<Formatter> fmtter)
-{
-	formatter = fmtter;
-}
-
 std::string &FileSink::GetName()
 {
 	return sinkname;
+}
+
+void FileSink::SetFormatter(std::shared_ptr<TextFormatter> fmtter)
+{
+	formatter = fmtter;
 }

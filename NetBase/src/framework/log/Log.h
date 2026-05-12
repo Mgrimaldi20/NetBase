@@ -19,7 +19,7 @@
 *	Info: Log a formatted information message, designed for general program information and state
 *	Warn: Log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: Log a formatted error message, designed for unrecoverable code errors, program should quit
-*	AddSink: Add a log sink to route logs to a particular destination
+*	AttachSink: Add a log sink to route logs to a particular destination
 */
 class Log
 {
@@ -28,16 +28,16 @@ public:
 	~Log();
 
 	template<typename ...Args>
-	inline void Debug(std::format_string<Args...> fmt, Args &&...args);
+	inline void Debug(std::format_string<Args...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Info(std::format_string<Args...> fmt, Args &&...args);
+	inline void Info(std::format_string<Args...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Warn(std::format_string<Args...> fmt, Args &&...args);
+	inline void Warn(std::format_string<Args...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Error(std::format_string<Args...> fmt, Args &&...args);
+	inline void Error(std::format_string<Args...> fmt, Args && ...args);
 
 	void AttachSink(std::shared_ptr<Sink> sink);
 

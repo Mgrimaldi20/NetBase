@@ -54,13 +54,13 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/entry/Entry.h"
 	"src/framework/log/entry/Entry.cpp"
 	"src/framework/log/sink/Sink.h"
-	"src/framework/log/sink/file/FileSink.h"
-	"src/framework/log/sink/file/FileSink.cpp"
-	"src/framework/log/sink/console/ConsoleSink.h"
-	"src/framework/log/sink/console/ConsoleSink.cpp"
-	"src/framework/log/formatter/Formatter.h"
-	"src/framework/log/formatter/text/TextFormatter.h"
-	"src/framework/log/formatter/text/TextFormatter.cpp"
+	"src/framework/log/sink/text/TextSink.h"
+	"src/framework/log/sink/text/file/FileSink.h"
+	"src/framework/log/sink/text/file/FileSink.cpp"
+	"src/framework/log/sink/text/console/ConsoleSink.h"
+	"src/framework/log/sink/text/console/ConsoleSink.cpp"
+	"src/framework/log/formatter/TextFormatter.h"
+	"src/framework/log/formatter/TextFormatter.cpp"
 )
 
 # Include different source code depending on OS

@@ -14,8 +14,8 @@
 #include "framework/ChannelManager.h"
 
 #include "framework/log/Log.h"
-#include "framework/log/sink/console/ConsoleSink.h"
-#include "framework/log/formatter/text/TextFormatter.h"
+#include "framework/log/sink/text/console/ConsoleSink.h"
+#include "framework/log/formatter/TextFormatter.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
