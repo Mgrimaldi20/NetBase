@@ -4,7 +4,6 @@
 #include <fstream>
 #include <filesystem>
 #include <string>
-#include <memory>
 
 #include "../TextSink.h"
 

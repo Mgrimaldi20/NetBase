@@ -1,9 +1,9 @@
 #include <chrono>
 #include <format>
 
-#include "TextFormatter.h"
+#include "BasicTextFormatter.h"
 
-std::string TextFormatter::Format(const Entry &entry) const
+std::string BasicTextFormatter::Format(const Entry &entry) const
 {
 	std::chrono::zoned_time localtime(
 		std::chrono::current_zone(),

@@ -15,7 +15,7 @@
 
 #include "framework/log/Log.h"
 #include "framework/log/sink/text/console/ConsoleSink.h"
-#include "framework/log/formatter/TextFormatter.h"
+#include "framework/log/formatter/text/basic/BasicTextFormatter.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 			std::move("NetBase"),
 			std::vector<std::shared_ptr<Sink>>
 			{
-				std::make_shared<ConsoleSink>(std::make_shared<TextFormatter>())
+				std::make_shared<ConsoleSink>(std::make_shared<BasicTextFormatter>())
 			}
 		);
 

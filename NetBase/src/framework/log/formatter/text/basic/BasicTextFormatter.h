@@ -1,0 +1,21 @@
+#ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
+#define __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
+
+#include "../TextFormatter.h"
+
+/*
+* Class: TextFormatter
+* A basic text formatter to turn an entry into a basic line format.
+*
+*	Format: Turns a log entry into a formatted string
+*/
+class BasicTextFormatter : public TextFormatter
+{
+public:
+	BasicTextFormatter() = default;
+	virtual ~BasicTextFormatter() = default;
+
+	std::string Format(const Entry &entry) const override final;
+};
+
+#endif

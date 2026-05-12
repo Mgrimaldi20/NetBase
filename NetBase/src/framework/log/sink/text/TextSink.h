@@ -1,7 +1,9 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_SINK_TEXT_TEXTSINK_H__
 #define __NETBASE_FRAMEWORK_LOG_SINK_TEXT_TEXTSINK_H__
 
-#include "../../formatter/TextFormatter.h"
+#include <memory>
+
+#include "../../formatter/text/TextFormatter.h"
 
 #include "../Sink.h"
 
