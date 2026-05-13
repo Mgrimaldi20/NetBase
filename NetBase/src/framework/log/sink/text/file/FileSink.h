@@ -18,19 +18,19 @@
 class FileSink : public TextSink
 {
 public:
-	FileSink(const std::filesystem::path &fullpath, std::shared_ptr<TextFormatter> formatter = {});
+	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});
 	virtual ~FileSink() = default;
 
 	void Write(const Entry &entry) override final;
 	std::string &GetName() override final;
 
-	void SetFormatter(std::shared_ptr<TextFormatter> fmtter) override final;
+	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
 	std::ofstream logfile;
 	std::string sinkname;
 
-	std::shared_ptr<TextFormatter> formatter;
+	std::unique_ptr<TextFormatter> formatter;
 };
 
 #endif

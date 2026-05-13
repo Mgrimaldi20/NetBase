@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 			std::move("NetBase"),
 			std::vector<std::shared_ptr<Sink>>
 			{
-				std::make_shared<ConsoleSink>(std::make_shared<BasicTextFormatter>())
+				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
 			}
 		);
 

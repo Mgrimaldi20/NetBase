@@ -14,17 +14,17 @@
 class ConsoleSink : public TextSink
 {
 public:
-	ConsoleSink(std::shared_ptr<TextFormatter> formatter = {});
+	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {});
 	virtual ~ConsoleSink() = default;
 
 	void Write(const Entry &entry) override final;
 	std::string &GetName() override final;
 
-	void SetFormatter(std::shared_ptr<TextFormatter> fmtter) override final;
+	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
 	std::string sinkname;
-	std::shared_ptr<TextFormatter> formatter;
+	std::unique_ptr<TextFormatter> formatter;
 };
 
 #endif

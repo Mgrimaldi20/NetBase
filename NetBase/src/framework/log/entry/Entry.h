@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <string>
+#include <source_location>
 
 /*
 * Struct: Entry
@@ -23,6 +24,7 @@ struct Entry
 
 	std::string_view GetLevelStr(Entry::Level entrylevel) const;
 
+	std::source_location srcloc;
 	std::chrono::system_clock::time_point time;
 	std::string logname;
 	Entry::Level level;

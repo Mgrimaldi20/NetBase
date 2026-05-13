@@ -25,7 +25,7 @@ public:
 	virtual void Write(const Entry &entry) = 0;
 	virtual std::string &GetName() = 0;
 
-	virtual void SetFormatter(std::shared_ptr<TextFormatter> fmtter) = 0;
+	virtual void SetFormatter(std::unique_ptr<TextFormatter> fmtter) = 0;
 };
 
 #endif

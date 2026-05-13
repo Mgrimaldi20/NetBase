@@ -3,9 +3,9 @@
 
 #include "FileSink.h"
 
-FileSink::FileSink(const std::filesystem::path &fullpath, std::shared_ptr<TextFormatter> formatter)
+FileSink::FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter)
 	: sinkname(fullpath.filename().string()),
-	formatter(formatter)
+	formatter(std::move(formatter))
 {
 	if (fullpath.empty())
 		throw std::runtime_error("The full path provided to the Logger is empty");
@@ -30,7 +30,7 @@ std::string &FileSink::GetName()
 	return sinkname;
 }
 
-void FileSink::SetFormatter(std::shared_ptr<TextFormatter> fmtter)
+void FileSink::SetFormatter(std::unique_ptr<TextFormatter> fmtter)
 {
-	formatter = fmtter;
+	formatter = std::move(fmtter);
 }

@@ -2,9 +2,9 @@
 
 #include "ConsoleSink.h"
 
-ConsoleSink::ConsoleSink(std::shared_ptr<TextFormatter> formatter)
+ConsoleSink::ConsoleSink(std::unique_ptr<TextFormatter> formatter)
 	: sinkname("STDOUT"),
-	formatter(formatter)
+	formatter(std::move(formatter))
 {
 }
 
@@ -19,7 +19,7 @@ std::string &ConsoleSink::GetName()
 	return sinkname;
 }
 
-void ConsoleSink::SetFormatter(std::shared_ptr<TextFormatter> fmtter)
+void ConsoleSink::SetFormatter(std::unique_ptr<TextFormatter> fmtter)
 {
-	formatter = fmtter;
+	formatter = std::move(fmtter);
 }
