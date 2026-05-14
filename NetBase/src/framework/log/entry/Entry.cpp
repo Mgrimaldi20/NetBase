@@ -8,6 +8,7 @@ std::string_view Entry::GetLevelStr(Entry::Level entrylevel) const
 		case Entry::Level::Info: return "INFO";
 		case Entry::Level::Warn: return "WARN";
 		case Entry::Level::Error: return "ERROR";
+		case Entry::Level::Fatal: return "FATAL";
 		default: return "UNKNOWN";
 	}
 }

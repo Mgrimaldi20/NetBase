@@ -9,18 +9,21 @@
 
 #include "entry/Entry.h"
 #include "sink/Sink.h"
+#include "policy/Policy.h"
 
 /*
 * Class: Log
 * The logging system, controls wiritng to various log sink, created with a default sink.
 * Different logging levels are provided to represent the class of information to log.
-* The logger will print the current time, level, and message.
+* The logger will apply attached policies, and send entries to the output sinks for formatting and writing.
 * 
 *	Debug: Log a formatted debug message, designed for debugging purposes and development, not in in release builds
 *	Info: Log a formatted information message, designed for general program information and state
 *	Warn: Log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: Log a formatted error message, designed for unrecoverable code errors, program should quit
+*	SetName: Sets the name of the logger to the name specified, changes the name
 *	AttachSink: Add a log sink to route logs to a particular destination
+*	AttachPolicy: Add a log policy to control the log outputs and entries
 */
 class Log
 {
@@ -42,7 +45,12 @@ public:
 		std::source_location loc;
 	};
 
-	Log(std::string logname, std::vector<std::shared_ptr<Sink>> sinks = {});
+	Log(
+		std::string logname = {},
+		std::vector<std::shared_ptr<Sink>> sinks = {},
+		std::vector<std::unique_ptr<Policy>> policies = {}
+	);
+
 	~Log();
 
 	template<typename ...Args>
@@ -60,13 +68,18 @@ public:
 	template<typename ...Args>
 	inline void Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
+	void SetLogName(std::string name);
+
 	void AttachSink(std::shared_ptr<Sink> sink);
+	void AttachPolicy(std::unique_ptr<Policy> policy);
 
 private:
 	void Write(Entry::Level level, std::string msg, std::source_location loc);
 
-	std::vector<std::shared_ptr<Sink>> sinks;
 	std::string logname;
+
+	std::vector<std::shared_ptr<Sink>> sinks;
+	std::vector<std::unique_ptr<Policy>> policies;
 };
 
 template<typename ...Args>
@@ -101,7 +114,7 @@ inline void Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Ar
 template<typename ...Args>
 inline void Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Error, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	Write(Entry::Level::Fatal, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 #endif

@@ -19,7 +19,7 @@
 * Class: Session
 * A session that represents a clients connection and all active session information.
 * Handles reading from and writing to channels that the client is connected to.
-* Implements the client interface, the Session is a Client.
+* Implements the client interface, the session is a client.
 * 
 *	Start: Creates the Reader and Writer coroutines when a client connects
 *	GetAddr: Returns the clients IP address

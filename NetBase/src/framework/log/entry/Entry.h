@@ -4,6 +4,7 @@
 #include <chrono>
 #include <string>
 #include <source_location>
+#include <stacktrace>
 
 /*
 * Struct: Entry
@@ -30,6 +31,7 @@ struct Entry
 	Entry::Level level;
 	std::string message;
 	std::source_location srcloc;
+	std::stacktrace stacktrace;
 };
 
 #endif
