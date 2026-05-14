@@ -53,5 +53,5 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 
 std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(const std::filesystem::path &fullpath)
 {
-	return std::unique_ptr<WinDynamicLibrary>(new WinDynamicLibrary(fullpath));
+	return std::make_unique<WinDynamicLibrary>(fullpath);
 }

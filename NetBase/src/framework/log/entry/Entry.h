@@ -19,16 +19,17 @@ struct Entry
 		Debug,
 		Info,
 		Warn,
-		Error
+		Error,
+		Fatal
 	};
 
 	std::string_view GetLevelStr(Entry::Level entrylevel) const;
 
-	std::source_location srcloc;
 	std::chrono::system_clock::time_point time;
 	std::string logname;
 	Entry::Level level;
 	std::string message;
+	std::source_location srcloc;
 };
 
 #endif

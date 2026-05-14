@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <source_location>
 
 #include "entry/Entry.h"
 #include "sink/Sink.h"
@@ -24,35 +25,55 @@
 class Log
 {
 public:
+	template<typename ...Args>
+	struct FormatContext
+	{
+		template<typename T>
+			//requires std::constructible_from<std::format_string<Args...>, T const &>	// intellisense hates this for some reason, all logging calls give false errors
+		consteval FormatContext(
+			T const &fmt,
+			std::source_location loc = std::source_location::current()
+		) noexcept
+			: fmt(fmt),
+			loc(loc)
+		{}
+
+		std::format_string<Args...> fmt;
+		std::source_location loc;
+	};
+
 	Log(std::string logname, std::vector<std::shared_ptr<Sink>> sinks = {});
 	~Log();
 
 	template<typename ...Args>
-	inline void Debug(std::format_string<Args...> fmt, Args && ...args);
+	inline void Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Info(std::format_string<Args...> fmt, Args && ...args);
+	inline void Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Warn(std::format_string<Args...> fmt, Args && ...args);
+	inline void Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Error(std::format_string<Args...> fmt, Args && ...args);
+	inline void Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+
+	template<typename ...Args>
+	inline void Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	void AttachSink(std::shared_ptr<Sink> sink);
 
 private:
-	void Write(Entry::Level level, std::string msg);
+	void Write(Entry::Level level, std::string msg, std::source_location loc);
 
 	std::vector<std::shared_ptr<Sink>> sinks;
 	std::string logname;
 };
 
 template<typename ...Args>
-inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
+inline void Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 #if defined(NETBASE_DEBUG)
-	Write(Entry::Level::Debug, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Debug, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 #else
 	(void)fmt;
 	(void)std::initializer_list<int>{((void)args, 0)...};
@@ -60,21 +81,27 @@ inline void Log::Debug(std::format_string<Args...> fmt, Args && ...args)
 }
 
 template<typename ...Args>
-inline void Log::Info(std::format_string<Args...> fmt, Args && ...args)
+inline void Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Info, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Info, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
-inline void Log::Warn(std::format_string<Args...> fmt, Args && ...args)
+inline void Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Warn, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Warn, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
-inline void Log::Error(std::format_string<Args...> fmt, Args && ...args)
+inline void Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Error, std::format(fmt, std::forward<Args>(args)...));
+	Write(Entry::Level::Error, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+}
+
+template<typename ...Args>
+inline void Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+{
+	Write(Entry::Level::Error, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 #endif

@@ -25,13 +25,13 @@ public:
 	class Parser
 	{
 	public:
-		virtual CmdDispatcher::ParsedCmd operator()(
+		Parser() = default;
+		virtual ~Parser() = default;
+
+		virtual CmdDispatcher::ParsedCmd Parse(
 			std::string_view data,
 			std::uint_least64_t length
 		) = 0;
-
-		Parser() = default;
-		virtual ~Parser() = default;
 	};
 
 	ClientAPI() = default;

@@ -8,6 +8,10 @@
 #include <filesystem>
 #include <vector>
 
+#include "NetBaseAPI.h"
+
+#include "sys/DynamicLibrary.h"
+
 #include "framework/Asio.h"
 #include "framework/Server.h"
 #include "framework/CmdDispatcher.h"

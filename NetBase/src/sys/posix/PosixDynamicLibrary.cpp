@@ -55,5 +55,5 @@ std::any PosixDynamicLibrary::GetSymbol(const std::string &funcname)
 
 std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(std::filesystem::path fullpath)
 {
-	return std::unique_ptr<PosixDynamicLibrary>(new PosixDynamicLibrary(fullpath));
+	return std::make_unique<PosixDynamicLibrary>(fullpath);
 }

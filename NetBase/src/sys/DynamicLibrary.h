@@ -1,5 +1,5 @@
-#ifndef _NETBASE_SYS_DYNAMICLIBRARY_H_
-#define _NETBASE_SYS_DYNAMICLIBRARY_H_
+#ifndef __NETBASE_SYS_DYNAMICLIBRARY_H__
+#define __NETBASE_SYS_DYNAMICLIBRARY_H__
 
 #include <any>
 #include <string>

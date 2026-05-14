@@ -24,14 +24,15 @@ void Log::AttachSink(std::shared_ptr<Sink> sink)
 	Info("Attached sink: {}", sink->GetName());
 }
 
-void Log::Write(Entry::Level level, std::string msg)
+void Log::Write(Entry::Level level, std::string msg, std::source_location loc)
 {
 	Entry entry =
 	{
 		.time = std::chrono::system_clock::now(),
 		.logname = logname,
 		.level = level,
-		.message = std::move(msg)
+		.message = std::move(msg),
+		.srcloc = std::move(loc)
 	};
 
 	for (auto &sink : sinks)

@@ -6,6 +6,7 @@
 /*
 * Class: TextFormatter
 * A basic text formatter to turn an entry into a basic line format.
+* Full file information will only be printed on debug builds for debug level logging.
 *
 *	Format: Turns a log entry into a formatted string
 */

@@ -102,6 +102,8 @@ endif()
 
 target_link_libraries(NetBase PRIVATE asio)
 
+set_target_properties(NetBase PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+
 # Set up all the compiler options here
 # MSVC compiler options
 if(MSVC)
@@ -120,6 +122,7 @@ if(MSVC)
 		"/fp:fast"
 		"/FAs"
 		"/MP"
+		"/Zc:__cplusplus"
 	)
 
 	# Debug build compiler options
