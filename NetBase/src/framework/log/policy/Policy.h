@@ -10,7 +10,8 @@
 * An abstract interface that represents a logging policy.
 * Policies can be used to control log information, or to query the logger.
 * 
-*	Transform: Pure virtual function, applies the policy and returns if the policy was applied or not
+*	Applicable: Pure virtual function, checks if this policy is applicable
+*	Transform: Pure virtual function, applies the policy
 *	GetName: Pure virtual function, get the name of the policy, can be set to anything
 */
 class Policy
@@ -19,7 +20,8 @@ public:
 	Policy() = default;
 	virtual ~Policy() = default;
 
-	virtual bool Transform(Entry &entry) = 0;
+	virtual bool Applicable(const Entry &entry) = 0;
+	virtual void Transform(Entry &entry) = 0;
 	virtual std::string &GetName() = 0;
 };
 

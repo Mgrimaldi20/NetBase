@@ -1,6 +1,8 @@
 #include <chrono>
 #include <format>
+#include <sstream>
 #include <source_location>
+#include <stacktrace>
 
 #include "BasicTextFormatter.h"
 
@@ -28,12 +30,33 @@ std::string BasicTextFormatter::Format(const Entry &entry) const
 		);
 	}(entry.srcloc, entry.level);
 
+	const std::string strace = [](const std::stacktrace &traces) -> std::string
+	{
+		if (traces.empty())
+			return "";
+
+		std::stringstream sstream;
+
+		sstream << "\n    ------------------------------";
+
+		for (const auto &trace : traces)
+		{
+			sstream
+				<< "\n    >> " << trace.source_file() << "(" << trace.source_line() << ")"
+				<< "\n    >> " << trace.description()
+				<< "\n    ------------------------------";
+		}
+
+		return sstream.str();
+	}(entry.stacktrace);
+
 	return std::format(
-		"{:%F %H:%M:%S %Z} [{}] [{}] {}{}\n",
+		"{:%F %H:%M:%S %Z} [{}] [{}] {}{}{}\n",
 		localtime,
 		entry.logname,
 		entry.GetLevelStr(entry.level),
 		entry.message,
-		dbgfmt
+		dbgfmt,
+		strace
 	);
 }

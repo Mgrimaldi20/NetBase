@@ -1,8 +1,9 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_ENTRY_ENTRY_ENTRY_H__
 #define __NETBASE_FRAMEWORK_LOG_ENTRY_ENTRY_ENTRY_H__
 
-#include <chrono>
 #include <string>
+#include <string_view>
+#include <chrono>
 #include <source_location>
 #include <stacktrace>
 

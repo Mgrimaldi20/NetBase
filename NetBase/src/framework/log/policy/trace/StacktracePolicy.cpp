@@ -5,13 +5,17 @@ StacktracePolicy::StacktracePolicy()
 {
 }
 
-bool StacktracePolicy::Transform(Entry &entry)
+bool StacktracePolicy::Applicable(const Entry &entry)
 {
 	if (entry.level != Entry::Level::Fatal)
 		return false;
 
-	entry.stacktrace = std::stacktrace::current(4);	// skip 4 frames (to call site)
 	return true;
+}
+
+void StacktracePolicy::Transform(Entry &entry)
+{
+	entry.stacktrace = std::stacktrace::current(3);	// skip 3 frames (to call site)
 }
 
 std::string &StacktracePolicy::GetName()

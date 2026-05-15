@@ -20,6 +20,7 @@
 #include "framework/log/Log.h"
 #include "framework/log/sink/text/console/ConsoleSink.h"
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
+#include "framework/log/policy/trace/StacktracePolicy.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
@@ -39,17 +40,25 @@ int main(int argc, char **argv)
 		asio::io_context ioctx(1);
 
 		std::shared_ptr<Log> log = std::make_shared<Log>(
-			std::move("NetBase"),
+			"NetBase",
 			std::vector<std::shared_ptr<Sink>>
 			{
 				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
-			}
+			},
+			std::move([]()
+			{ 
+				std::vector<std::unique_ptr<Policy>> policies;
+				policies.push_back(std::make_unique<StacktracePolicy>());
+				return policies;
+			}())
 		);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
 		Server server(serverport, ioctx, log, dispatcher);
+
+		log->Fatal("Stack trace test, filter should be applied :)");
 
 		ioctx.run();
 

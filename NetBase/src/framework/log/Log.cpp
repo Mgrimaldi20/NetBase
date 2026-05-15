@@ -40,11 +40,7 @@ void Log::AttachSink(std::shared_ptr<Sink> sink)
 void Log::AttachPolicy(std::unique_ptr<Policy> policy)
 {
 	policies.push_back(std::move(policy));
-
-	// i dont really like this much but it does what i want so whatever
-	auto it = std::prev(policies.end());
-
-	Info("Attached policy: {}", it->get()->GetName());
+	Info("Attached policy: {}", policies.back()->GetName());
 }
 
 void Log::Write(Entry::Level level, std::string msg, std::source_location loc)
@@ -57,6 +53,12 @@ void Log::Write(Entry::Level level, std::string msg, std::source_location loc)
 		.message = std::move(msg),
 		.srcloc = std::move(loc)
 	};
+
+	for (auto &policy : policies)
+	{
+		if (policy->Applicable(entry))
+			policy->Transform(entry);
+	}
 
 	for (auto &sink : sinks)
 		sink->Write(entry);
