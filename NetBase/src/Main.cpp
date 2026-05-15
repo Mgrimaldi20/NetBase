@@ -18,6 +18,7 @@
 #include "framework/ChannelManager.h"
 
 #include "framework/log/Log.h"
+#include "framework/log/entry/Entry.h"
 #include "framework/log/sink/text/console/ConsoleSink.h"
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 			std::move([]()
 			{ 
 				std::vector<std::unique_ptr<Policy>> policies;
-				policies.push_back(std::make_unique<StacktracePolicy>());
+				policies.push_back(std::make_unique<StacktracePolicy>(Entry::Level::Fatal));
 				return policies;
 			}())
 		);

@@ -1,13 +1,14 @@
 #include "StacktracePolicy.h"
 
-StacktracePolicy::StacktracePolicy()
-	: policyname("StacktracePolicy")
+StacktracePolicy::StacktracePolicy(Entry::Level level)
+	: policyname("StacktracePolicy"),
+	level(level)
 {
 }
 
 bool StacktracePolicy::Applicable(const Entry &entry)
 {
-	if (entry.level != Entry::Level::Fatal)
+	if (entry.level != level)
 		return false;
 
 	return true;
@@ -15,7 +16,7 @@ bool StacktracePolicy::Applicable(const Entry &entry)
 
 void StacktracePolicy::Transform(Entry &entry)
 {
-	entry.stacktrace = std::stacktrace::current(3);	// skip 3 frames (to call site)
+	entry.stacktrace = std::stacktrace::current();
 }
 
 std::string &StacktracePolicy::GetName()
