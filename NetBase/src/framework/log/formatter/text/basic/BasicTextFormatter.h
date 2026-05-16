@@ -1,6 +1,9 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 #define __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 
+#include <source_location>
+#include <stacktrace>
+
 #include "../TextFormatter.h"
 
 /*
@@ -17,6 +20,10 @@ public:
 	virtual ~BasicTextFormatter() = default;
 
 	std::string Format(const Entry &entry) const override final;
+
+private:
+	std::string GetSourceLocation(const Entry &entry) const;
+	std::string GetStacktrace(const Entry &entry) const;
 };
 
 #endif

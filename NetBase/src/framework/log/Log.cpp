@@ -6,17 +6,17 @@
 Log::Log(
 	std::string logname,
 	std::vector<std::shared_ptr<Sink>> sinks,
-	std::vector<std::unique_ptr<Policy>> policies
+	std::vector<std::shared_ptr<Policy>> policies
 )
 	: logname(std::move(logname)),
-	sinks(),
-	policies()
+	sinks(sinks),
+	policies(policies)
 {
-	for (const auto &sink : sinks)
-		AttachSink(sink);
+	for (const auto &sink : this->sinks)
+		Info("Attached sink: {}", sink->GetName());
 
-	for (auto &policy : policies)
-		AttachPolicy(std::move(policy));
+	for (const auto &policy : this->policies)
+		Info("Attached policy: {}", policy->GetName());
 
 	Info("Logger started: {}", this->logname);
 }
@@ -37,10 +37,10 @@ void Log::AttachSink(std::shared_ptr<Sink> sink)
 	Info("Attached sink: {}", sink->GetName());
 }
 
-void Log::AttachPolicy(std::unique_ptr<Policy> policy)
+void Log::AttachPolicy(std::shared_ptr<Policy> policy)
 {
-	policies.push_back(std::move(policy));
-	Info("Attached policy: {}", policies.back()->GetName());
+	policies.push_back(policy);
+	Info("Attached policy: {}", policy->GetName());
 }
 
 void Log::Write(Entry::Level level, std::string msg, std::source_location loc)
@@ -56,8 +56,8 @@ void Log::Write(Entry::Level level, std::string msg, std::source_location loc)
 
 	for (auto &policy : policies)
 	{
-		if (policy->Applicable(entry))
-			policy->Transform(entry);
+		if (!policy->Transform(entry))
+			return;
 	}
 
 	for (auto &sink : sinks)

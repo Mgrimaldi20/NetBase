@@ -48,7 +48,7 @@ public:
 	Log(
 		std::string logname = {},
 		std::vector<std::shared_ptr<Sink>> sinks = {},
-		std::vector<std::unique_ptr<Policy>> policies = {}
+		std::vector<std::shared_ptr<Policy>> policies = {}
 	);
 
 	~Log();
@@ -71,7 +71,7 @@ public:
 	void SetLogName(std::string name);
 
 	void AttachSink(std::shared_ptr<Sink> sink);
-	void AttachPolicy(std::unique_ptr<Policy> policy);
+	void AttachPolicy(std::shared_ptr<Policy> policy);
 
 private:
 	void Write(Entry::Level level, std::string msg, std::source_location loc);
@@ -79,7 +79,7 @@ private:
 	std::string logname;
 
 	std::vector<std::shared_ptr<Sink>> sinks;
-	std::vector<std::unique_ptr<Policy>> policies;
+	std::vector<std::shared_ptr<Policy>> policies;
 };
 
 template<typename ...Args>

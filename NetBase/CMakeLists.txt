@@ -65,6 +65,8 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/policy/Policy.h"
 	"src/framework/log/policy/trace/StacktracePolicy.h"
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
+	"src/framework/log/policy/trace/SourceLocationPolicy.h"
+	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
 )
 
 # Include different source code depending on OS

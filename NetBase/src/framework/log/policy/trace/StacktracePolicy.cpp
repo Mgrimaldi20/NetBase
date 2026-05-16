@@ -6,17 +6,13 @@ StacktracePolicy::StacktracePolicy(Entry::Level level)
 {
 }
 
-bool StacktracePolicy::Applicable(const Entry &entry)
+bool StacktracePolicy::Transform(Entry &entry)
 {
 	if (entry.level != level)
-		return false;
+		return true;
 
-	return true;
-}
-
-void StacktracePolicy::Transform(Entry &entry)
-{
 	entry.stacktrace = std::stacktrace::current();
+	return true;
 }
 
 std::string &StacktracePolicy::GetName()

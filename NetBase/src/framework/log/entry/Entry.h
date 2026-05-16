@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <chrono>
+#include <optional>
 #include <source_location>
 #include <stacktrace>
 
@@ -31,8 +32,8 @@ struct Entry
 	std::string logname;
 	Entry::Level level;
 	std::string message;
-	std::source_location srcloc;
-	std::stacktrace stacktrace;
+	std::optional<std::source_location> srcloc;
+	std::optional<std::stacktrace> stacktrace;
 };
 
 #endif

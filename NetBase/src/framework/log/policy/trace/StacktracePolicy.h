@@ -9,8 +9,7 @@
 * Class: StacktracePolicy
 * Checks the log level, if its the same as the level set, then grab the stack trace.
 * 
-*	Applicable: Checks if the log level is the level provided, returns true if it is
-*	Transform: Gets the current stack trace if the policy was applicable
+*	Transform: Gets the current stack trace if applicable and returns true if further steps are needed
 *	GetName: Returns the name of the policy
 */
 class StacktracePolicy : public Policy
@@ -19,8 +18,7 @@ public:
 	StacktracePolicy(Entry::Level level);
 	virtual ~StacktracePolicy() = default;
 
-	bool Applicable(const Entry &entry) override final;
-	void Transform(Entry &entry) override final;
+	bool Transform(Entry &entry) override final;
 	std::string &GetName() override final;
 
 private:

@@ -22,6 +22,7 @@
 #include "framework/log/sink/text/console/ConsoleSink.h"
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
+#include "framework/log/policy/trace/SourceLocationPolicy.h"
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
@@ -46,12 +47,11 @@ int main(int argc, char **argv)
 			{
 				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
 			},
-			std::move([]()
-			{ 
-				std::vector<std::unique_ptr<Policy>> policies;
-				policies.push_back(std::make_unique<StacktracePolicy>(Entry::Level::Fatal));
-				return policies;
-			}())
+			std::vector<std::shared_ptr<Policy>>
+			{
+				std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
+				std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
+			}
 		);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
@@ -60,6 +60,7 @@ int main(int argc, char **argv)
 		Server server(serverport, ioctx, log, dispatcher);
 
 		log->Fatal("Stack trace test, filter should be applied :)");
+		log->Debug("And now a debug log for source location testing :)");
 
 		ioctx.run();
 
