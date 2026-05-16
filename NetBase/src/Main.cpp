@@ -59,9 +59,6 @@ int main(int argc, char **argv)
 
 		Server server(serverport, ioctx, log, dispatcher);
 
-		log->Fatal("Stack trace test, filter should be applied :)");
-		log->Debug("And now a debug log for source location testing :)");
-
 		ioctx.run();
 
 		log->Info("NetBase server is exiting...");

@@ -151,6 +151,7 @@ if(MSVC)
 			"/GL"
 			"/LTCG"
 			"/Gw"
+			"/Z7"
 		)
 	endif()
 
@@ -164,12 +165,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 		"-ffast-math"
 		"-fanalyzer"
 		"-fvisibility=hidden"
+		"-g"
 	)
 
 	# Debug build compiler options
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_options(NetBase PRIVATE
-			"-g"
 			"-fsanitize=address"
 			"-fsanitize=leak"
 			"-fsanitize=undefined"
