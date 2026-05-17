@@ -7,14 +7,15 @@
 Session::Session(
 	asio::ip::tcp::socket socket,
 	std::shared_ptr<CmdDispatcher> dispatcher,
+	std::shared_ptr<ClientAPI::Parser> parser,
 	std::shared_ptr<Log> log
 )
 	: writequeue(),
 	clientaddr(socket.remote_endpoint().address().to_string()),
 	timer(socket.get_executor()),
-	joinedchannels(),
 	socket(std::move(socket)),
 	dispatcher(dispatcher),
+	parser(parser),
 	log(log)
 {
 	timer.expires_at(std::chrono::steady_clock::time_point::max());
@@ -84,11 +85,8 @@ asio::awaitable<void> Session::Reader()
 
 			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
 
-			CmdDispatcher::ParsedCmd parsedcmd;
+			CmdDispatcher::ParsedCmd parsedcmd = parser->Parse(*msg, msg->size());
 			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
-
-			for (const auto &channel : joinedchannels)
-				channel.lock()->Broadcast(msg);
 		}
 	}
 
@@ -135,7 +133,4 @@ void Session::Close()
 {
 	socket.close();
 	timer.cancel();
-
-	for (const auto &channel : joinedchannels)
-		channel.lock()->Leave(shared_from_this());
 }

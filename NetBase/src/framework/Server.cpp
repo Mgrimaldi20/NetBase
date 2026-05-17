@@ -11,18 +11,18 @@ Server::Server(
 	asio::ip::port_type port,
 	asio::io_context &ioctx,
 	std::shared_ptr<Log> log,
-	std::shared_ptr<CmdDispatcher> dispatcher
+	std::shared_ptr<CmdDispatcher> dispatcher,
+	std::shared_ptr<ClientAPI::Parser> parser
 )
 	: signals(ioctx, NET_SIGINT, NET_SIGTERM),
 	ioctx(ioctx),
 	port(port),
-	log(log),
-	dispatcher(dispatcher)
+	log(log)
 {
 	RegisterSignals();
 
 	// start the server and listen for incoming connections on the specified port number
-	asio::co_spawn(ioctx, Listener(), asio::detached);
+	asio::co_spawn(ioctx, Listener(dispatcher, parser), asio::detached);
 
 	log->Info("Server started");
 	log->Info("NetBase server running on port: {}", port);
@@ -34,7 +34,10 @@ Server::~Server()
 	log->Info("Shutting down the Server");
 }
 
-asio::awaitable<void> Server::Listener()
+asio::awaitable<void> Server::Listener(
+	std::shared_ptr<CmdDispatcher> dispatcher,
+	std::shared_ptr<ClientAPI::Parser> parser
+)
 {
 	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
 	asio::ip::tcp::acceptor acceptor(ioctx, endpoint);
@@ -44,6 +47,7 @@ asio::awaitable<void> Server::Listener()
 		std::make_shared<Session>(
 			co_await std::move(acceptor.async_accept(asio::use_awaitable)),
 			dispatcher,
+			parser,
 			log
 		)->Start();
 	}

@@ -3,10 +3,11 @@
 #
 
 cmake_minimum_required(VERSION 3.25)
-project(NetBase LANGUAGES CXX)
 
 # Add source to this project's executable
 add_executable(NetBase)
+
+project(NetBase LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)

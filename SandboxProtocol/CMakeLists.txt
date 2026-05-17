@@ -2,14 +2,17 @@
 # project specific logic here.
 #
 
+cmake_minimum_required(VERSION 3.25)
+
 # Add source to this project's executable.
 add_library(SandboxProtocol SHARED)
 
-if(CMAKE_VERSION VERSION_GREATER 3.25)
-	set_property(TARGET SandboxProtocol PROPERTY CXX_STANDARD 23)
-endif()
+project(SandboxProtocol LANGUAGES CXX)
 
-target_compile_definitions(SandboxProtocol PRIVATE SandboxProtocol_SPEC_VERSION=1)
+set(CMAKE_CXX_STANDARD 23)
+set_property(TARGET SandboxProtocol PROPERTY CXX_STANDARD 23)
+
+target_compile_definitions(SandboxProtocol PRIVATE SANDBOXPROTOCOL_SPEC_VERSION=1)
 
 # Specify the common OS independent source files for the SandboxProtocol project.
 target_sources(SandboxProtocol PRIVATE
@@ -27,6 +30,12 @@ endif()
 # Set up all the compiler options here
 # MSVC compiler options
 if(MSVC)
+	target_compile_options(SandboxProtocol PRIVATE
+		"/external:W0"
+		"/external:anglebrackets"
+		"/analyze:external-"
+	)
+
 	# Common options for all build types
 	target_compile_options(SandboxProtocol PRIVATE
 		"/W4"
@@ -36,6 +45,7 @@ if(MSVC)
 		"/fp:fast"
 		"/FAs"
 		"/MP"
+		"/Zc:__cplusplus"
 	)
 
 	# Debug build compiler options
@@ -59,6 +69,7 @@ if(MSVC)
 			"/GL"
 			"/LTCG"
 			"/Gw"
+			"/Z7"
 		)
 	endif()
 
@@ -72,12 +83,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 		"-ffast-math"
 		"-fanalyzer"
 		"-fvisibility=hidden"
+		"-g"
 	)
 
 	# Debug build compiler options
 	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		target_compile_options(SandboxProtocol PRIVATE
-			"-g"
 			"-fsanitize=address"
 			"-fsanitize=leak"
 			"-fsanitize=undefined"
@@ -94,7 +105,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
 
 	# Release build compiler options
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-		target_compile_options(NetBase PRIVATE
+		target_compile_options(SandboxProtocol PRIVATE
 			"-O3"
 			"-flto"
 		)

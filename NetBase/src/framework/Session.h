@@ -4,8 +4,9 @@
 #include <memory>
 #include <string>
 #include <queue>
-#include <vector>
 #include <string_view>
+
+#include "../NetBaseAPI.h"
 
 #include "Asio.h"
 #include "Channel.h"
@@ -31,6 +32,7 @@ public:
 	Session(
 		asio::ip::tcp::socket socket,
 		std::shared_ptr<CmdDispatcher> dispatcher,
+		std::shared_ptr<ClientAPI::Parser> parser,
 		std::shared_ptr<Log> log
 	);
 
@@ -52,10 +54,9 @@ private:
 
 	asio::steady_timer timer;
 
-	std::vector<std::weak_ptr<Channel>> joinedchannels;
-
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<CmdDispatcher> dispatcher;
+	std::shared_ptr<ClientAPI::Parser> parser;
 	std::shared_ptr<Log> log;
 };
 

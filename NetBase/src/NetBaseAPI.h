@@ -9,6 +9,8 @@
 #include "framework/CmdDispatcher.h"
 #include "framework/ChannelManager.h"
 
+#include "framework/log/Log.h"
+
 class NetBaseAPI
 {
 public:
@@ -17,6 +19,7 @@ public:
 
 	virtual std::shared_ptr<CmdDispatcher> GetCmdDispatcher() = 0;
 	virtual std::shared_ptr<ChannelManager> GetChannelManager() = 0;
+	virtual std::shared_ptr<Log> GetLogger() = 0;
 };
 
 class ClientAPI

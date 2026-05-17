@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "../NetBaseAPI.h"
+
 #include "Asio.h"
 #include "CmdDispatcher.h"
 
@@ -22,7 +24,8 @@ public:
 		asio::ip::port_type port,
 		asio::io_context &ioctx,
 		std::shared_ptr<Log> log,
-		std::shared_ptr<CmdDispatcher> dispatcher
+		std::shared_ptr<CmdDispatcher> dispatcher,
+		std::shared_ptr<ClientAPI::Parser> parser
 	);
 
 	Server(const Server &) = delete;
@@ -34,18 +37,18 @@ public:
 	~Server();
 
 private:
-	asio::awaitable<void> Listener();
+	asio::awaitable<void> Listener(
+		std::shared_ptr<CmdDispatcher> dispatcher,
+		std::shared_ptr<ClientAPI::Parser> parser
+	);
 
 	void RegisterSignals();
 
 	asio::signal_set signals;
-
 	asio::ip::port_type port;
-
 	asio::io_context &ioctx;
 
 	std::shared_ptr<Log> log;
-	std::shared_ptr<CmdDispatcher> dispatcher;
 };
 
 #endif

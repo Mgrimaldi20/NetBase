@@ -57,7 +57,10 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		Server server(serverport, ioctx, log, dispatcher);
+		std::shared_ptr<ClientAPI> clientapi;
+		std::shared_ptr<ClientAPI::Parser> parser = clientapi->GetParser();
+
+		Server server(serverport, ioctx, log, dispatcher, parser);
 
 		ioctx.run();
 
