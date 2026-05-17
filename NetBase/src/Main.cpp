@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "NetBaseAPI.h"
+#include "NetBaseAPIImpl.h"
 
 #include "sys/DynamicLibrary.h"
 
@@ -23,6 +24,9 @@
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
+
+// to be implemented by the client protocol library
+using GetClientAPI = std::shared_ptr<ClientAPI>(*)(std::shared_ptr<NetBaseAPI>);
 
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
@@ -57,8 +61,30 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		std::shared_ptr<ClientAPI> clientapi;
-		std::shared_ptr<ClientAPI::Parser> parser = clientapi->GetParser();
+		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
+		std::any func = dylib->GetSymbol("GetClientAPI");
+
+		GetClientAPI GetAPI = std::any_cast<GetClientAPI>(func);
+
+		// create a new logger instance for the client, they can add sinks and policies
+		std::shared_ptr<ClientAPI> clientapi = GetAPI(
+			std::make_shared<NetBaseAPIImpl>(dispatcher, channelmanager, std::make_shared<Log>())
+		);
+
+		std::shared_ptr<ClientAPI::Parser> parser;
+
+		try
+		{
+			if (!clientapi)
+				throw std::runtime_error("Trying to dereference the ClientAPI when its null");
+
+			parser = clientapi->GetParser();
+		}
+
+		catch (const std::exception &e)
+		{
+			throw e;	// rethrow the exception to be caught by global
+		}
 
 		Server server(serverport, ioctx, log, dispatcher, parser);
 
@@ -122,7 +148,7 @@ bool ValidateOptions(int argc, char **argv)
 					return false;
 				}
 
-				std::filesystem::path path(fullpath);
+				std::filesystem::path path(fullpath.substr(1));
 				if (!path.has_filename() || !path.has_extension())
 				{
 					std::println("Invalid dynamic library file path: {}", path.string());

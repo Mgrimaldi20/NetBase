@@ -54,6 +54,7 @@ install(FILES
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/ChannelManager.h"
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/CmdDispatcher.h"
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/Client.h"
+	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/Channel.h"
 	DESTINATION NetBase/sdk/framework
 )
 

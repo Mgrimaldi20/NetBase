@@ -14,6 +14,7 @@ set_property(TARGET NetBase PROPERTY CXX_STANDARD 23)
 
 # Set the NetBase version
 target_compile_definitions(NetBase PRIVATE NETBASE_VERSION=1)
+target_compile_definitions(NetBase PRIVATE NETBASE_EXPORTS)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_compile_definitions(NetBase PRIVATE NETBASE_DEBUG)
@@ -32,9 +33,19 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_definitions(NetBase PRIVATE NETBASE_GCC)
 endif()
 
+if (WIN32)
+	target_compile_definitions(NetBase PRIVATE NETBASE_WIN32)
+elseif (APPLE)
+	target_compile_definitions(NetBase PRIVATE NETBASE_APPLE)
+elseif (UNIX)
+	target_compile_definitions(NetBase PRIVATE NETBASE_LINUX)
+endif()
+
 # Specify the common OS independent source files for the NetBase project
 target_sources(NetBase PRIVATE
 	"src/NetBaseAPI.h"
+	"src/NetBaseAPIImpl.h"
+	"src/NetBaseAPIImpl.cpp"
 	"src/Main.cpp"
 	"src/sys/DynamicLibrary.h"
 	"src/framework/Asio.h"

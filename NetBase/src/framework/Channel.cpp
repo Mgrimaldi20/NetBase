@@ -1,8 +1,8 @@
 #include "Channel.h"
 
-Channel::Channel(std::string_view channelname, std::shared_ptr<Log> log)
+Channel::Channel(std::string channelname, std::shared_ptr<Log> log)
 	: clients(),
-	channelname(channelname),
+	channelname(std::move(channelname)),
 	log(log)
 {
 	log->Info("Channel: {} has been created", channelname);

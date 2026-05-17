@@ -11,6 +11,23 @@
 
 #include "framework/log/Log.h"
 
+#if defined(NETBASE_WIN32)
+#define EXPORT __declspec(dllexport)
+#define IMPORT __declspec(dllimport)
+#elif defined(NETBASE_LINUX) || defined(NETBASE_APPLE)
+#define EXPORT __attribute__((visibility("default")))
+#define IMPORT
+#else
+#define EXPORT
+#define IMPORT
+#endif
+
+#if defined(NETBASE_EXPORTS)
+#define NETBASE_API EXPORT
+#else
+#define NETBASE_API IMPORT
+#endif
+
 class NetBaseAPI
 {
 public:
@@ -45,8 +62,5 @@ public:
 
 	virtual std::string GetProtocolName() = 0;
 };
-
-// to be implemented by the client protocol library
-using GetClientAPI = std::shared_ptr<ClientAPI> (*)(std::shared_ptr<NetBaseAPI>);
 
 #endif

@@ -16,8 +16,11 @@ target_compile_definitions(SandboxProtocol PRIVATE SANDBOXPROTOCOL_SPEC_VERSION=
 
 # Specify the common OS independent source files for the SandboxProtocol project.
 target_sources(SandboxProtocol PRIVATE
-	"src/Cmd.h"
-	"src/Cmd.cpp"
+	"src/SandboxProtocol.cpp"
+	"src/ClientAPIImpl.h"
+	"src/ClientAPIImpl.cpp"
+	"src/ParserImpl.h"
+	"src/ParserImpl.cpp"
 )
 
 include_directories(src)
