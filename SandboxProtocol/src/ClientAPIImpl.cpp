@@ -39,7 +39,7 @@ std::shared_ptr<ClientAPI::Parser> ClientAPIImpl::GetParser()
 	return parser;
 }
 
-std::string ClientAPIImpl::GetProtocolName()
+std::string &ClientAPIImpl::GetProtocolName()
 {
 	return protoname;
 }

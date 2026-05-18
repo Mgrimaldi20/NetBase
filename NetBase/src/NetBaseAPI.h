@@ -60,7 +60,7 @@ public:
 	virtual void RegisterCmds() = 0;
 	virtual std::shared_ptr<ClientAPI::Parser> GetParser() = 0;
 
-	virtual std::string GetProtocolName() = 0;
+	virtual std::string &GetProtocolName() = 0;
 };
 
 #endif

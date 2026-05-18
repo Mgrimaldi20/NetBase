@@ -18,7 +18,7 @@ public:
 
 	void RegisterCmds() override final;
 	std::shared_ptr<ClientAPI::Parser> GetParser() override final;
-	std::string GetProtocolName() override final;
+	std::string &GetProtocolName() override final;
 
 private:
 	std::shared_ptr<NetBaseAPI> netbaseapi;
