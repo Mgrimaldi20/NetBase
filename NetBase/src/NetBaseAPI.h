@@ -6,11 +6,6 @@
 #include <string>
 #include <string_view>
 
-#include "framework/CmdDispatcher.h"
-#include "framework/ChannelManager.h"
-
-#include "framework/log/Log.h"
-
 #if defined(NETBASE_WIN32)
 #define EXPORT __declspec(dllexport)
 #define IMPORT __declspec(dllimport)

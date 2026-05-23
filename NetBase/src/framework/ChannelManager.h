@@ -6,6 +6,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "NetBaseAPI.h"
+
 #include "Channel.h"
 
 #include "log/Log.h"

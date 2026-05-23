@@ -25,9 +25,6 @@
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"
 
-// to be implemented by the client protocol library
-using GetClientAPI = std::shared_ptr<ClientAPI>(*)(std::shared_ptr<NetBaseAPI>);
-
 constexpr asio::ip::port_type NET_DEFAULT_PORT = 5001;
 
 static asio::ip::port_type serverport = NET_DEFAULT_PORT;
@@ -62,7 +59,13 @@ int main(int argc, char **argv)
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
 		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
+
+		log->Info("Loaded plugin library: {}", dylibpath.string());
+
 		std::any func = dylib->GetSymbol("GetClientAPI");
+
+		// to be implemented by the client protocol library
+		using GetClientAPI = std::shared_ptr<ClientAPI>(*)(std::shared_ptr<NetBaseAPI>);
 
 		GetClientAPI GetAPI = std::any_cast<GetClientAPI>(func);
 
