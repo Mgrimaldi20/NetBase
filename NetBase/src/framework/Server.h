@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../NetBaseAPI.h"
+#include "NetBaseAPI.h"
 
 #include "Asio.h"
 #include "CmdDispatcher.h"
@@ -14,8 +14,6 @@
 * Class: Server
 * The main server class, responsible for accepting incoming connections and spawning sessions.
 * The server will run on a single thread, and coroutines will be used to handle async accepts.
-* 
-*	Run: Runs the server, and blocks until the server is stopped
 */
 class Server
 {

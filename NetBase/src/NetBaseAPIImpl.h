@@ -5,6 +5,14 @@
 
 #include "NetBaseAPI.h"
 
+/*
+* Class: NetBaseAPIImpl
+* The implementation of the abstract NetBaseAPI interface that will be sent over to the client.
+* 
+*	GetCmdDispatcher: Gets the command dispatcher instance from the engine
+*	GetChannelManager: Gets the channel manager instance from the engine
+*	GetLogger: Creates and gets a new logger instance that can be configured by the client
+*/
 class NetBaseAPIImpl : public NetBaseAPI
 {
 public:

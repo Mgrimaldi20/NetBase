@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 
+#include "NetBaseAPI.h"
+
 #include "Client.h"
 
 #include "log/Log.h"
@@ -28,7 +30,7 @@ public:
 	void Join(std::shared_ptr<Client> client);
 	void Leave(std::shared_ptr<Client> client);
 
-	void Broadcast(std::shared_ptr<std::string> message);
+	void Broadcast(std::string message);
 
 private:
 	std::unordered_set<std::shared_ptr<Client>> clients;

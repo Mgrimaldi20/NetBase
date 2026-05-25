@@ -5,7 +5,7 @@
 
 #include "ParserImpl.h"
 
-CmdDispatcher::ParsedCmd ParserImpl::Parse(
+ClientAPI::Parser::ParsedCmd ParserImpl::Parse(
 	std::string_view data,
 	std::uint_least64_t length
 )
@@ -17,7 +17,7 @@ CmdDispatcher::ParsedCmd ParserImpl::Parse(
 	if (data.empty())
 		throw std::runtime_error("Command is null");
 
-	CmdDispatcher::ParsedCmd cmd =
+	Parser::ParsedCmd cmd =
 	{
 		.cmdid = (std::uint_least16_t)-1,
 		.data = data.substr(1)

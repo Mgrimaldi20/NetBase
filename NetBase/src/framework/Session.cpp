@@ -48,7 +48,7 @@ std::string_view Session::GetAddr()
 	return clientaddr;
 }
 
-void Session::Send(std::shared_ptr<std::string> message)
+void Session::Send(std::string message)
 {
 	bool empty = writequeue.empty();
 	writequeue.emplace(std::move(message));
@@ -83,9 +83,10 @@ asio::awaitable<void> Session::Reader()
 
 			message.resize(n);
 
-			std::shared_ptr<std::string> msg = std::make_shared<std::string>(message);
+			CmdDispatcher::ParsedCmd parsedcmd = CmdDispatcher::ParsedCmd::Map(
+				parser->Parse(message, message.size())
+			);
 
-			CmdDispatcher::ParsedCmd parsedcmd = parser->Parse(*msg, msg->size());
 			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 		}
 	}
@@ -112,12 +113,12 @@ asio::awaitable<void> Session::Writer()
 				continue;
 			}
 
-			std::shared_ptr<std::string> message = std::move(writequeue.front());
+			std::string message = std::move(writequeue.front());
 			writequeue.pop();
 
-			co_await asio::async_write(socket, asio::buffer(*message), asio::use_awaitable);
+			co_await asio::async_write(socket, asio::buffer(message), asio::use_awaitable);
 
-			log->Debug("Wrote message to Client {}: [{} bytes] :: {}", clientaddr, message->size(), *message);
+			log->Debug("Wrote message to Client {}: [{} bytes] :: {}", clientaddr, message.size(), message);
 		}
 	}
 

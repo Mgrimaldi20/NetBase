@@ -8,7 +8,7 @@ public:
 	ParserImpl() = default;
 	virtual ~ParserImpl() = default;
 
-	CmdDispatcher::ParsedCmd Parse(
+	ClientAPI::Parser::ParsedCmd Parse(
 		std::string_view data,
 		std::uint_least64_t length
 	) override final;

@@ -6,7 +6,7 @@
 #include <queue>
 #include <string_view>
 
-#include "../NetBaseAPI.h"
+#include "NetBaseAPI.h"
 
 #include "Asio.h"
 #include "Channel.h"
@@ -41,7 +41,7 @@ public:
 	void Start();
 
 	std::string_view GetAddr() override final;
-	void Send(std::shared_ptr<std::string> message) override final;
+	void Send(std::string message) override final;
 
 private:
 	asio::awaitable<void> Reader();
@@ -49,7 +49,7 @@ private:
 
 	void Close();
 
-	std::queue<std::shared_ptr<std::string>> writequeue;
+	std::queue<std::string> writequeue;
 	std::string clientaddr;
 
 	asio::steady_timer timer;

@@ -7,6 +7,8 @@
 #include <string>
 #include <source_location>
 
+#include "NetBaseAPI.h"
+
 #include "entry/Entry.h"
 #include "sink/Sink.h"
 #include "policy/Policy.h"

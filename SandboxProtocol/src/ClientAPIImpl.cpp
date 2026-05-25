@@ -1,3 +1,7 @@
+#include "../../NetBase/src/framework/CmdDispatcher.h"
+#include "../../NetBase/src/framework/ChannelManager.h"
+#include "../../NetBase/src/framework/Channel.h"
+
 #include "ClientAPIImpl.h"
 
 ClientAPIImpl::ClientAPIImpl(
@@ -27,9 +31,9 @@ void ClientAPIImpl::RegisterCmds()
 		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
 		{
 			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(cmd.data.data());
-			channel->Broadcast(std::make_shared<std::string>("Hello\n"));
+			channel->Broadcast("Hello\n");
 
-			client.lock()->Send(std::make_shared<std::string>("Response Message\n"));
+			client.lock()->Send("Response Message\n");
 		}
 	);
 }

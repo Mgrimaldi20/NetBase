@@ -3,7 +3,6 @@
 
 #include <string_view>
 #include <string>
-#include <memory>
 
 /*
 * Class: Client
@@ -20,7 +19,7 @@ public:
 	virtual ~Client() = default;
 
 	virtual std::string_view GetAddr() = 0;
-	virtual void Send(std::shared_ptr<std::string> message) = 0;
+	virtual void Send(std::string message) = 0;
 };
 
 #endif

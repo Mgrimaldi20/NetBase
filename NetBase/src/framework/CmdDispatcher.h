@@ -9,6 +9,8 @@
 #include <initializer_list>
 #include <utility>
 
+#include "NetBaseAPI.h"
+
 #include "Client.h"
 
 #include "log/Log.h"
@@ -30,9 +32,11 @@ public:
 	{
 		std::uint_least16_t cmdid;
 		std::string_view data;
+
+		static CmdDispatcher::ParsedCmd Map(ClientAPI::Parser::ParsedCmd parsedcmd);
 	};
 
-	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const CmdDispatcher::ParsedCmd &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
@@ -40,7 +44,7 @@ public:
 	void Register(std::uint_least16_t cmdid, CmdHandlerFn fn);
 	void Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems);
 
-	void Dispatch(std::weak_ptr<Client> client, ParsedCmd parsedcmd);
+	void Dispatch(std::weak_ptr<Client> client, CmdDispatcher::ParsedCmd parsedcmd);
 
 private:
 	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
