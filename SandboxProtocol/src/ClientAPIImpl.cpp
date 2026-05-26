@@ -2,6 +2,14 @@
 #include "../../NetBase/src/framework/ChannelManager.h"
 #include "../../NetBase/src/framework/Channel.h"
 
+#include "../../NetBase/src/framework/log/Log.h"
+#include "../../NetBase/src/framework/log/entry/Entry.h"
+#include "../../NetBase/src/framework/log/sink/text/console/ConsoleSink.h"
+#include "../../NetBase/src/framework/log/sink/text/file/FileSink.h"
+#include "../../NetBase/src/framework/log/formatter/text/basic/BasicTextFormatter.h"
+#include "../../NetBase/src/framework/log/policy/trace/StacktracePolicy.h"
+#include "../../NetBase/src/framework/log/policy/trace/SourceLocationPolicy.h"
+
 #include "ClientAPIImpl.h"
 
 ClientAPIImpl::ClientAPIImpl(
@@ -13,6 +21,12 @@ ClientAPIImpl::ClientAPIImpl(
 	parser(parser),
 	protoname(std::move(protoname))
 {
+	netbaseapi->GetLogger()->SetLogName(this->protoname);
+
+	netbaseapi->GetLogger()->AttachSink(std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>()));
+
+	netbaseapi->GetLogger()->AttachPolicy(std::make_shared<StacktracePolicy>(Entry::Level::Fatal));
+	netbaseapi->GetLogger()->AttachPolicy(std::make_shared<SourceLocationPolicy>(Entry::Level::Debug));
 }
 
 void ClientAPIImpl::RegisterCmds()

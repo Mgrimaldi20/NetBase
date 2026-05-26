@@ -21,7 +21,7 @@
 *	Leave: Remove a client from a channel
 *	Broadcast: Send a message to all clients connected to the channel
 */
-class Channel
+class NETBASE_API Channel
 {
 public:
 	Channel(std::string channelname, std::shared_ptr<Log> log);

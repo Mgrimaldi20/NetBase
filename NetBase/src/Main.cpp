@@ -21,6 +21,7 @@
 #include "framework/log/Log.h"
 #include "framework/log/entry/Entry.h"
 #include "framework/log/sink/text/console/ConsoleSink.h"
+#include "framework/log/sink/text/file/FileSink.h"
 #include "framework/log/formatter/text/basic/BasicTextFormatter.h"
 #include "framework/log/policy/trace/StacktracePolicy.h"
 #include "framework/log/policy/trace/SourceLocationPolicy.h"

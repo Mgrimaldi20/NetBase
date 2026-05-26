@@ -25,7 +25,7 @@
 *	Register: Registers a command handler within the system by its id
 *	Dispatch: Calls the registered handlers by id using the client as context
 */
-class CmdDispatcher
+class NETBASE_API CmdDispatcher
 {
 public:
 	struct ParsedCmd

@@ -25,6 +25,9 @@ target_sources(SandboxProtocol PRIVATE
 
 include_directories(src)
 
+message(STATUS "The full source include path is ${CMAKE_SOURCE_DIR}/NetBase/src")
+target_include_directories(SandboxProtocol PRIVATE "${CMAKE_SOURCE_DIR}/NetBase/src")
+
 # Set up linker options
 if(WIN32)
 	target_compile_definitions(SandboxProtocol PRIVATE UNICODE _UNICODE)

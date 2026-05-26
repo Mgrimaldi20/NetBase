@@ -51,7 +51,7 @@ std::string_view Session::GetAddr()
 void Session::Send(std::string message)
 {
 	bool empty = writequeue.empty();
-	writequeue.emplace(std::move(message));
+	writequeue.push(std::move(message));
 
 	if (empty)
 		timer.cancel_one();

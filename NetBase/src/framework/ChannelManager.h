@@ -22,7 +22,7 @@
 *	Exists: Check if a channel with the specified name exists
 *	Destroy: Deletes a channel if it exists and kicks out all connected clients
 */
-class ChannelManager
+class NETBASE_API ChannelManager
 {
 public:
 	ChannelManager(std::shared_ptr<Log> log);

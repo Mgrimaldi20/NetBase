@@ -27,7 +27,7 @@
 *	AttachSink: Add a log sink to route logs to a particular destination
 *	AttachPolicy: Add a log policy to control the log outputs and entries
 */
-class Log
+class NETBASE_API Log
 {
 public:
 	template<typename ...Args>
