@@ -6,12 +6,13 @@
 #include <memory>
 #include <string>
 #include <source_location>
+#include <type_traits>
 
 #include "NetBaseAPI.h"
 
 #include "entry/Entry.h"
-#include "sink/Sink.h"
-#include "policy/Policy.h"
+#include "entry/EntryBuilder.h"
+#include "driver/Driver.h"
 
 /*
 * Class: Log
@@ -24,8 +25,7 @@
 *	Warn: Log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: Log a formatted error message, designed for unrecoverable code errors, program should quit
 *	SetName: Sets the name of the logger to the name specified, changes the name
-*	AttachSink: Add a log sink to route logs to a particular destination
-*	AttachPolicy: Add a log policy to control the log outputs and entries
+*	AttachDriver: Swaps out the current driver config with a new one
 */
 class NETBASE_API Log
 {
@@ -47,76 +47,87 @@ public:
 		std::source_location loc;
 	};
 
-	Log(
-		std::string logname = {},
-		std::vector<std::shared_ptr<Sink>> sinks = {},
-		std::vector<std::shared_ptr<Policy>> policies = {}
-	);
-
+	Log(std::string logname = {}, std::shared_ptr<Driver> driver = {});
 	~Log();
 
 	template<typename ...Args>
-	inline void Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	inline EntryBuilder Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	inline EntryBuilder Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	inline EntryBuilder Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	inline EntryBuilder Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline void Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	inline EntryBuilder Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	void SetLogName(std::string name);
-
-	void AttachSink(std::shared_ptr<Sink> sink);
-	void AttachPolicy(std::shared_ptr<Policy> policy);
+	void AttachDriver(std::shared_ptr<Driver> driver);
 
 private:
-	void Write(Entry::Level level, std::string msg, std::source_location loc);
-
 	std::string logname;
-
-	std::vector<std::shared_ptr<Sink>> sinks;
-	std::vector<std::shared_ptr<Policy>> policies;
+	std::shared_ptr<Driver> driver;
 };
 
 template<typename ...Args>
-inline void Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 #if defined(NETBASE_DEBUG)
-	Write(Entry::Level::Debug, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	return EntryBuilder(fmt.loc)
+		.Name(logname)
+		.Level(Entry::Level::Debug)
+		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
+		.Dest(driver);
 #else
 	(void)fmt;
 	(void)std::initializer_list<int>{((void)args, 0)...};
+
+	return {};
 #endif
 }
 
 template<typename ...Args>
-inline void Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Info, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	return EntryBuilder(fmt.loc)
+		.Name(logname)
+		.Level(Entry::Level::Info)
+		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
+		.Dest(driver);
 }
 
 template<typename ...Args>
-inline void Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Warn, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	return EntryBuilder(fmt.loc)
+		.Name(logname)
+		.Level(Entry::Level::Warn)
+		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
+		.Dest(driver);
 }
 
 template<typename ...Args>
-inline void Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Error, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	return EntryBuilder(fmt.loc)
+		.Name(logname)
+		.Level(Entry::Level::Error)
+		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
+		.Dest(driver);
 }
 
 template<typename ...Args>
-inline void Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	Write(Entry::Level::Fatal, std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
+	return EntryBuilder(fmt.loc)
+		.Name(logname)
+		.Level(Entry::Level::Fatal)
+		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
+		.Dest(driver);
 }
 
 #endif

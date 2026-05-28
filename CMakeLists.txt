@@ -64,6 +64,11 @@ install(FILES
 )
 
 install(FILES
+	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/log/driver/Driver.h"
+	DESTINATION NetBase/sdk/framework/log/driver
+)
+
+install(FILES
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/log/entry/Entry.h"
 	DESTINATION NetBase/sdk/framework/log/entry
 )

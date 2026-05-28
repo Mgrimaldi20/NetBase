@@ -19,6 +19,7 @@
 #include "framework/ChannelManager.h"
 
 #include "framework/log/Log.h"
+#include "framework/log/driver/Driver.h"
 #include "framework/log/entry/Entry.h"
 #include "framework/log/sink/text/console/ConsoleSink.h"
 #include "framework/log/sink/text/file/FileSink.h"
@@ -45,15 +46,18 @@ int main(int argc, char **argv)
 
 		std::shared_ptr<Log> log = std::make_shared<Log>(
 			"NetBase",
-			std::vector<std::shared_ptr<Sink>>
-			{
-				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
-			},
-			std::vector<std::shared_ptr<Policy>>
-			{
-				std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
-				std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
-			}
+			std::make_shared<Driver>(
+				"NetBaseMainLogDriver",
+				std::vector<std::shared_ptr<Sink>>
+				{
+					std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
+				},
+				std::vector<std::shared_ptr<Policy>>
+				{
+					std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
+					std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
+				}
+			)
 		);
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);

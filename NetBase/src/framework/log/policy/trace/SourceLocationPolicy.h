@@ -1,6 +1,8 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_POLICY_TRACE_SOURCELOCATIONPOLICY_H__
 #define __NETBASE_FRAMEWORK_LOG_POLICY_TRACE_SOURCELOCATIONPOLICY_H__
 
+#include "NetBaseAPI.h"
+
 #include "../../entry/Entry.h"
 
 #include "../Policy.h"
@@ -12,7 +14,7 @@
 *	Transform: Gets the current source location if applicable and returns true if further steps are needed
 *	GetName: Returns the name of the policy
 */
-class SourceLocationPolicy : public Policy
+class NETBASE_API SourceLocationPolicy : public Policy
 {
 public:
 	SourceLocationPolicy(Entry::Level level);

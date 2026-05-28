@@ -26,13 +26,19 @@ struct Entry
 		Fatal
 	};
 
-	std::string_view GetLevelStr(Entry::Level entrylevel) const;
+	Entry()
+		: entrylevel(Entry::Level::Error)
+	{}
 
-	std::chrono::system_clock::time_point time;
+	virtual ~Entry() = default;
+
+	virtual std::string_view GetLevelStr(Entry::Level entrylevel) const = 0;
+
+	std::chrono::system_clock::time_point timestamp;
 	std::string logname;
-	Entry::Level level;
+	Entry::Level entrylevel;
 	std::string message;
-	std::optional<std::source_location> srcloc;
+	std::optional<std::source_location> location;
 	std::optional<std::stacktrace> stacktrace;
 };
 

@@ -4,6 +4,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include "NetBaseAPI.h"
+
 #include "../TextSink.h"
 
 /*
@@ -15,7 +17,7 @@
 *	GetName: Gets the name of the file Sink, will be the name of the file
 *	SetFormatter: Sets the internal formatter to a newly defined one
 */
-class FileSink : public TextSink
+class NETBASE_API FileSink : public TextSink
 {
 public:
 	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});

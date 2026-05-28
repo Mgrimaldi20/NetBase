@@ -1,6 +1,8 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 #define __NETBASE_FRAMEWORK_LOG_SINK_TEXT_CONSOLE_CONSOLESINK_H__
 
+#include "NetBaseAPI.h"
+
 #include "../TextSink.h"
 
 /*
@@ -11,7 +13,7 @@
 *	GetName: Gets the name of the stdout Sink
 *	SetFormatter: Sets the internal formatter to a newly defined one
 */
-class ConsoleSink : public TextSink
+class NETBASE_API ConsoleSink : public TextSink
 {
 public:
 	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {});

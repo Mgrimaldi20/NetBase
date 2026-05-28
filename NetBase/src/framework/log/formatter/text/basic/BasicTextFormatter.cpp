@@ -8,14 +8,14 @@ std::string BasicTextFormatter::Format(const Entry &entry) const
 {
 	std::chrono::zoned_time localtime(
 		std::chrono::current_zone(),
-		std::chrono::floor<std::chrono::seconds>(entry.time)
+		std::chrono::floor<std::chrono::seconds>(entry.timestamp)
 	);
 
 	return std::format(
 		"{:%F %H:%M:%S %Z} [{}] [{}] {}{}{}\n",
 		localtime,
 		entry.logname,
-		entry.GetLevelStr(entry.level),
+		entry.GetLevelStr(entry.entrylevel),
 		entry.message,
 		GetSourceLocation(entry),
 		GetStacktrace(entry)
@@ -24,10 +24,10 @@ std::string BasicTextFormatter::Format(const Entry &entry) const
 
 std::string BasicTextFormatter::GetSourceLocation(const Entry &entry) const
 {
-	if (!entry.srcloc.has_value() || entry.level != Entry::Level::Debug)
+	if (!entry.location.has_value() || entry.entrylevel != Entry::Level::Debug)
 		return "";
 
-	std::source_location srcloc = entry.srcloc.value();
+	std::source_location srcloc = entry.location.value();
 
 	return std::format(
 		"\n    >> {}\n    >> {}({},{})",

@@ -4,6 +4,8 @@
 #include <source_location>
 #include <stacktrace>
 
+#include "NetBaseAPI.h"
+
 #include "../TextFormatter.h"
 
 /*
@@ -13,7 +15,7 @@
 *
 *	Format: Turns a log entry into a formatted string
 */
-class BasicTextFormatter : public TextFormatter
+class NETBASE_API BasicTextFormatter : public TextFormatter
 {
 public:
 	BasicTextFormatter() = default;
