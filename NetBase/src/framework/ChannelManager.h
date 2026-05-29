@@ -4,11 +4,11 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 #include "NetBaseAPI.h"
 
 #include "Channel.h"
+#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -38,7 +38,8 @@ public:
 	void Destroy(std::string channelname);
 
 private:
-	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 
 	std::shared_ptr<Log> log;
 };

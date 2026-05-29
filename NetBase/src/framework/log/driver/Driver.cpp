@@ -28,12 +28,22 @@ std::string &Driver::GetName()
 	return drivername;
 }
 
-const std::vector<std::shared_ptr<Sink>> Driver::GetSinks() const
+std::vector<std::string> Driver::GetSinkConfig() const
 {
-	return sinks;
+	std::vector<std::string> sinkcfg;
+
+	for (const auto &sink: sinks)
+		sinkcfg.push_back(sink->GetName());
+
+	return sinkcfg;
 }
 
-const std::vector<std::shared_ptr<Policy>> Driver::GetPolicies() const
+std::vector<std::string> Driver::GetPolicyConfig() const
 {
-	return policies;
+	std::vector<std::string> policycfg;
+
+	for (const auto &policy: policies)
+		policycfg.push_back(policy->GetName());
+
+	return policycfg;
 }

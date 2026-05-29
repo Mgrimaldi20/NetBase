@@ -51,19 +51,19 @@ public:
 	~Log();
 
 	template<typename ...Args>
-	inline EntryBuilder Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline EntryBuilder Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline EntryBuilder Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline EntryBuilder Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	inline EntryBuilder Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	void SetLogName(std::string name);
 	void AttachDriver(std::shared_ptr<Driver> driver);

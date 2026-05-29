@@ -4,14 +4,9 @@
 #include "Log.h"
 
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
-	: logname(std::move(logname)),
-	driver(driver)
 {
-	for (const auto &sink : this->driver->GetSinks())
-		Info("Attached sink: {}", sink->GetName());
-
-	for (const auto &policy : this->driver->GetPolicies())
-		Info("Attached sink: {}", policy->GetName());
+	SetLogName(std::move(logname));
+	AttachDriver(driver);
 
 	Info("Logger started: {}", this->logname);
 }
@@ -30,4 +25,10 @@ void Log::AttachDriver(std::shared_ptr<Driver> driver)
 {
 	this->driver = driver;
 	Info("Attached new driver: {}", driver->GetName());
+
+	for (const auto &sinkname : driver->GetSinkConfig())
+		Info("Attached sink: {}", sinkname);
+
+	for (const auto &policyname : driver->GetPolicyConfig())
+		Info("Attached policy: {}", policyname);
 }

@@ -38,7 +38,7 @@ public:
 	EntryBuilder &Stacktrace(std::stacktrace trace);
 
 private:
-	std::string_view GetLevelStr(Entry::Level entrylevel) const override final;
+	std::string_view GetLevelStr(Entry::Level level) const override final;
 
 	std::weak_ptr<Driver> dest;
 };

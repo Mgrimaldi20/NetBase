@@ -36,8 +36,8 @@ public:
 
 	std::string &GetName();
 
-	const std::vector<std::shared_ptr<Sink>> GetSinks() const;
-	const std::vector<std::shared_ptr<Policy>> GetPolicies() const;
+	std::vector<std::string> GetSinkConfig() const;
+	std::vector<std::string> GetPolicyConfig() const;
 
 private:
 	std::string drivername;

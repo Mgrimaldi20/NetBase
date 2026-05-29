@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
+		/*std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
 
 		log->Info("Loaded plugin library: {}", dylibpath.string());
 
@@ -92,9 +92,9 @@ int main(int argc, char **argv)
 		catch (const std::exception &e)
 		{
 			throw e;	// rethrow the exception to be caught by global
-		}
+		}*/
 
-		Server server(serverport, ioctx, log, dispatcher, parser);
+		Server server(serverport, ioctx, log, dispatcher, /*parser*/nullptr);
 
 		ioctx.run();
 

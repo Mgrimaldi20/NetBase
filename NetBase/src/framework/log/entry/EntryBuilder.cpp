@@ -55,9 +55,9 @@ EntryBuilder &EntryBuilder::Stacktrace(std::stacktrace trace)
 	return *this;
 }
 
-std::string_view EntryBuilder::GetLevelStr(Entry::Level entrylevel) const
+std::string_view EntryBuilder::GetLevelStr(Entry::Level level) const
 {
-	switch (entrylevel)
+	switch (level)
 	{
 		case Entry::Level::Debug: return "DEBUG";
 		case Entry::Level::Info: return "INFO";

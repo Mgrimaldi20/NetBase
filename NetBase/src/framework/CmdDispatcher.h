@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <unordered_map>
 #include <functional>
 #include <string_view>
 #include <initializer_list>
@@ -12,6 +11,7 @@
 #include "NetBaseAPI.h"
 
 #include "Client.h"
+#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -47,7 +47,8 @@ public:
 	void Dispatch(std::weak_ptr<Client> client, CmdDispatcher::ParsedCmd parsedcmd);
 
 private:
-	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 
 	std::shared_ptr<Log> log;
 };

@@ -82,7 +82,7 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
-)
+ "src/framework/PImplPtr.h")
 
 # Include different source code depending on OS
 if(WIN32)

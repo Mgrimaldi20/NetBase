@@ -8,10 +8,10 @@ SourceLocationPolicy::SourceLocationPolicy(Entry::Level level)
 
 bool SourceLocationPolicy::Transform(Entry &entry)
 {
-	if (entry.level == level)
+	if (entry.entrylevel == level)
 		return true;
 
-	entry.srcloc.reset();
+	entry.location.reset();
 	return true;
 }
 

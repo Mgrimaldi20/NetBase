@@ -1,4 +1,17 @@
+#include <unordered_map>
+
 #include "CmdDispatcher.h"
+
+struct CmdDispatcher::Impl
+{
+	Impl()
+		: handlers()
+	{}
+
+	~Impl() = default;
+
+	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
+};
 
 CmdDispatcher::CmdDispatcher(std::shared_ptr<Log> log)
 	: log(log)
@@ -13,7 +26,7 @@ CmdDispatcher::~CmdDispatcher()
 
 void CmdDispatcher::Register(std::uint_least16_t cmdid, CmdHandlerFn fn)
 {
-	bool inserted = handlers.emplace(cmdid, fn).second;
+	bool inserted = pimpl->handlers.emplace(cmdid, fn).second;
 
 	if (!inserted)
 		log->Warn("Failed to register CmdHandler");
@@ -29,7 +42,7 @@ void CmdDispatcher::Register(std::initializer_list<std::pair<std::uint_least16_t
 
 void CmdDispatcher::Dispatch(std::weak_ptr<Client> client, CmdDispatcher::ParsedCmd parsedcmd)
 {
-	CmdHandlerFn handler = handlers.at(parsedcmd.cmdid);
+	CmdHandlerFn handler = pimpl->handlers.at(parsedcmd.cmdid);
 
 	if (!handler)
 		return;

@@ -2,11 +2,23 @@
 #include <iterator>
 #include <utility>
 #include <exception>
+#include <unordered_map>
 
 #include "ChannelManager.h"
 
+struct ChannelManager::Impl
+{
+	Impl()
+		: channels()
+	{}
+
+	~Impl() = default;
+
+	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
+};
+
 ChannelManager::ChannelManager(std::shared_ptr<Log> log)
-	: channels(),
+	: pimpl(),
 	log(log)
 {
 	log->Info("Channel Manager started");
@@ -19,7 +31,7 @@ ChannelManager::~ChannelManager()
 
 std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
 {
-	auto [it, inserted] = channels.emplace(
+	auto [it, inserted] = pimpl->channels.emplace(
 		channelname,
 		std::make_shared<Channel>(
 			channelname,
@@ -35,8 +47,8 @@ std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
 
 std::shared_ptr<Channel> ChannelManager::Fetch(std::string channelname)
 {
-	auto it = channels.find(channelname);
-	if (it != channels.end())
+	auto it = pimpl->channels.find(channelname);
+	if (it != pimpl->channels.end())
 		return it->second;
 
 	return nullptr;
@@ -45,7 +57,7 @@ std::shared_ptr<Channel> ChannelManager::Fetch(std::string channelname)
 std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 {
 	std::vector<std::shared_ptr<Channel>> elements;
-	elements.reserve(channels.size());
+	elements.reserve(pimpl->channels.size());
 
 	auto Transformer = [](const std::pair<const std::string, std::shared_ptr<Channel>> &pair)
 	{
@@ -53,8 +65,8 @@ std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 	};
 
 	std::transform(
-		channels.begin(),
-		channels.end(),
+		pimpl->channels.begin(),
+		pimpl->channels.end(),
 		std::back_inserter(elements),
 		Transformer
 	);
@@ -64,7 +76,7 @@ std::vector<std::shared_ptr<Channel>> ChannelManager::FetchAll()
 
 bool ChannelManager::Exists(std::string channelname)
 {
-	return channels.contains(channelname);
+	return pimpl->channels.contains(channelname);
 }
 
 void ChannelManager::Destroy(std::string channelname)
@@ -72,5 +84,5 @@ void ChannelManager::Destroy(std::string channelname)
 	if (!Exists(channelname))
 		return;
 
-	channels.erase(channelname);
+	pimpl->channels.erase(channelname);
 }

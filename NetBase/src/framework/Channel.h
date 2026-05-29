@@ -1,13 +1,13 @@
 #ifndef __NETBASE_FRAMEWORK_CHANNEL_H__
 #define __NETBASE_FRAMEWORK_CHANNEL_H__
 
-#include <unordered_set>
 #include <string>
 #include <memory>
 
 #include "NetBaseAPI.h"
 
 #include "Client.h"
+#include "PImplPtr.h"
 
 #include "log/Log.h"
 
@@ -33,9 +33,9 @@ public:
 	void Broadcast(std::string message);
 
 private:
-	std::unordered_set<std::shared_ptr<Client>> clients;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 
-	std::string channelname;
 	std::shared_ptr<Log> log;
 };
 
