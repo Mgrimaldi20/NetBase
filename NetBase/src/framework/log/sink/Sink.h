@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "NetBaseAPI.h"
+
 #include "../entry/Entry.h"
 
 /*
@@ -14,7 +16,7 @@
 *	Write: Pure virtual function, designed to write an entry to the destination
 *	GetName: Pure virtual function, get the name of the sink, can be set to anything
 */
-class Sink
+class NETBASE_API Sink
 {
 public:
 	Sink() = default;

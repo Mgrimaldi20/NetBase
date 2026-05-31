@@ -3,6 +3,8 @@
 
 #include "NetBaseAPI.h"
 
+#include "../../../../PImplPtr.h"
+
 #include "../TextSink.h"
 
 /*
@@ -17,7 +19,7 @@ class NETBASE_API ConsoleSink : public TextSink
 {
 public:
 	ConsoleSink(std::unique_ptr<TextFormatter> formatter = {});
-	virtual ~ConsoleSink() = default;
+	virtual ~ConsoleSink();
 
 	void Write(const Entry &entry) override final;
 	std::string &GetName() override final;
@@ -25,8 +27,8 @@ public:
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
-	std::string sinkname;
-	std::unique_ptr<TextFormatter> formatter;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 };
 
 #endif

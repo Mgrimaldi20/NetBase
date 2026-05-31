@@ -3,32 +3,43 @@
 
 #include "Log.h"
 
+struct Log::Impl
+{
+	Impl() = default;
+	~Impl() = default;
+
+	std::string logname;
+	std::shared_ptr<Driver> driver;
+};
+
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
+	: pimpl(PImplPtr<Log::Impl>::MakePImpl())
 {
 	SetLogName(std::move(logname));
 	AttachDriver(driver);
 
-	Info("Logger started: {}", this->logname);
+	Info("Logger started: {}", this->pimpl->logname);
 }
 
 Log::~Log()
 {
-	Info("Shutting down the Logger: {}", logname);
+	Info("Shutting down the Logger: {}", pimpl->logname);
 }
 
 void Log::SetLogName(std::string name)
 {
-	logname = std::move(name);
+	pimpl->logname = std::move(name);
 }
 
-void Log::AttachDriver(std::shared_ptr<Driver> driver)
+void Log::AttachDriver(std::shared_ptr<Driver> newdriver)
 {
-	this->driver = driver;
-	Info("Attached new driver: {}", driver->GetName());
+	this->pimpl->driver = newdriver;
 
-	for (const auto &sinkname : driver->GetSinkConfig())
+	Info("Attached new driver: {}", pimpl->driver->GetName());
+
+	for (const auto &sinkname : pimpl->driver->GetSinkConfig())
 		Info("Attached sink: {}", sinkname);
 
-	for (const auto &policyname : driver->GetPolicyConfig())
+	for (const auto &policyname : pimpl->driver->GetPolicyConfig())
 		Info("Attached policy: {}", policyname);
 }

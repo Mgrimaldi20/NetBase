@@ -7,8 +7,11 @@
 #include <string>
 #include <source_location>
 #include <type_traits>
+#include <utility>
 
 #include "NetBaseAPI.h"
+
+#include "../PImplPtr.h"
 
 #include "entry/Entry.h"
 #include "entry/EntryBuilder.h"
@@ -66,11 +69,11 @@ public:
 	EntryBuilder Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	void SetLogName(std::string name);
-	void AttachDriver(std::shared_ptr<Driver> driver);
+	void AttachDriver(std::shared_ptr<Driver> newdriver);
 
 private:
-	std::string logname;
-	std::shared_ptr<Driver> driver;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 };
 
 template<typename ...Args>
@@ -78,10 +81,10 @@ inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...>
 {
 #if defined(NETBASE_DEBUG)
 	return EntryBuilder(fmt.loc)
-		.Name(logname)
+		.Name(pimpl->logname)
 		.Level(Entry::Level::Debug)
 		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(driver);
+		.Dest(pimpl->driver);
 #else
 	(void)fmt;
 	(void)std::initializer_list<int>{((void)args, 0)...};
@@ -94,40 +97,40 @@ template<typename ...Args>
 inline EntryBuilder Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return EntryBuilder(fmt.loc)
-		.Name(logname)
+		.Name(pimpl->logname)
 		.Level(Entry::Level::Info)
 		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(driver);
+		.Dest(pimpl->driver);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return EntryBuilder(fmt.loc)
-		.Name(logname)
+		.Name(pimpl->logname)
 		.Level(Entry::Level::Warn)
 		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(driver);
+		.Dest(pimpl->driver);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return EntryBuilder(fmt.loc)
-		.Name(logname)
+		.Name(pimpl->logname)
 		.Level(Entry::Level::Error)
 		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(driver);
+		.Dest(pimpl->driver);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return EntryBuilder(fmt.loc)
-		.Name(logname)
+		.Name(pimpl->logname)
 		.Level(Entry::Level::Fatal)
 		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(driver);
+		.Dest(pimpl->driver);
 }
 
 #endif

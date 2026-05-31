@@ -3,6 +3,8 @@
 
 #include "NetBaseAPI.h"
 
+#include "../../../PImplPtr.h"
+
 #include "../../entry/Entry.h"
 
 #include "../Policy.h"
@@ -18,13 +20,14 @@ class NETBASE_API SourceLocationPolicy : public Policy
 {
 public:
 	SourceLocationPolicy(Entry::Level level);
-	virtual ~SourceLocationPolicy() = default;
+	virtual ~SourceLocationPolicy();
 
 	bool Transform(Entry &entry) override final;
 	std::string &GetName() override final;
 
 private:
-	std::string policyname;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 
 	Entry::Level level;
 };

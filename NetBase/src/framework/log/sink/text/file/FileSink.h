@@ -6,6 +6,8 @@
 
 #include "NetBaseAPI.h"
 
+#include "../../../../PImplPtr.h"
+
 #include "../TextSink.h"
 
 /*
@@ -21,7 +23,7 @@ class NETBASE_API FileSink : public TextSink
 {
 public:
 	FileSink(const std::filesystem::path &fullpath, std::unique_ptr<TextFormatter> formatter = {});
-	virtual ~FileSink() = default;
+	virtual ~FileSink();
 
 	void Write(const Entry &entry) override final;
 	std::string &GetName() override final;
@@ -29,10 +31,8 @@ public:
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;
 
 private:
-	std::ofstream logfile;
-	std::string sinkname;
-
-	std::unique_ptr<TextFormatter> formatter;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 };
 
 #endif

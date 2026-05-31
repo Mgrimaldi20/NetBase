@@ -1,10 +1,23 @@
 #include "StacktracePolicy.h"
 
+struct StacktracePolicy::Impl
+{
+	Impl(std::string policyname)
+		: policyname(policyname)
+	{}
+
+	~Impl() = default;
+
+	std::string policyname;
+};
+
 StacktracePolicy::StacktracePolicy(Entry::Level level)
-	: policyname("StacktracePolicy"),
+	: pimpl(PImplPtr<StacktracePolicy::Impl>::MakePImpl("StacktracePolicy")),
 	level(level)
 {
 }
+
+StacktracePolicy::~StacktracePolicy() = default;
 
 bool StacktracePolicy::Transform(Entry &entry)
 {
@@ -17,5 +30,5 @@ bool StacktracePolicy::Transform(Entry &entry)
 
 std::string &StacktracePolicy::GetName()
 {
-	return policyname;
+	return pimpl->policyname;
 }

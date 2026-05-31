@@ -1,10 +1,23 @@
 #include "SourceLocationPolicy.h"
 
+struct SourceLocationPolicy::Impl
+{
+	Impl(std::string policyname)
+		: policyname(policyname)
+	{}
+
+	~Impl() = default;
+
+	std::string policyname;
+};
+
 SourceLocationPolicy::SourceLocationPolicy(Entry::Level level)
-	: policyname("SourceLocationPolicy"),
+	: pimpl(PImplPtr<SourceLocationPolicy::Impl>::MakePImpl("SourceLocationPolicy")),
 	level(level)
 {
 }
+
+SourceLocationPolicy::~SourceLocationPolicy() = default;
 
 bool SourceLocationPolicy::Transform(Entry &entry)
 {
@@ -17,5 +30,5 @@ bool SourceLocationPolicy::Transform(Entry &entry)
 
 std::string &SourceLocationPolicy::GetName()
 {
-	return policyname;
+	return pimpl->policyname;
 }

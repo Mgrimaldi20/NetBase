@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "NetBaseAPI.h"
+
 #include "../../formatter/text/TextFormatter.h"
 
 #include "../Sink.h"
@@ -16,7 +18,7 @@
 *	GetName: Pure virtual function, get the name of the sink, can be set to anything - from Sink interface
 *	SetFormatter: Pure virtual function, sets the text formatter for text based outputs
 */
-class TextSink : public Sink
+class NETBASE_API TextSink : public Sink
 {
 public:
 	TextSink() = default;

@@ -14,7 +14,8 @@ struct CmdDispatcher::Impl
 };
 
 CmdDispatcher::CmdDispatcher(std::shared_ptr<Log> log)
-	: log(log)
+	: pimpl(PImplPtr<CmdDispatcher::Impl>::MakePImpl()),
+	log(log)
 {
 	log->Info("Command Dispatcher started");
 }

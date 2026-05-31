@@ -16,7 +16,7 @@ struct Channel::Impl
 };
 
 Channel::Channel(std::string channelname, std::shared_ptr<Log> log)
-	: pimpl(std::move(channelname)),
+	: pimpl(PImplPtr<Channel::Impl>::MakePImpl(std::move(channelname))),
 	log(log)
 {
 	log->Info("Channel: {} has been created", channelname);

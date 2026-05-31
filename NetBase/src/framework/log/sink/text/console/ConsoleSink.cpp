@@ -2,24 +2,38 @@
 
 #include "ConsoleSink.h"
 
+struct ConsoleSink::Impl
+{
+	Impl(std::string sinkname, std::unique_ptr<TextFormatter> formatter)
+		: sinkname(sinkname),
+		formatter(std::move(formatter))
+	{}
+
+	~Impl() = default;
+
+	std::string sinkname;
+	std::unique_ptr<TextFormatter> formatter;
+};
+
 ConsoleSink::ConsoleSink(std::unique_ptr<TextFormatter> formatter)
-	: sinkname("STDOUT"),
-	formatter(std::move(formatter))
+	: pimpl(PImplPtr<ConsoleSink::Impl>::MakePImpl("STDOUT", std::move(formatter)))
 {
 }
 
+ConsoleSink::~ConsoleSink() = default;
+
 void ConsoleSink::Write(const Entry &entry)
 {
-	if (formatter)
-		std::print("{}", formatter->Format(entry));
+	if (pimpl->formatter)
+		std::print("{}", pimpl->formatter->Format(entry));
 }
 
 std::string &ConsoleSink::GetName()
 {
-	return sinkname;
+	return pimpl->sinkname;
 }
 
 void ConsoleSink::SetFormatter(std::unique_ptr<TextFormatter> fmtter)
 {
-	formatter = std::move(fmtter);
+	pimpl->formatter = std::move(fmtter);
 }

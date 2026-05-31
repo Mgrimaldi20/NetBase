@@ -18,7 +18,7 @@ struct ChannelManager::Impl
 };
 
 ChannelManager::ChannelManager(std::shared_ptr<Log> log)
-	: pimpl(),
+	: pimpl(PImplPtr<ChannelManager::Impl>::MakePImpl()),
 	log(log)
 {
 	log->Info("Channel Manager started");

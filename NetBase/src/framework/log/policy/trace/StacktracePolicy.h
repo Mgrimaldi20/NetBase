@@ -3,6 +3,8 @@
 
 #include "NetBaseAPI.h"
 
+#include "../../../PImplPtr.h"
+
 #include "../../entry/Entry.h"
 
 #include "../Policy.h"
@@ -18,13 +20,14 @@ class NETBASE_API StacktracePolicy : public Policy
 {
 public:
 	StacktracePolicy(Entry::Level level);
-	virtual ~StacktracePolicy() = default;
+	virtual ~StacktracePolicy();
 
 	bool Transform(Entry &entry) override final;
 	std::string &GetName() override final;
 
 private:
-	std::string policyname;
+	struct Impl;
+	PImplPtr<Impl> pimpl;
 
 	Entry::Level level;
 };
