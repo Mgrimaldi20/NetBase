@@ -63,7 +63,7 @@ inline PImplPtr<T> &PImplPtr<T>::operator=(PImplPtr &&other) noexcept
 		other.deleter = nullptr;
 	}
 
-	return *this
+	return *this;
 }
 
 template<typename T>
