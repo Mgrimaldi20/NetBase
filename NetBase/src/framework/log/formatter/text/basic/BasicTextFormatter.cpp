@@ -1,6 +1,8 @@
 #include <chrono>
 #include <format>
 #include <sstream>
+#include <source_location>
+#include <stacktrace>
 
 #include "BasicTextFormatter.h"
 

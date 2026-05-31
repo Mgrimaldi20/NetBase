@@ -19,8 +19,6 @@
 class EntryBuilder : private Entry
 {
 public:
-	EntryBuilder() = default;
-
 	EntryBuilder(
 		std::source_location srcloc = std::source_location::current(),
 		std::chrono::system_clock::time_point time = std::chrono::system_clock::now()

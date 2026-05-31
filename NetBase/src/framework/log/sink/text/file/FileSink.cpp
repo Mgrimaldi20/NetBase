@@ -1,5 +1,6 @@
 #include <ostream>
 #include <print>
+#include <fstream>
 
 #include "FileSink.h"
 
@@ -40,6 +41,11 @@ void FileSink::Write(const Entry &entry)
 {
 	if (pimpl->formatter)
 		std::print(pimpl->logfile, "{}", pimpl->formatter->Format(entry));
+}
+
+void FileSink::Flush()
+{
+	pimpl->logfile.flush();
 }
 
 std::string &FileSink::GetName()

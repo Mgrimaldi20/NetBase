@@ -70,6 +70,7 @@ install(FILES
 
 install(FILES
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/log/entry/Entry.h"
+	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/log/entry/EntryBuilder.h"
 	DESTINATION NetBase/sdk/framework/log/entry
 )
 

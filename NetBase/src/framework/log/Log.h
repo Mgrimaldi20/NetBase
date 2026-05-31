@@ -53,6 +53,12 @@ public:
 	Log(std::string logname = {}, std::shared_ptr<Driver> driver = {});
 	~Log();
 
+	EntryBuilder Debug(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder Info(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder Warn(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder Error(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder Fatal(std::string msg, std::source_location loc = std::source_location::current());
+
 	template<typename ...Args>
 	EntryBuilder Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 

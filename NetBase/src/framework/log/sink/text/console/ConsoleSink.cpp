@@ -1,4 +1,5 @@
 #include <print>
+#include <iostream>
 
 #include "ConsoleSink.h"
 
@@ -25,7 +26,12 @@ ConsoleSink::~ConsoleSink() = default;
 void ConsoleSink::Write(const Entry &entry)
 {
 	if (pimpl->formatter)
-		std::print("{}", pimpl->formatter->Format(entry));
+		std::print(std::cout, "{}", pimpl->formatter->Format(entry));
+}
+
+void ConsoleSink::Flush()
+{
+	std::cout.flush();
 }
 
 std::string &ConsoleSink::GetName()

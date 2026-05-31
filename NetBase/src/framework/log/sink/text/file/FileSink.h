@@ -1,7 +1,6 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_SINK_TEXT_FILE_FILESINK_H__
 #define __NETBASE_FRAMEWORK_LOG_SINK_TEXT_FILE_FILESINK_H__
 
-#include <fstream>
 #include <filesystem>
 
 #include "NetBaseAPI.h"
@@ -16,6 +15,7 @@
 * The Sink will create the file and directory/s if they do not exist.
 * 
 *	Write: Writes a formatted log entry to the file opened
+*	Flush: Immediately writes to the file instead of buffering
 *	GetName: Gets the name of the file Sink, will be the name of the file
 *	SetFormatter: Sets the internal formatter to a newly defined one
 */
@@ -26,6 +26,8 @@ public:
 	virtual ~FileSink();
 
 	void Write(const Entry &entry) override final;
+	void Flush() override final;
+
 	std::string &GetName() override final;
 
 	void SetFormatter(std::unique_ptr<TextFormatter> fmtter) override final;

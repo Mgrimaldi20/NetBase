@@ -1,9 +1,6 @@
 #ifndef __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 #define __NETBASE_FRAMEWORK_LOG_FORMATTER_TEXT_BASIC_BASICTEXTFORMATTER_H__
 
-#include <source_location>
-#include <stacktrace>
-
 #include "NetBaseAPI.h"
 
 #include "../TextFormatter.h"

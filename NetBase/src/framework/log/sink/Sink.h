@@ -14,6 +14,7 @@
 * For text based sinks, the TextSink derived interface can be used.
 * 
 *	Write: Pure virtual function, designed to write an entry to the destination
+*	Flush: Pure virtual function, should immediately flush the buffer and write
 *	GetName: Pure virtual function, get the name of the sink, can be set to anything
 */
 class NETBASE_API Sink
@@ -23,6 +24,8 @@ public:
 	virtual ~Sink() = default;
 
 	virtual void Write(const Entry &entry) = 0;
+	virtual void Flush() = 0;
+
 	virtual std::string &GetName() = 0;
 };
 

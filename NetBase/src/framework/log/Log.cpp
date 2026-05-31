@@ -26,6 +26,31 @@ Log::~Log()
 	Info("Shutting down the Logger: {}", pimpl->logname);
 }
 
+EntryBuilder Log::Debug(std::string msg, std::source_location loc)
+{
+	return EntryBuilder(loc);
+}
+
+EntryBuilder Log::Info(std::string msg, std::source_location loc)
+{
+	return EntryBuilder(loc);
+}
+
+EntryBuilder Log::Warn(std::string msg, std::source_location loc)
+{
+	return EntryBuilder(loc);
+}
+
+EntryBuilder Log::Error(std::string msg, std::source_location loc)
+{
+	return EntryBuilder(loc);
+}
+
+EntryBuilder Log::Fatal(std::string msg, std::source_location loc)
+{
+	return EntryBuilder(loc);
+}
+
 void Log::SetLogName(std::string name)
 {
 	pimpl->logname = std::move(name);
