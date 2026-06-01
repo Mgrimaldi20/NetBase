@@ -33,7 +33,8 @@ void ClientAPIImpl::RegisterCmds()
 		0,
 		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
 		{
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Create(cmd.data.data());
+			std::string channelname = std::string(cmd.data);
+			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Create(channelname);
 			channel->Join(client.lock());
 		}
 	);
@@ -42,7 +43,8 @@ void ClientAPIImpl::RegisterCmds()
 		1,
 		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
 		{
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(cmd.data.data());
+			std::string channelname = std::string(cmd.data);
+			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(channelname);
 			channel->Broadcast("Hello\n");
 
 			client.lock()->Send("Response Message\n");

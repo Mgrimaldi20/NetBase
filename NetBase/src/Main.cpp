@@ -78,13 +78,13 @@ int main(int argc, char **argv)
 		GetClientAPIFn GetClientAPI = reinterpret_cast<GetClientAPIFn>(std::any_cast<void *>(func));
 
 		// create a new logger instance for the protocol, they can add sinks and policies
-		//std::shared_ptr<Log> clientlog = std::make_shared<Log>();
+		std::shared_ptr<Log> clientlog = std::make_shared<Log>();
 
 		// create the NetBaseAPI impl to send to the protocol library
 		std::shared_ptr<NetBaseAPIImpl> netbaseapi = std::make_shared<NetBaseAPIImpl>(
 			dispatcher,
 			channelmanager,
-			log
+			clientlog
 		);
 
 		ClientAPI *rawclientapi = GetClientAPI(netbaseapi.get());

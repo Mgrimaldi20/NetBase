@@ -50,7 +50,8 @@ public:
 		std::source_location loc;
 	};
 
-	Log(std::string logname = {}, std::shared_ptr<Driver> driver = {});
+	Log();
+	Log(std::string logname, std::shared_ptr<Driver> driver = {});
 
 	~Log();
 

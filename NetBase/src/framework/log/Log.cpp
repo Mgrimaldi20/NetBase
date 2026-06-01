@@ -5,6 +5,11 @@
 
 struct Log::Impl
 {
+	Impl()
+		: logname(),
+		driver()
+	{}
+
 	Impl(std::string logname, std::shared_ptr<Driver> driver)
 		: logname(std::move(logname)),
 		driver(driver)
@@ -16,13 +21,18 @@ struct Log::Impl
 	std::shared_ptr<Driver> driver;
 };
 
+Log::Log()
+	: pimpl(PImplPtr<Log::Impl>::MakePImpl())
+{
+}
+
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
 	: pimpl(PImplPtr<Log::Impl>::MakePImpl(logname, driver))
 {
 	SetLogName(std::move(logname));
 	AttachDriver(driver);
 
-	Info("Logger started: {}", this->pimpl->logname);
+	Info("Logger started: {}", pimpl->logname);
 }
 
 Log::~Log()
@@ -91,12 +101,18 @@ EntryBuilder Log::Fatal(std::string msg, std::source_location loc)
 
 void Log::SetLogName(std::string name)
 {
+	if (name.empty())
+		return;
+
 	pimpl->logname = std::move(name);
 }
 
 void Log::AttachDriver(std::shared_ptr<Driver> newdriver)
 {
-	this->pimpl->driver = newdriver;
+	if (!newdriver)
+		return;
+
+	pimpl->driver = newdriver;
 
 	Info("Attached new driver: {}", pimpl->driver->GetName());
 

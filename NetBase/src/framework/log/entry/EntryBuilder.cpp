@@ -9,8 +9,8 @@ EntryBuilder::EntryBuilder(std::source_location srcloc, std::chrono::system_cloc
 
 EntryBuilder::~EntryBuilder()
 {
-	if (!dest.expired())
-		dest.lock()->Submit(*this);
+	if (std::shared_ptr<Driver> driver = dest.lock())
+		driver->Submit(*this);
 }
 
 EntryBuilder &EntryBuilder::Name(std::string name)
