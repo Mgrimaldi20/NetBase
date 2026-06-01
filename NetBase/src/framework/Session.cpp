@@ -83,14 +83,11 @@ asio::awaitable<void> Session::Reader()
 
 			message.resize(n);
 
-			if (parser)
-			{
-				CmdDispatcher::ParsedCmd parsedcmd = CmdDispatcher::ParsedCmd::Map(
-					parser->Parse(message, message.size())
-				);
+			CmdDispatcher::ParsedCmd parsedcmd = CmdDispatcher::ParsedCmd::Map(
+				parser->Parse(message, message.size())
+			);
 
-				dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
-			}
+			dispatcher->Dispatch(shared_from_this(), std::move(parsedcmd));
 		}
 	}
 

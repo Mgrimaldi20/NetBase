@@ -99,8 +99,6 @@ int main(int argc, char **argv)
 
 		log->Info("Started protocol: {}", clientapi->GetProtocolName());
 
-		log->Debug("Test");
-
 		Server server(serverport, ioctx, log, dispatcher, parser);
 
 		ioctx.run();

@@ -33,7 +33,7 @@ ChannelManager::~ChannelManager()
 
 std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
 {
-	auto [it, inserted] = pimpl->channels.emplace(
+	auto [it, inserted] = pimpl->channels.try_emplace(
 		channelname,
 		std::make_shared<Channel>(
 			channelname,
