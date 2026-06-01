@@ -40,8 +40,6 @@ public:
 private:
 	struct Impl;
 	PImplPtr<Impl> pimpl;
-
-	std::shared_ptr<Log> log;
 };
 
 #endif

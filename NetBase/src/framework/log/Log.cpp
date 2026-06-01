@@ -5,7 +5,11 @@
 
 struct Log::Impl
 {
-	Impl() = default;
+	Impl(std::string logname, std::shared_ptr<Driver> driver)
+		: logname(std::move(logname)),
+		driver(driver)
+	{}
+
 	~Impl() = default;
 
 	std::string logname;
@@ -13,7 +17,7 @@ struct Log::Impl
 };
 
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
-	: pimpl(PImplPtr<Log::Impl>::MakePImpl())
+	: pimpl(PImplPtr<Log::Impl>::MakePImpl(logname, driver))
 {
 	SetLogName(std::move(logname));
 	AttachDriver(driver);
@@ -28,27 +32,61 @@ Log::~Log()
 
 EntryBuilder Log::Debug(std::string msg, std::source_location loc)
 {
-	return EntryBuilder(loc);
+#if defined(NETBASE_DEBUG)
+	return std::move(
+		EntryBuilder(loc)
+		.Name(pimpl->logname)
+		.Level(Entry::Level::Debug)
+		.Message(msg)
+		.Dest(pimpl->driver)
+	);
+#else
+	return {};
+#endif
 }
 
 EntryBuilder Log::Info(std::string msg, std::source_location loc)
 {
-	return EntryBuilder(loc);
+	return std::move(
+		EntryBuilder(loc)
+		.Name(pimpl->logname)
+		.Level(Entry::Level::Info)
+		.Message(msg)
+		.Dest(pimpl->driver)
+	);
 }
 
 EntryBuilder Log::Warn(std::string msg, std::source_location loc)
 {
-	return EntryBuilder(loc);
+	return std::move(
+		EntryBuilder(loc)
+		.Name(pimpl->logname)
+		.Level(Entry::Level::Warn)
+		.Message(msg)
+		.Dest(pimpl->driver)
+	);
 }
 
 EntryBuilder Log::Error(std::string msg, std::source_location loc)
 {
-	return EntryBuilder(loc);
+	return std::move(
+		EntryBuilder(loc)
+		.Name(pimpl->logname)
+		.Level(Entry::Level::Error)
+		.Message(msg)
+		.Dest(pimpl->driver)
+	);
 }
 
 EntryBuilder Log::Fatal(std::string msg, std::source_location loc)
 {
-	return EntryBuilder(loc);
+	return std::move(
+		EntryBuilder(loc)
+		.Name(pimpl->logname)
+		.Level(Entry::Level::Fatal)
+		.Message(msg)
+		.Dest(pimpl->driver)
+	);
 }
 
 void Log::SetLogName(std::string name)

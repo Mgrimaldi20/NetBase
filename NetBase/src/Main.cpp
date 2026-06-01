@@ -63,38 +63,45 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		/*std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
+		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
 
 		log->Info("Loaded plugin library: {}", dylibpath.string());
 
 		std::any func = dylib->GetSymbol("GetClientAPI");
 
+		if (func.type() != typeid(void *))
+			throw std::runtime_error("Failed to get GetClientAPI function, expected type: void *");
+
 		// to be implemented by the client protocol library
-		using GetClientAPI = std::shared_ptr<ClientAPI>(*)(std::shared_ptr<NetBaseAPI>);
+		using GetClientAPIFn = ClientAPI *(*)(NetBaseAPI *);
 
-		GetClientAPI GetAPI = std::any_cast<GetClientAPI>(func);
+		GetClientAPIFn GetClientAPI = reinterpret_cast<GetClientAPIFn>(std::any_cast<void *>(func));
 
-		// create a new logger instance for the client, they can add sinks and policies
-		std::shared_ptr<ClientAPI> clientapi = GetAPI(
-			std::make_shared<NetBaseAPIImpl>(dispatcher, channelmanager, std::make_shared<Log>())
+		// create a new logger instance for the protocol, they can add sinks and policies
+		//std::shared_ptr<Log> clientlog = std::make_shared<Log>();
+
+		// create the NetBaseAPI impl to send to the protocol library
+		std::shared_ptr<NetBaseAPIImpl> netbaseapi = std::make_shared<NetBaseAPIImpl>(
+			dispatcher,
+			channelmanager,
+			log
 		);
+
+		ClientAPI *rawclientapi = GetClientAPI(netbaseapi.get());
+		std::shared_ptr<ClientAPI> clientapi(rawclientapi, [](ClientAPI *) {});
 
 		std::shared_ptr<ClientAPI::Parser> parser;
 
-		try
-		{
-			if (!clientapi)
-				throw std::runtime_error("Trying to dereference the ClientAPI when its null");
+		parser = clientapi->GetParser();
 
-			parser = clientapi->GetParser();
-		}
+		clientapi->RegisterCmds();
+		log->Info("Registered protocol commands in the CmdSystem");
 
-		catch (const std::exception &e)
-		{
-			throw e;	// rethrow the exception to be caught by global
-		}*/
+		log->Info("Started protocol: {}", clientapi->GetProtocolName());
 
-		Server server(serverport, ioctx, log, dispatcher, /*parser*/nullptr);
+		log->Debug("Test");
+
+		Server server(serverport, ioctx, log, dispatcher, parser);
 
 		ioctx.run();
 

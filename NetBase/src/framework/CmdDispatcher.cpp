@@ -4,25 +4,27 @@
 
 struct CmdDispatcher::Impl
 {
-	Impl()
-		: handlers()
+	Impl(std::shared_ptr<Log> log)
+		: handlers(),
+		log(log)
 	{}
 
 	~Impl() = default;
 
 	std::unordered_map<std::uint_least16_t, CmdHandlerFn> handlers;
+
+	std::shared_ptr<Log> log;
 };
 
 CmdDispatcher::CmdDispatcher(std::shared_ptr<Log> log)
-	: pimpl(PImplPtr<CmdDispatcher::Impl>::MakePImpl()),
-	log(log)
+	: pimpl(PImplPtr<CmdDispatcher::Impl>::MakePImpl(log))
 {
-	log->Info("Command Dispatcher started");
+	pimpl->log->Info("Command Dispatcher started");
 }
 
 CmdDispatcher::~CmdDispatcher()
 {
-	log->Info("Shutting down the Command Dispatcher");
+	pimpl->log->Info("Shutting down the Command Dispatcher");
 }
 
 void CmdDispatcher::Register(std::uint_least16_t cmdid, CmdHandlerFn fn)
@@ -30,9 +32,9 @@ void CmdDispatcher::Register(std::uint_least16_t cmdid, CmdHandlerFn fn)
 	bool inserted = pimpl->handlers.emplace(cmdid, fn).second;
 
 	if (!inserted)
-		log->Warn("Failed to register CmdHandler");
+		pimpl->log->Warn("Failed to register CmdHandler");
 
-	log->Info("Registered command with ID: {}", cmdid);
+	pimpl->log->Info("Registered command with ID: {}", cmdid);
 }
 
 void CmdDispatcher::Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems)

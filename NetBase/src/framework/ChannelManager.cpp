@@ -8,25 +8,27 @@
 
 struct ChannelManager::Impl
 {
-	Impl()
-		: channels()
+	Impl(std::shared_ptr<Log> log)
+		: channels(),
+		log(log)
 	{}
 
 	~Impl() = default;
 
 	std::unordered_map<std::string, std::shared_ptr<Channel>> channels;
+
+	std::shared_ptr<Log> log;
 };
 
 ChannelManager::ChannelManager(std::shared_ptr<Log> log)
-	: pimpl(PImplPtr<ChannelManager::Impl>::MakePImpl()),
-	log(log)
+	: pimpl(PImplPtr<ChannelManager::Impl>::MakePImpl(log))
 {
-	log->Info("Channel Manager started");
+	pimpl->log->Info("Channel Manager started");
 }
 
 ChannelManager::~ChannelManager()
 {
-	log->Info("Shutting down the Channel Manager");
+	pimpl->log->Info("Shutting down the Channel Manager");
 }
 
 std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
@@ -35,12 +37,12 @@ std::shared_ptr<Channel> ChannelManager::Create(std::string channelname)
 		channelname,
 		std::make_shared<Channel>(
 			channelname,
-			log
+			pimpl->log
 		)
 	);
 
 	if (!inserted)
-		log->Warn("Failed to create Channel, already exists, fetching existing Channel: {}", channelname);
+		pimpl->log->Warn("Failed to create Channel, already exists, fetching existing Channel: {}", channelname);
 
 	return it->second;
 }

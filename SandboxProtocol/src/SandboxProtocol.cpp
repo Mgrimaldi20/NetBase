@@ -3,11 +3,13 @@
 #include "ClientAPIImpl.h"
 #include "ParserImpl.h"
 
-__declspec(dllexport) std::shared_ptr<ClientAPI> GetClientAPI(std::shared_ptr<NetBaseAPI> netbaseapi)
+extern "C" __declspec(dllexport) ClientAPI *GetClientAPI(NetBaseAPI *netbaseapi)
 {
-	return std::make_shared<ClientAPIImpl>(
-		netbaseapi,
+	static ClientAPIImpl clientapi(
+		std::shared_ptr<NetBaseAPI>(netbaseapi),
 		std::make_shared<ParserImpl>(),
 		"SandboxProtocol"
 	);
+
+	return &clientapi;
 }

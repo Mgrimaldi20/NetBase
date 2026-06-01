@@ -33,6 +33,11 @@ if(WIN32)
 	target_compile_definitions(SandboxProtocol PRIVATE UNICODE _UNICODE)
 endif()
 
+if(WIN32)
+	target_link_libraries(SandboxProtocol "${CMAKE_BINARY_DIR}/bin/NetBase.lib")
+	message(STATUS "Getting NetBase.lib from: ${CMAKE_BINARY_DIR}/bin/NetBase.lib")
+endif()
+
 # Set up all the compiler options here
 # MSVC compiler options
 if(MSVC)

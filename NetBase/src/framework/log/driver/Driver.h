@@ -27,7 +27,7 @@ class NETBASE_API Driver
 {
 public:
 	Driver(
-		std::string drivername,
+		std::string drivername = {},
 		std::vector<std::shared_ptr<Sink>> sinks = {},
 		std::vector<std::shared_ptr<Policy>> policies = {}
 	);

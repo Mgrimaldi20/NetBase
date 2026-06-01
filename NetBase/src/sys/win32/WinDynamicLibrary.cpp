@@ -48,7 +48,7 @@ std::any WinDynamicLibrary::GetSymbol(const std::string &funcname)
 		);
 	}
 
-	return func;
+	return reinterpret_cast<void *>(func);
 }
 
 std::unique_ptr<DynamicLibrary> DynamicLibrary::CreateDynamicLibrary(const std::filesystem::path &fullpath)

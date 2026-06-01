@@ -21,9 +21,15 @@ add_subdirectory("SandboxProtocol")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 message(STATUS "Binary output directory set: ${CMAKE_BINARY_DIR}")
+
 set_target_properties(NetBase PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set_target_properties(NetBase PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set_target_properties(NetBase PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 set_target_properties(SandboxProtocol PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set_target_properties(SandboxProtocol PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+add_dependencies(SandboxProtocol NetBase)
 
 ############################################################################################################
 ############################################## Install Targets #############################################
@@ -31,6 +37,7 @@ set_target_properties(SandboxProtocol PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAK
 # Install the executable and DLLs to the bin directory
 if(WIN32)
 	install(TARGETS NetBase
+		ARCHIVE DESTINATION NetBase/lib
 		RUNTIME DESTINATION NetBase/bin
 	)
 endif()
@@ -55,6 +62,7 @@ install(FILES
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/CmdDispatcher.h"
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/Client.h"
 	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/Channel.h"
+	"${CMAKE_SOURCE_DIR}/NetBase/src/framework/PImplPtr.h"
 	DESTINATION NetBase/sdk/framework
 )
 

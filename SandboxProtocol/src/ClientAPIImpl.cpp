@@ -1,15 +1,3 @@
-#include "../../NetBase/src/framework/CmdDispatcher.h"
-#include "../../NetBase/src/framework/ChannelManager.h"
-#include "../../NetBase/src/framework/Channel.h"
-
-#include "../../NetBase/src/framework/log/Log.h"
-#include "../../NetBase/src/framework/log/entry/Entry.h"
-#include "../../NetBase/src/framework/log/sink/text/console/ConsoleSink.h"
-#include "../../NetBase/src/framework/log/sink/text/file/FileSink.h"
-#include "../../NetBase/src/framework/log/formatter/text/basic/BasicTextFormatter.h"
-#include "../../NetBase/src/framework/log/policy/trace/StacktracePolicy.h"
-#include "../../NetBase/src/framework/log/policy/trace/SourceLocationPolicy.h"
-
 #include "ClientAPIImpl.h"
 
 ClientAPIImpl::ClientAPIImpl(
@@ -23,10 +11,20 @@ ClientAPIImpl::ClientAPIImpl(
 {
 	netbaseapi->GetLogger()->SetLogName(this->protoname);
 
-	netbaseapi->GetLogger()->AttachSink(std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>()));
-
-	netbaseapi->GetLogger()->AttachPolicy(std::make_shared<StacktracePolicy>(Entry::Level::Fatal));
-	netbaseapi->GetLogger()->AttachPolicy(std::make_shared<SourceLocationPolicy>(Entry::Level::Debug));
+	netbaseapi->GetLogger()->AttachDriver(
+		std::make_shared<Driver>(
+			"ClientAPIMainDriver",
+			std::vector<std::shared_ptr<Sink>>
+			{
+				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
+			},
+			std::vector<std::shared_ptr<Policy>>
+			{
+				std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
+				std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
+			}
+		)
+	);
 }
 
 void ClientAPIImpl::RegisterCmds()
@@ -35,7 +33,7 @@ void ClientAPIImpl::RegisterCmds()
 		0,
 		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
 		{
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Create(cmd.data.data());
+			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Create(std::string(cmd.data.data()));
 			channel->Join(client.lock());
 		}
 	);
@@ -44,7 +42,7 @@ void ClientAPIImpl::RegisterCmds()
 		1,
 		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
 		{
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(cmd.data.data());
+			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(std::string(cmd.data.data()));
 			channel->Broadcast("Hello\n");
 
 			client.lock()->Send("Response Message\n");

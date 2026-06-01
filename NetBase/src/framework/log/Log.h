@@ -51,6 +51,7 @@ public:
 	};
 
 	Log(std::string logname = {}, std::shared_ptr<Driver> driver = {});
+
 	~Log();
 
 	EntryBuilder Debug(std::string msg, std::source_location loc = std::source_location::current());
@@ -86,11 +87,7 @@ template<typename ...Args>
 inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 #if defined(NETBASE_DEBUG)
-	return EntryBuilder(fmt.loc)
-		.Name(pimpl->logname)
-		.Level(Entry::Level::Debug)
-		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(pimpl->driver);
+	return Debug(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 #else
 	(void)fmt;
 	(void)std::initializer_list<int>{((void)args, 0)...};
@@ -102,41 +99,25 @@ inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...>
 template<typename ...Args>
 inline EntryBuilder Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	return EntryBuilder(fmt.loc)
-		.Name(pimpl->logname)
-		.Level(Entry::Level::Info)
-		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(pimpl->driver);
+	return Info(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	return EntryBuilder(fmt.loc)
-		.Name(pimpl->logname)
-		.Level(Entry::Level::Warn)
-		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(pimpl->driver);
+	return Warn(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	return EntryBuilder(fmt.loc)
-		.Name(pimpl->logname)
-		.Level(Entry::Level::Error)
-		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(pimpl->driver);
+	return Error(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
 inline EntryBuilder Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
-	return EntryBuilder(fmt.loc)
-		.Name(pimpl->logname)
-		.Level(Entry::Level::Fatal)
-		.Message(std::format(fmt.fmt, std::forward<Args>(args)...))
-		.Dest(pimpl->driver);
+	return Fatal(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 #endif
