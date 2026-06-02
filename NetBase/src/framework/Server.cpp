@@ -8,21 +8,20 @@ constexpr int NET_SIGINT = SIGINT;
 constexpr int NET_SIGTERM = SIGTERM;
 
 Server::Server(
-	asio::ip::port_type port,
 	asio::io_context &ioctx,
+	asio::ip::port_type port,
 	std::shared_ptr<Log> log,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<ClientAPI::Parser> parser
+	ClientAPI::Parser &parser
 )
-	: signals(ioctx, NET_SIGINT, NET_SIGTERM),
-	ioctx(ioctx),
-	port(port),
-	log(log)
+	: ioctx(ioctx),
+	log(log),
+	signals(ioctx, NET_SIGINT, NET_SIGTERM)
 {
 	RegisterSignals();
 
 	// start the server and listen for incoming connections on the specified port number
-	asio::co_spawn(ioctx, Listener(dispatcher, parser), asio::detached);
+	asio::co_spawn(ioctx, Listener(port, dispatcher, parser), asio::detached);
 
 	log->Info("Server started");
 	log->Info("NetBase server running on port: {}", port);
@@ -35,21 +34,44 @@ Server::~Server()
 }
 
 asio::awaitable<void> Server::Listener(
+	asio::ip::port_type port,
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<ClientAPI::Parser> parser
+	ClientAPI::Parser &parser
 )
 {
 	asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), port);
-	asio::ip::tcp::acceptor acceptor(ioctx, endpoint);
+	asio::ip::tcp::acceptor acceptor(ioctx.get(), endpoint);
 
-	while (true)
+	try
 	{
-		std::make_shared<Session>(
-			co_await std::move(acceptor.async_accept(asio::use_awaitable)),
-			dispatcher,
-			parser,
-			log
-		)->Start();
+		while (true)
+		{
+			asio::error_code ec;
+			auto socket = co_await acceptor.async_accept(asio::redirect_error(asio::use_awaitable, ec));
+
+			if (ec)
+			{
+				if (ec == asio::error::operation_aborted)
+				{
+					log->Info("Operation aborted: Listener stopped");
+					break;
+				}
+
+				throw std::system_error(ec);
+			}
+
+			std::make_shared<Session>(
+				std::move(socket),
+				dispatcher,
+				parser,
+				log
+			)->Start();
+		}
+	}
+
+	catch (const std::exception &e)
+	{
+		log->Info("Listener exiting: {}", e.what());
 	}
 }
 
@@ -75,6 +97,6 @@ void Server::RegisterSignals()
 		}
 
 		log->Info("Signal received: {} : {}", signal, GetSignalStr(signal));
-		ioctx.stop();
+		ioctx.get().stop();
 	});
 }

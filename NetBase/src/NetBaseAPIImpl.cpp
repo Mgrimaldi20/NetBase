@@ -2,26 +2,26 @@
 
 NetBaseAPIImpl::NetBaseAPIImpl(
 	std::shared_ptr<CmdDispatcher> dispatcher,
-	std::shared_ptr<ChannelManager> manager,
+	std::shared_ptr<ChannelManager> chmanager,
 	std::shared_ptr<Log> log
 )
 	: dispatcher(dispatcher),
-	manager(manager),
+	chmanager(chmanager),
 	log(log)
 {
 }
 
-std::shared_ptr<CmdDispatcher> NetBaseAPIImpl::GetCmdDispatcher()
+CmdDispatcher &NetBaseAPIImpl::GetCmdDispatcher()
 {
-	return dispatcher;
+	return *dispatcher;
 }
 
-std::shared_ptr<ChannelManager> NetBaseAPIImpl::GetChannelManager()
+ChannelManager &NetBaseAPIImpl::GetChannelManager()
 {
-	return manager;
+	return *chmanager;
 }
 
-std::shared_ptr<Log> NetBaseAPIImpl::GetLogger()
+Log &NetBaseAPIImpl::GetLogger()
 {
-	return log;
+	return *log;
 }

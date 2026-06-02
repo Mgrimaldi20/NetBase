@@ -43,7 +43,7 @@ void CmdDispatcher::Register(std::initializer_list<std::pair<std::uint_least16_t
 		Register(key, val);
 }
 
-void CmdDispatcher::Dispatch(std::weak_ptr<Client> client, CmdDispatcher::ParsedCmd parsedcmd)
+void CmdDispatcher::Dispatch(std::weak_ptr<Client> client, ClientAPI::Parser::ParsedCmd parsedcmd)
 {
 	CmdHandlerFn handler = pimpl->handlers.at(parsedcmd.cmdid);
 
@@ -51,13 +51,4 @@ void CmdDispatcher::Dispatch(std::weak_ptr<Client> client, CmdDispatcher::Parsed
 		return;
 
 	handler(client, parsedcmd);
-}
-
-CmdDispatcher::ParsedCmd CmdDispatcher::ParsedCmd::Map(ClientAPI::Parser::ParsedCmd parsedcmd)
-{
-	return
-	{
-		.cmdid = parsedcmd.cmdid,
-		.data = parsedcmd.data
-	};
 }

@@ -43,19 +43,20 @@ public:
 	NetBaseAPI() = default;
 	virtual ~NetBaseAPI() = default;
 
-	virtual std::shared_ptr<CmdDispatcher> GetCmdDispatcher() = 0;
-	virtual std::shared_ptr<ChannelManager> GetChannelManager() = 0;
-	virtual std::shared_ptr<Log> GetLogger() = 0;
+	virtual CmdDispatcher &GetCmdDispatcher() = 0;
+	virtual ChannelManager &GetChannelManager() = 0;
+	virtual Log &GetLogger() = 0;
 };
 
 /*
 * Class: ClientAPI
-* The API interface that is implemented by the client protocol that NetBase uses to parse commands and do protocol setup.
+* The API interface that is implemented by the client protocol, used to parse commands and do protocol setup.
 * The client must implement the virtual functions which provide a parser and the registration function.
-* The registration function is called once at startup of NetBase, and should call the NetBaseAPI command dispatcher to register commands.
+* The registration function is called once at startup of NetBase.
+* This function should call the NetBaseAPI command dispatcher to register commands.
 * 
-*	Parser::Parse: Tells NetBase how to parse a command to determine what command to execute and gives the client protocol its data block
-*	RegisterCmds: Should call the NetBaseAPI registration functions to set up commands with IDs and functor objects (any functor type)
+*	Parser::Parse: Tells NetBase how to parse data to determine what command to execute
+*	RegisterCmds: Should call the NetBaseAPI registration functions to set up commands with IDs and functor objects
 *	GetParser: Gets the created Parser class instance to NetBase which contains the implemented Parse function
 *	GetProtocolName: Retrieves the name of the protocol thats implemented (mostly used for logging)
 */
@@ -65,7 +66,7 @@ public:
 	class Parser
 	{
 	public:
-		struct ParsedCmd	// mapped to internal struct
+		struct ParsedCmd
 		{
 			std::uint_least16_t cmdid;
 			std::string_view data;
@@ -74,19 +75,14 @@ public:
 		Parser() = default;
 		virtual ~Parser() = default;
 
-		virtual ClientAPI::Parser::ParsedCmd Parse(
-			std::string_view data,
-			std::uint_least64_t length
-		) = 0;
+		virtual ClientAPI::Parser::ParsedCmd Parse(std::string_view data) = 0;
 	};
 
 	ClientAPI() = default;
 	virtual ~ClientAPI() = default;
 
 	virtual void RegisterCmds() = 0;
-
-	virtual std::shared_ptr<ClientAPI::Parser> GetParser() = 0;
-
+	virtual ClientAPI::Parser &GetParser() = 0;
 	virtual std::string &GetProtocolName() = 0;
 };
 

@@ -1,19 +1,24 @@
+#include <system_error>
+
+#include "ParserImpl.h"
+
 #include "ClientAPIImpl.h"
 
-ClientAPIImpl::ClientAPIImpl(
-	std::shared_ptr<NetBaseAPI> netbaseapi,
-	std::shared_ptr<ClientAPI::Parser> parser,
-	std::string protoname
-)
+ClientAPIImpl::ClientAPIImpl(NetBaseAPI *netbaseapi, std::string protoname)
 	: netbaseapi(netbaseapi),
-	parser(parser),
+	parser(std::make_shared<ParserImpl>()),
 	protoname(std::move(protoname))
 {
-	netbaseapi->GetLogger()->SetLogName(this->protoname);
+	if (!netbaseapi)
+		throw std::runtime_error("NetBaseAPI is null");
 
-	netbaseapi->GetLogger()->AttachDriver(
+	Log &log = netbaseapi->GetLogger();
+
+	log.SetLogName(this->protoname);
+
+	log.AttachDriver(
 		std::make_shared<Driver>(
-			"ClientAPIMainDriver",
+			"SandboxProtocolMainDriver",
 			std::vector<std::shared_ptr<Sink>>
 			{
 				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
@@ -29,22 +34,25 @@ ClientAPIImpl::ClientAPIImpl(
 
 void ClientAPIImpl::RegisterCmds()
 {
-	netbaseapi->GetCmdDispatcher()->Register(
+	CmdDispatcher &dispatcher = netbaseapi->GetCmdDispatcher();
+	ChannelManager &chmanager = netbaseapi->GetChannelManager();
+
+	dispatcher.Register(
 		0,
-		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
+		[this, &chmanager](std::weak_ptr<Client> client, const ClientAPI::Parser::ParsedCmd &cmd)
 		{
 			std::string channelname = std::string(cmd.data);
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Create(channelname);
+			std::shared_ptr<Channel> channel = chmanager.Create(channelname);
 			channel->Join(client.lock());
 		}
 	);
 
-	netbaseapi->GetCmdDispatcher()->Register(
+	dispatcher.Register(
 		1,
-		[this](std::weak_ptr<Client> client, const CmdDispatcher::ParsedCmd &cmd)
+		[this, &chmanager](std::weak_ptr<Client> client, const ClientAPI::Parser::ParsedCmd &cmd)
 		{
 			std::string channelname = std::string(cmd.data);
-			std::shared_ptr<Channel> channel = netbaseapi->GetChannelManager()->Fetch(channelname);
+			std::shared_ptr<Channel> channel = chmanager.Fetch(channelname);
 			channel->Broadcast("Hello\n");
 
 			client.lock()->Send("Response Message\n");
@@ -52,9 +60,9 @@ void ClientAPIImpl::RegisterCmds()
 	);
 }
 
-std::shared_ptr<ClientAPI::Parser> ClientAPIImpl::GetParser()
+ClientAPI::Parser &ClientAPIImpl::GetParser()
 {
-	return parser;
+	return *parser;
 }
 
 std::string &ClientAPIImpl::GetProtocolName()

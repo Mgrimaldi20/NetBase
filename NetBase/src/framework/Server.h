@@ -2,6 +2,7 @@
 #define __NETBASE_FRAMEWORK_SERVER_H__
 
 #include <memory>
+#include <functional>
 
 #include "NetBaseAPI.h"
 
@@ -19,11 +20,11 @@ class Server
 {
 public:
 	Server(
-		asio::ip::port_type port,
 		asio::io_context &ioctx,
+		asio::ip::port_type port,
 		std::shared_ptr<Log> log,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		std::shared_ptr<ClientAPI::Parser> parser
+		ClientAPI::Parser &parser
 	);
 
 	Server(const Server &) = delete;
@@ -36,17 +37,17 @@ public:
 
 private:
 	asio::awaitable<void> Listener(
+		asio::ip::port_type port,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		std::shared_ptr<ClientAPI::Parser> parser
+		ClientAPI::Parser &parser
 	);
 
 	void RegisterSignals();
 
-	asio::signal_set signals;
-	asio::ip::port_type port;
-	asio::io_context &ioctx;
-
+	std::reference_wrapper<asio::io_context> ioctx;
 	std::shared_ptr<Log> log;
+
+	asio::signal_set signals;
 };
 
 #endif

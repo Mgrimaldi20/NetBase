@@ -28,15 +28,7 @@
 class NETBASE_API CmdDispatcher
 {
 public:
-	struct ParsedCmd
-	{
-		std::uint_least16_t cmdid;
-		std::string_view data;
-
-		static CmdDispatcher::ParsedCmd Map(ClientAPI::Parser::ParsedCmd parsedcmd);
-	};
-
-	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const CmdDispatcher::ParsedCmd &)>;
+	using CmdHandlerFn = std::function<void(std::weak_ptr<Client>, const ClientAPI::Parser::ParsedCmd &)>;
 
 	CmdDispatcher(std::shared_ptr<Log> log);
 	~CmdDispatcher();
@@ -44,7 +36,7 @@ public:
 	void Register(std::uint_least16_t cmdid, CmdHandlerFn fn);
 	void Register(std::initializer_list<std::pair<std::uint_least16_t, CmdHandlerFn>> elems);
 
-	void Dispatch(std::weak_ptr<Client> client, CmdDispatcher::ParsedCmd parsedcmd);
+	void Dispatch(std::weak_ptr<Client> client, ClientAPI::Parser::ParsedCmd parsedcmd);
 
 private:
 	struct Impl;

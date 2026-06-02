@@ -5,6 +5,7 @@
 #include <string>
 #include <queue>
 #include <string_view>
+#include <functional>
 
 #include "NetBaseAPI.h"
 
@@ -32,7 +33,7 @@ public:
 	Session(
 		asio::ip::tcp::socket socket,
 		std::shared_ptr<CmdDispatcher> dispatcher,
-		std::shared_ptr<ClientAPI::Parser> parser,
+		ClientAPI::Parser &parser,
 		std::shared_ptr<Log> log
 	);
 
@@ -56,7 +57,7 @@ private:
 
 	asio::ip::tcp::socket socket;
 	std::shared_ptr<CmdDispatcher> dispatcher;
-	std::shared_ptr<ClientAPI::Parser> parser;
+	std::reference_wrapper<ClientAPI::Parser> parser;
 	std::shared_ptr<Log> log;
 };
 

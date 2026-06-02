@@ -5,10 +5,10 @@
 
 #include "ParserImpl.h"
 
-ClientAPI::Parser::ParsedCmd ParserImpl::Parse(std::string_view data, std::uint_least64_t length)
+ClientAPI::Parser::ParsedCmd ParserImpl::Parse(std::string_view data)
 {
 	// just something silly to stop the warnings... do whatever you need to here
-	if (length == 0 || data.empty())
+	if (data.empty())
 		throw std::runtime_error("Command is empty");
 
 	while (!data.empty() && (data.back() == '\n' || data.back() == '\r'))

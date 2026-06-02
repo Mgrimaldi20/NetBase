@@ -23,21 +23,17 @@
 class ClientAPIImpl : public ClientAPI
 {
 public:
-	ClientAPIImpl(
-		std::shared_ptr<NetBaseAPI> netbaseapi,
-		std::shared_ptr<ClientAPI::Parser> parser,
-		std::string protoname
-	);
+	ClientAPIImpl(NetBaseAPI *netbaseapi, std::string protoname);
 
 	virtual ~ClientAPIImpl() = default;
 
 	void RegisterCmds() override final;
-	std::shared_ptr<ClientAPI::Parser> GetParser() override final;
+	ClientAPI::Parser &GetParser() override final;
 	std::string &GetProtocolName() override final;
 
 private:
-	std::shared_ptr<NetBaseAPI> netbaseapi;
-	std::shared_ptr<ClientAPI::Parser> parser;
+	NetBaseAPI *netbaseapi;
 
+	std::shared_ptr<ClientAPI::Parser> parser;
 	std::string protoname;
 };

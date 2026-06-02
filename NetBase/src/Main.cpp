@@ -41,9 +41,6 @@ int main(int argc, char **argv)
 		if (!ValidateOptions(argc, argv))
 			return 1;
 
-		// single thread hint
-		asio::io_context ioctx(1);
-
 		std::shared_ptr<Log> log = std::make_shared<Log>(
 			"NetBase",
 			std::make_shared<Driver>(
@@ -63,10 +60,9 @@ int main(int argc, char **argv)
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
+		log->Info("Loaded plugin library: {}", dylibpath.filename().string());
+
 		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
-
-		log->Info("Loaded plugin library: {}", dylibpath.string());
-
 		std::any func = dylib->GetSymbol("GetClientAPI");
 
 		if (func.type() != typeid(void *))
@@ -87,19 +83,21 @@ int main(int argc, char **argv)
 			clientlog
 		);
 
-		ClientAPI *rawclientapi = GetClientAPI(netbaseapi.get());
-		std::shared_ptr<ClientAPI> clientapi(rawclientapi, [](ClientAPI *) {});
+		ClientAPI *clientapi = GetClientAPI(netbaseapi.get());
 
-		std::shared_ptr<ClientAPI::Parser> parser;
-
-		parser = clientapi->GetParser();
+		ClientAPI::Parser &parser = clientapi->GetParser();
 
 		clientapi->RegisterCmds();
 		log->Info("Registered protocol commands in the CmdSystem");
 
 		log->Info("Started protocol: {}", clientapi->GetProtocolName());
 
-		Server server(serverport, ioctx, log, dispatcher, parser);
+		// put here because if the dylib is unloaded first, it causes a segfault
+		// need to fix and make more robust as its a big problem
+		// single thread hint
+		asio::io_context ioctx(1);
+
+		Server server(ioctx, serverport, log, dispatcher, parser);
 
 		ioctx.run();
 
