@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iterator>
 
+#include "entry/EntryBuilderImpl.h"
+
 #include "Log.h"
 
 struct Log::Impl
@@ -40,63 +42,48 @@ Log::~Log()
 	Info("Shutting down the Logger: {}", pimpl->logname);
 }
 
-EntryBuilder Log::Debug(std::string msg, std::source_location loc)
+EntryBuilder &Log::Debug(std::string msg, std::source_location loc)
 {
 #if defined(NETBASE_DEBUG)
-	return std::move(
-		EntryBuilder(loc)
+	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Debug)
-		.Message(msg)
-		.Dest(pimpl->driver)
-	);
+		.Message(msg);
 #else
 	return {};
 #endif
 }
 
-EntryBuilder Log::Info(std::string msg, std::source_location loc)
+EntryBuilder &Log::Info(std::string msg, std::source_location loc)
 {
-	return std::move(
-		EntryBuilder(loc)
+	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Info)
-		.Message(msg)
-		.Dest(pimpl->driver)
-	);
+		.Message(msg);
 }
 
-EntryBuilder Log::Warn(std::string msg, std::source_location loc)
+EntryBuilder &Log::Warn(std::string msg, std::source_location loc)
 {
-	return std::move(
-		EntryBuilder(loc)
+	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Warn)
-		.Message(msg)
-		.Dest(pimpl->driver)
-	);
+		.Message(msg);
 }
 
-EntryBuilder Log::Error(std::string msg, std::source_location loc)
+EntryBuilder &Log::Error(std::string msg, std::source_location loc)
 {
-	return std::move(
-		EntryBuilder(loc)
+	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Error)
-		.Message(msg)
-		.Dest(pimpl->driver)
-	);
+		.Message(msg);
 }
 
-EntryBuilder Log::Fatal(std::string msg, std::source_location loc)
+EntryBuilder &Log::Fatal(std::string msg, std::source_location loc)
 {
-	return std::move(
-		EntryBuilder(loc)
+	return EntryBuilderImpl(pimpl->driver, loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Fatal)
-		.Message(msg)
-		.Dest(pimpl->driver)
-	);
+		.Message(msg);
 }
 
 void Log::SetLogName(std::string name)

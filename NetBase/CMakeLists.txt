@@ -48,6 +48,7 @@ target_sources(NetBase PRIVATE
 	"src/NetBaseAPIImpl.cpp"
 	"src/Main.cpp"
 	"src/sys/DynamicLibrary.h"
+	"src/framework/PImplPtr.h"
 	"src/framework/Asio.h"
 	"src/framework/Asio.cpp"
 	"src/framework/Server.h"
@@ -67,7 +68,8 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/driver/Driver.cpp"
 	"src/framework/log/entry/Entry.h"
 	"src/framework/log/entry/EntryBuilder.h"
-	"src/framework/log/entry/EntryBuilder.cpp"
+	"src/framework/log/entry/EntryBuilderImpl.h"
+	"src/framework/log/entry/EntryBuilderImpl.cpp"
 	"src/framework/log/sink/Sink.h"
 	"src/framework/log/sink/text/TextSink.h"
 	"src/framework/log/sink/text/file/FileSink.h"
@@ -82,7 +84,6 @@ target_sources(NetBase PRIVATE
 	"src/framework/log/policy/trace/StacktracePolicy.cpp"
 	"src/framework/log/policy/trace/SourceLocationPolicy.h"
 	"src/framework/log/policy/trace/SourceLocationPolicy.cpp"
-	"src/framework/PImplPtr.h"
 )
 
 # Include different source code depending on OS

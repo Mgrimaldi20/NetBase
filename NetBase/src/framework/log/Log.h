@@ -37,7 +37,8 @@ public:
 	struct FormatContext
 	{
 		template<typename T>
-			//requires std::constructible_from<std::format_string<Args...>, T const &>	// intellisense hates this for some reason, all logging calls give false errors
+			// intellisense hates this for some reason, all logging calls give false errors
+			//requires std::constructible_from<std::format_string<Args...>, T const &>
 		consteval FormatContext(
 			T const &fmt,
 			std::source_location loc = std::source_location::current()
@@ -55,26 +56,26 @@ public:
 
 	~Log();
 
-	EntryBuilder Debug(std::string msg, std::source_location loc = std::source_location::current());
-	EntryBuilder Info(std::string msg, std::source_location loc = std::source_location::current());
-	EntryBuilder Warn(std::string msg, std::source_location loc = std::source_location::current());
-	EntryBuilder Error(std::string msg, std::source_location loc = std::source_location::current());
-	EntryBuilder Fatal(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder &Debug(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder &Info(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder &Warn(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder &Error(std::string msg, std::source_location loc = std::source_location::current());
+	EntryBuilder &Fatal(std::string msg, std::source_location loc = std::source_location::current());
 
 	template<typename ...Args>
-	EntryBuilder Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder &Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	EntryBuilder Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder &Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	EntryBuilder Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder &Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	EntryBuilder Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder &Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	template<typename ...Args>
-	EntryBuilder Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
+	EntryBuilder &Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
 
 	void SetLogName(std::string name);
 	void AttachDriver(std::shared_ptr<Driver> newdriver);
@@ -85,7 +86,7 @@ private:
 };
 
 template<typename ...Args>
-inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder &Log::Debug(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 #if defined(NETBASE_DEBUG)
 	return Debug(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
@@ -98,25 +99,25 @@ inline EntryBuilder Log::Debug(Log::FormatContext<std::type_identity_t<Args>...>
 }
 
 template<typename ...Args>
-inline EntryBuilder Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder &Log::Info(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return Info(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
-inline EntryBuilder Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder &Log::Warn(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return Warn(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
-inline EntryBuilder Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder &Log::Error(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return Error(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
 
 template<typename ...Args>
-inline EntryBuilder Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
+inline EntryBuilder &Log::Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args)
 {
 	return Fatal(std::format(fmt.fmt, std::forward<Args>(args)...), fmt.loc);
 }
