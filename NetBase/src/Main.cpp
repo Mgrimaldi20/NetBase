@@ -57,12 +57,12 @@ int main(int argc, char **argv)
 			)
 		);
 
+		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
+		log->Info("Loaded plugin library: {}", dylibpath.filename().string());
+
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
 		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
 
-		log->Info("Loaded plugin library: {}", dylibpath.filename().string());
-
-		std::unique_ptr<DynamicLibrary> dylib = DynamicLibrary::CreateDynamicLibrary(dylibpath);
 		std::any func = dylib->GetSymbol("GetClientAPI");
 
 		if (func.type() != typeid(void *))
