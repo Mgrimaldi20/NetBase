@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		log->Info("Loaded plugin library: {}", dylibpath.filename().string());
 
 		std::shared_ptr<CmdDispatcher> dispatcher = std::make_shared<CmdDispatcher>(log);
-		std::shared_ptr<ChannelManager> channelmanager = std::make_shared<ChannelManager>(log);
+		std::shared_ptr<ChannelManager> chmanager = std::make_shared<ChannelManager>(log);
 
 		std::any func = dylib->GetSymbol("GetClientAPI");
 
@@ -73,14 +73,11 @@ int main(int argc, char **argv)
 
 		GetClientAPIFn GetClientAPI = reinterpret_cast<GetClientAPIFn>(std::any_cast<void *>(func));
 
-		// create a new logger instance for the protocol, they can add sinks and policies
-		std::shared_ptr<Log> clientlog = std::make_shared<Log>();
-
 		// create the NetBaseAPI impl to send to the protocol library
 		std::shared_ptr<NetBaseAPIImpl> netbaseapi = std::make_shared<NetBaseAPIImpl>(
 			dispatcher,
-			channelmanager,
-			clientlog
+			chmanager,
+			log
 		);
 
 		ClientAPI *clientapi = GetClientAPI(netbaseapi.get());

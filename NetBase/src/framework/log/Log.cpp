@@ -7,11 +7,6 @@
 
 struct Log::Impl
 {
-	Impl()
-		: logname(),
-		driver()
-	{}
-
 	Impl(std::string logname, std::shared_ptr<Driver> driver)
 		: logname(std::move(logname)),
 		driver(driver)
@@ -23,16 +18,16 @@ struct Log::Impl
 	std::shared_ptr<Driver> driver;
 };
 
-Log::Log()
-	: pimpl(PImplPtr<Log::Impl>::MakePImpl())
-{
-}
-
 Log::Log(std::string logname, std::shared_ptr<Driver> driver)
-	: pimpl(PImplPtr<Log::Impl>::MakePImpl(logname, driver))
+	: pimpl(PImplPtr<Log::Impl>::MakePImpl(std::move(logname), driver))
 {
-	SetLogName(std::move(logname));
-	AttachDriver(driver);
+	Info("Attached new driver: {}", pimpl->driver->GetName());
+
+	for (const auto &sinkname : pimpl->driver->GetSinkConfig())
+		Info("Attached sink: {}", sinkname);
+
+	for (const auto &policyname : pimpl->driver->GetPolicyConfig())
+		Info("Attached policy: {}", policyname);
 
 	Info("Logger started: {}", pimpl->logname);
 }
@@ -84,28 +79,4 @@ EntryBuilder &Log::Fatal(std::string msg, std::source_location loc)
 		.Name(pimpl->logname)
 		.Level(Entry::Level::Fatal)
 		.Message(msg);
-}
-
-void Log::SetLogName(std::string name)
-{
-	if (name.empty())
-		return;
-
-	pimpl->logname = std::move(name);
-}
-
-void Log::AttachDriver(std::shared_ptr<Driver> newdriver)
-{
-	if (!newdriver)
-		return;
-
-	pimpl->driver = newdriver;
-
-	Info("Attached new driver: {}", pimpl->driver->GetName());
-
-	for (const auto &sinkname : pimpl->driver->GetSinkConfig())
-		Info("Attached sink: {}", sinkname);
-
-	for (const auto &policyname : pimpl->driver->GetPolicyConfig())
-		Info("Attached policy: {}", policyname);
 }

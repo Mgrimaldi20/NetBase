@@ -11,25 +11,6 @@ ClientAPIImpl::ClientAPIImpl(NetBaseAPI *netbaseapi, std::string protoname)
 {
 	if (!netbaseapi)
 		throw std::runtime_error("NetBaseAPI is null");
-
-	Log &log = netbaseapi->GetLogger();
-
-	log.SetLogName(this->protoname);
-
-	log.AttachDriver(
-		std::make_shared<Driver>(
-			"SandboxProtocolMainDriver",
-			std::vector<std::shared_ptr<Sink>>
-			{
-				std::make_shared<ConsoleSink>(std::make_unique<BasicTextFormatter>())
-			},
-			std::vector<std::shared_ptr<Policy>>
-			{
-				std::make_shared<StacktracePolicy>(Entry::Level::Fatal),
-				std::make_shared<SourceLocationPolicy>(Entry::Level::Debug)
-			}
-		)
-	);
 }
 
 void ClientAPIImpl::RegisterCmds()

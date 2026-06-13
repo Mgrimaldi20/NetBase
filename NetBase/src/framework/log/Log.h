@@ -27,8 +27,6 @@
 *	Info: Log a formatted information message, designed for general program information and state
 *	Warn: Log a formatted warning message, designed for recoverable issues or abnormal state
 *	Error: Log a formatted error message, designed for unrecoverable code errors, program should quit
-*	SetName: Sets the name of the logger to the name specified, changes the name
-*	AttachDriver: Swaps out the current driver config with a new one
 */
 class NETBASE_API Log
 {
@@ -51,7 +49,6 @@ public:
 		std::source_location loc;
 	};
 
-	Log();
 	Log(std::string logname, std::shared_ptr<Driver> driver = {});
 
 	~Log();
@@ -76,9 +73,6 @@ public:
 
 	template<typename ...Args>
 	EntryBuilder &Fatal(Log::FormatContext<std::type_identity_t<Args>...> fmt, Args && ...args);
-
-	void SetLogName(std::string name);
-	void AttachDriver(std::shared_ptr<Driver> newdriver);
 
 private:
 	struct Impl;

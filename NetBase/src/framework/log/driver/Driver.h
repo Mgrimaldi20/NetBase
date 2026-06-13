@@ -5,10 +5,6 @@
 #include <vector>
 #include <string>
 
-#include "NetBaseAPI.h"
-
-#include "../../PImplPtr.h"
-
 #include "../sink/Sink.h"
 #include "../policy/Policy.h"
 #include "../entry/Entry.h"
@@ -23,7 +19,7 @@
 *	GetSinks: Returns a const look into the underlying sinks
 *	GetPolicies: Returns a const look into the underlying policies
 */
-class NETBASE_API Driver
+class Driver
 {
 public:
 	Driver(
@@ -32,7 +28,7 @@ public:
 		std::vector<std::shared_ptr<Policy>> policies = {}
 	);
 
-	~Driver();
+	~Driver() = default;
 
 	void Submit(Entry &entry);
 
@@ -42,8 +38,10 @@ public:
 	std::vector<std::string> GetPolicyConfig() const;
 
 private:
-	struct Impl;
-	PImplPtr<Impl> pimpl;
+	std::string drivername;
+
+	std::vector<std::shared_ptr<Sink>> sinks;
+	std::vector<std::shared_ptr<Policy>> policies;
 };
 
 #endif
